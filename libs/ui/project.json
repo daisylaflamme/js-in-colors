@@ -5,6 +5,48 @@
   "prefix": "jic",
   "projectType": "library",
   "tags": ["type:ui", "scope:shared"],
-  "// targets": "to see all targets run: nx show project ui --web",
-  "targets": {}
+  "targets": {
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "continuous": true,
+      "readyWhen": {
+        "port": "{env.SBCONFIG_PORT ?? options.port ?? 9009}",
+        "host": "{env.SBCONFIG_HOSTNAME ?? options.host ?? localhost}"
+      },
+      "options": {
+        "port": 4400,
+        "configDir": "libs/ui/.storybook",
+        "browserTarget": "ui:build-storybook",
+        "compodoc": false,
+        "styles": ["styles/index.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["styles"]
+        }
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/ui",
+        "configDir": "libs/ui/.storybook",
+        "browserTarget": "ui:build-storybook",
+        "compodoc": false,
+        "styles": ["styles/index.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["styles"]
+        }
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    }
+  }
 }
