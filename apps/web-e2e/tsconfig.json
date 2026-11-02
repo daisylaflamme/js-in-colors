@@ -5,10 +5,7 @@
     "allowJs": true,
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": [
-      "cypress",
-      "node"
-    ],
+    "types": ["cypress", "node"],
     "sourceMap": false,
     "strict": true,
     "noImplicitOverride": true,
@@ -16,12 +13,5 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.js",
-    "cypress.config.ts",
-    "**/*.cy.ts",
-    "**/*.cy.js",
-    "**/*.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.js", "cypress.config.ts", "**/*.cy.ts", "**/*.cy.js", "**/*.d.ts"]
 }

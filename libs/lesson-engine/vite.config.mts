@@ -24,6 +24,6 @@ export default defineConfig(() => ({
     coverage: {
       reportsDirectory: '../../coverage/libs/lesson-engine',
       provider: 'v8' as const,
-    }
+    },
   },
 }));

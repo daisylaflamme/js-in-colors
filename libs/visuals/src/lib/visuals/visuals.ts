@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'jic-visuals',
   imports: [],
   templateUrl: './visuals.html',
-  styleUrl: './visuals.scss'
+  styleUrl: './visuals.scss',
 })
 export class Visuals {}

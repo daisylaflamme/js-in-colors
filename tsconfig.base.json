@@ -7,10 +7,7 @@
     "moduleResolution": "bundler",
     "module": "preserve",
     "target": "es2022",
-    "lib": [
-      "es2022",
-      "dom"
-    ],
+    "lib": ["es2022", "dom"],
     "strict": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -21,25 +18,12 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@jic/ui": [
-        "./libs/ui/src/index.ts"
-      ],
-      "@jic/lesson-engine": [
-        "./libs/lesson-engine/src/index.ts"
-      ],
-      "@jic/data-access": [
-        "./libs/data-access/src/index.ts"
-      ],
-      "@jic/visuals": [
-        "./libs/visuals/src/index.ts"
-      ],
-      "@jic/shared": [
-        "./libs/shared/src/index.ts"
-      ]
+      "@jic/ui": ["./libs/ui/src/index.ts"],
+      "@jic/lesson-engine": ["./libs/lesson-engine/src/index.ts"],
+      "@jic/data-access": ["./libs/data-access/src/index.ts"],
+      "@jic/visuals": ["./libs/visuals/src/index.ts"],
+      "@jic/shared": ["./libs/shared/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

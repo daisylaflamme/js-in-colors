@@ -7,7 +7,7 @@ describe('Visuals', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Visuals]
+      imports: [Visuals],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Visuals);

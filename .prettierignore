@@ -1,0 +1,12 @@
+/dist
+/coverage
+/storybook-static
+/.nx/cache
+/.nx/workspace-data
+/.angular
+package-lock.json
+
+# Hand-written by the project owner: keep as authored
+/docs/mockups
+/CLAUDE.md
+/FIRST_PROMPT.md

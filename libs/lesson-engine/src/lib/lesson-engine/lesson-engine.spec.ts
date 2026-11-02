@@ -7,7 +7,7 @@ describe('LessonEngine', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LessonEngine]
+      imports: [LessonEngine],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LessonEngine);

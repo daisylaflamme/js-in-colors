@@ -7,7 +7,13 @@
     "node": ">=24"
   },
   "scripts": {
-    "start": "nx serve web"
+    "start": "nx serve web",
+    "build": "nx build web",
+    "test": "nx run-many -t test",
+    "lint": "nx run-many -t lint",
+    "e2e": "nx e2e web-e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "~2.7.3",
@@ -40,6 +46,7 @@
     "eslint-plugin-cypress": "^3.5.0",
     "jsdom": "^27.1.0",
     "nx": "24.0.3",
+    "prettier": "3.9.10",
     "tslib": "^2.3.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.58.0",

@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'jic-lesson-engine',
   imports: [],
   templateUrl: './lesson-engine.html',
-  styleUrl: './lesson-engine.scss'
+  styleUrl: './lesson-engine.scss',
 })
 export class LessonEngine {}

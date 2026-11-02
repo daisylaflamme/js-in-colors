@@ -4,10 +4,7 @@
   "sourceRoot": "libs/data-access/src",
   "prefix": "jic",
   "projectType": "library",
-  "tags": [
-    "type:data-access",
-    "scope:shared"
-  ],
+  "tags": ["type:data-access", "scope:shared"],
   "// targets": "to see all targets run: nx show project data-access --web",
   "targets": {}
 }
