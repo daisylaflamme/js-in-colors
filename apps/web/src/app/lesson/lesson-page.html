@@ -22,8 +22,8 @@
     <jic-concept-chip-list class="chips" [label]="scene.chipsLabel" [concepts]="scene.chips" />
 
     <jic-stage [bubble]="picked().bubble">
-      <jic-dot-placeholder jicStageCharacter />
-      <jic-jar-placeholder
+      <jic-dot-character jicStageCharacter />
+      <jic-jar-visual
         jicStageArt
         [name]="scene.jarName"
         [value]="picked().value"
@@ -59,7 +59,7 @@
     }
   } @else {
     <jic-stage [bubble]="comingSoon.bubble">
-      <jic-dot-placeholder jicStageCharacter />
+      <jic-dot-character jicStageCharacter />
     </jic-stage>
   }
 

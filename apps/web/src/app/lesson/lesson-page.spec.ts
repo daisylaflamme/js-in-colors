@@ -27,7 +27,7 @@ describe('LessonPage', () => {
     expect(choice('Emma')?.getAttribute('aria-pressed')).toBe('true');
     expect(choice('7')?.getAttribute('aria-pressed')).toBe('false');
     expect(el.querySelector('.bubble')?.textContent).toBe('My favorite is Emma!');
-    expect(el.querySelector('jic-jar-placeholder .value-text')?.textContent).toBe('Emma');
+    expect(el.querySelector('jic-jar-visual .value-text')?.textContent).toBe('Emma');
     expect(el.querySelector('#code-peek code')?.textContent).toBe('let favorite = "Emma";');
   });
 

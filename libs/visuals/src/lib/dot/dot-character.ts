@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
  * The real, original Dot artwork is a separate task.
  */
 @Component({
-  selector: 'jic-dot-placeholder',
+  selector: 'jic-dot-character',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { 'aria-hidden': 'true' },
   template: `
@@ -44,4 +44,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     }
   `,
 })
-export class DotPlaceholderComponent {}
+export class DotCharacterComponent {}

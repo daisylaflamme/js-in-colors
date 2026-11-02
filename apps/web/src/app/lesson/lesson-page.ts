@@ -19,8 +19,7 @@ import {
 import { DEFAULT_LESSON_ID, findLesson, LESSONS, lessonNumber } from '../lessons/lesson-catalog';
 import { ShellState } from '../shell/shell-state';
 import { SpeechService } from '../shell/speech.service';
-import { DotPlaceholderComponent } from './art/dot-placeholder';
-import { JarPlaceholderComponent } from './art/jar-placeholder';
+import { DotCharacterComponent, JarVisualComponent } from '@jic/visuals';
 import { codeLine, codeNotes, DEMO_SCENE, type DemoChoice } from './demo-scene';
 
 /**
@@ -38,10 +37,10 @@ import { codeLine, codeNotes, DEMO_SCENE, type DemoChoice } from './demo-scene';
     CodePeekToggleComponent,
     ConceptChipListComponent,
     ConceptShapeComponent,
-    DotPlaceholderComponent,
+    DotCharacterComponent,
     HelpTabsComponent,
     IconComponent,
-    JarPlaceholderComponent,
+    JarVisualComponent,
     LessonHeaderComponent,
     LibraryPanelComponent,
     MenuButtonComponent,

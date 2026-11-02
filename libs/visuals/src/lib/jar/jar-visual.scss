@@ -1,0 +1,84 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(15rem, 70cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+svg {
+  inline-size: 100%;
+  overflow: visible;
+}
+
+.ink {
+  stroke: var(--color-ink);
+  stroke-width: 6;
+}
+
+.thin {
+  stroke-width: 3;
+}
+
+.lid {
+  fill: var(--color-accent);
+}
+
+.glass {
+  fill: var(--color-variable-tint);
+}
+
+.tag {
+  fill: var(--color-surface);
+}
+
+.value-shape {
+  fill: var(--fill);
+}
+
+.value-text {
+  fill: var(--on);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.tag-text {
+  fill: var(--color-ink);
+  font-family: var(--font-code);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+// The value drops into the jar. Reduced or calm motion: it is simply there.
+@include motion-ok {
+  .value {
+    animation: drop-in var(--motion-slow) var(--ease-out) both;
+    transform-box: view-box;
+  }
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-90px);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(6px);
+  }
+}

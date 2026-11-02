@@ -1,0 +1,82 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(20rem, 80cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  margin: 0;
+}
+
+.monitor {
+  inline-size: 100%;
+  min-block-size: 9rem;
+  border: var(--border-width-heavy) solid var(--color-ink);
+  border-radius: var(--radius-chip);
+  background: var(--color-code-bg);
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-muted);
+
+  span {
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: 50%;
+    background: var(--color-code-text);
+  }
+}
+
+.lines {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4);
+  list-style: none;
+  color: var(--color-surface);
+  font-family: var(--font-code);
+  font-size: clamp(1.125rem, 7cqi, 1.75rem);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+
+  .empty {
+    color: var(--color-code-text);
+    font-weight: 500;
+  }
+}
+
+.stand {
+  inline-size: 30%;
+  block-size: 1.25rem;
+  border: var(--border-width-heavy) solid var(--color-ink);
+  border-block-start: 0;
+  border-radius: 0 0 var(--radius-nav-item) var(--radius-nav-item);
+  background: var(--color-muted);
+}
+
+figcaption {
+  margin-block-start: var(--space-3);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+@include motion-ok {
+  .lines li {
+    animation: line-in var(--motion-base) var(--ease-out) both;
+    animation-delay: calc(var(--i) * var(--motion-slow));
+  }
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
