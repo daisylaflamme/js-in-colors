@@ -1,0 +1,91 @@
+id: hello
+title: Hello, JavaScript!
+topic: Introduction
+lead: JavaScript is how we talk to a computer.
+leadHighlight: talk
+concept: intro
+tip: JavaScript is words that tell a computer what to do.
+library:
+  title: Meet JavaScript
+  sections:
+    - heading: What is JavaScript?
+      text: JavaScript is a language. People write it. Computers read it and do what it says.
+    - heading: Where does it live?
+      text: It lives in web pages. It makes buttons work and pictures move.
+    - heading: Colors and shapes
+      text: In this app, every idea has a color and a shape. Look for them in each lesson.
+  examples:
+    - concept: number
+      label: Numbers
+      value: blue circles, like 7
+    - concept: string
+      label: Words
+      value: green pills, like "Hi"
+    - concept: boolean
+      label: Yes or no
+      value: purple diamonds, like true
+  words:
+    - term: JavaScript
+      meaning: words for computers
+    - term: code
+      meaning: the words we write
+scenes:
+  - id: meet-dot
+    type: watch
+    bubble: Hi! I am Dot. Let's learn JavaScript together!
+    visual:
+      kind: dot
+  - id: what-it-does
+    type: watch
+    bubble: JavaScript tells the computer what to do. Look, it said hello!
+    visual:
+      kind: screen
+      lines:
+        - Hello!
+    code: console.log("Hello!");
+    notes:
+      - term: console
+        text: is the computer's message box
+      - term: '"Hello!"'
+        text: is what it shows
+  - id: colors-and-shapes
+    type: interact
+    prompt: 'Pick one to see its shape:'
+    visual:
+      kind: screen
+      lines: []
+    choices:
+      - id: number
+        label: '7'
+        concept: number
+        value: 7 is a number.
+        bubble: Numbers wear blue circles!
+        code: console.log(7);
+      - id: word
+        label: Hi
+        concept: string
+        value: Hi is a word.
+        bubble: Words wear green pills!
+        code: console.log("Hi");
+      - id: yes
+        label: 'yes'
+        concept: boolean
+        value: true means yes.
+        bubble: Yes or no wears a purple diamond!
+        code: console.log(true);
+  - id: who-reads-it
+    type: quiz
+    question: Who reads JavaScript?
+    options:
+      - id: computer
+        label: The computer
+        correct: true
+        feedback: Yes! People write it, and the computer reads it.
+      - id: cat
+        label: A cat
+        correct: false
+        feedback: Cats are clever, but they nap a lot. Try another one!
+      - id: tree
+        label: A tree
+        correct: false
+        feedback: Trees are great, but they cannot read code. Try another one!

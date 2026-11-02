@@ -1,0 +1,154 @@
+id: variables
+title: Variables
+topic: Variables
+lead: A variable is a jar with a name on it.
+leadHighlight: jar
+concept: variable
+chips:
+  label: 'Jars can hold:'
+  concepts:
+    - number
+    - string
+    - boolean
+    - object
+    - array
+    - function
+tip: Jars can hold numbers, words, and more!
+library:
+  title: All about variables
+  sections:
+    - heading: What is a variable?
+      text: A variable is a jar. You write a name on the jar. Then you put something inside. Later, you can ask the jar, "What is inside?"
+    - heading: Same jar, new things
+      text: You can swap what is inside. The name on the jar stays the same.
+    - heading: Jars can hold many things
+      text: Here are some things a jar can hold.
+  examples:
+    - concept: number
+      label: Numbers
+      value: '7'
+    - concept: string
+      label: Words
+      value: Emma
+    - concept: boolean
+      label: Yes or no
+      value: 'true'
+    - concept: object
+      label: Things
+      value: a cat with a name
+    - concept: array
+      label: Lists
+      value: red, blue, green
+    - concept: function
+      label: Helpers
+      value: a machine with a job
+  words:
+    - term: variable
+      meaning: the jar
+    - term: value
+      meaning: what is inside
+    - term: name
+      meaning: the label
+scenes:
+  - id: meet-the-jar
+    type: watch
+    bubble: This is a jar. A jar can hold one thing.
+    visual:
+      kind: jar
+      name: favorite
+  - id: name-the-jar
+    type: watch
+    bubble: We write a name on the jar. This jar is called favorite.
+    visual:
+      kind: jar
+      name: favorite
+    code: let favorite;
+    notes:
+      - term: let
+        text: 'means: make a new jar'
+      - term: favorite
+        text: is the name on the jar
+  - id: fill-the-jar
+    type: interact
+    prompt: 'Pick something for the jar:'
+    visual:
+      kind: jar
+      name: favorite
+    choices:
+      - id: seven
+        label: '7'
+        concept: number
+        value: '7'
+        bubble: My favorite is 7!
+        code: let favorite = 7;
+      - id: emma
+        label: Emma
+        concept: string
+        value: Emma
+        bubble: My favorite is Emma!
+        code: let favorite = "Emma";
+      - id: 'yes'
+        label: yes!
+        concept: boolean
+        value: 'yes'
+        bubble: My favorite is yes!
+        code: let favorite = true;
+    notes:
+      - term: let
+        text: 'means: make a new jar'
+      - term: favorite
+        text: is the name on the jar
+      - term: '='
+        text: puts the value inside
+  - id: swap-it
+    type: interact
+    prompt: 'Put something new in the jar:'
+    visual:
+      kind: jar
+      name: favorite
+    choices:
+      - id: cat
+        label: cat
+        concept: string
+        value: cat
+        bubble: Now favorite holds cat. Same jar, new value!
+        code: favorite = "cat";
+      - id: ten
+        label: '10'
+        concept: number
+        value: '10'
+        bubble: Now favorite holds 10. The name did not change!
+        code: favorite = 10;
+      - id: 'no'
+        label: no!
+        concept: boolean
+        value: 'no'
+        bubble: Now favorite holds no. Still the same jar!
+        code: favorite = false;
+    notes:
+      - term: favorite
+        text: is the same jar as before
+      - term: '='
+        text: puts a new value inside
+  - id: name-check
+    type: quiz
+    question: What is the name of this jar?
+    visual:
+      kind: jar
+      name: favorite
+      value: '7'
+      concept: number
+    options:
+      - id: favorite
+        label: favorite
+        correct: true
+        feedback: Yes! favorite is the name on the tag.
+      - id: seven
+        label: '7'
+        concept: number
+        correct: false
+        feedback: Not quite. 7 is inside the jar. Try another one!
+      - id: let
+        label: let
+        correct: false
+        feedback: Close! let makes a new jar. Try another one!

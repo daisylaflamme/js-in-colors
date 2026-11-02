@@ -6,17 +6,17 @@ lessons:
     title: Hello, JavaScript!
     topic: Introduction
     concept: intro
-    status: soon
+    status: ready
   - id: output
     title: Say it out loud
     topic: Output
     concept: string
-    status: soon
+    status: ready
   - id: variables
     title: Variables
     topic: Variables
     concept: variable
-    status: soon
+    status: ready
   - id: data-types
     title: Numbers, words, yes/no
     topic: Data types

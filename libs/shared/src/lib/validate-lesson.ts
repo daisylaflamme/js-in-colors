@@ -171,6 +171,10 @@ function describe(value: unknown): string {
   return String(value);
 }
 
+function plural(n: number, word: string): string {
+  return n === 1 ? word : `${word}s`;
+}
+
 function truncate(text: string): string {
   return text.length > 40 ? `${text.slice(0, 37)}...` : text;
 }
@@ -192,7 +196,8 @@ function checkVisual(c: Checker, value: unknown, path: IssuePath): void {
       return;
     case 'screen': {
       c.knownKeys(v, path, ['kind', 'lines']);
-      const lines = c.array(v, 'lines', path, { min: 1, max: 4 });
+      // May be empty: an interact scene fills the screen with the picked choice.
+      const lines = c.array(v, 'lines', path, { max: 4 });
       lines?.forEach((line, i) => {
         if (typeof line !== 'string')
           c.error([...path, 'lines', i], `should be text, got ${describe(line)}.`);

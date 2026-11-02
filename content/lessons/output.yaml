@@ -1,0 +1,107 @@
+id: output
+title: Say it out loud
+topic: Output
+lead: console.log makes the computer say something.
+leadHighlight: say
+concept: string
+chips:
+  label: 'The computer can say:'
+  concepts:
+    - string
+    - number
+    - boolean
+tip: Words go inside quotes, but numbers do not.
+library:
+  title: All about saying things
+  sections:
+    - heading: How does a computer talk?
+      text: It writes words on the screen. We tell it what to write.
+    - heading: What is console.log?
+      text: console.log is a helper. You give it something, and it shows it.
+    - heading: Quotes
+      text: Words need quotes around them. Numbers and true or false do not.
+  examples:
+    - concept: string
+      label: Words
+      value: '"Hi!"'
+    - concept: number
+      label: Numbers
+      value: '7'
+    - concept: boolean
+      label: Yes or no
+      value: 'true'
+  words:
+    - term: console.log
+      meaning: show this
+    - term: quotes
+      meaning: the marks around words
+scenes:
+  - id: it-can-talk
+    type: watch
+    bubble: The computer can talk to us. It uses console.log.
+    visual:
+      kind: screen
+      lines:
+        - Hi!
+    code: console.log("Hi!");
+    notes:
+      - term: log
+        text: 'means: show it'
+      - term: '"Hi!"'
+        text: is what the screen shows
+  - id: pick-a-message
+    type: interact
+    prompt: 'Pick something to say:'
+    visual:
+      kind: screen
+      lines: []
+    choices:
+      - id: hi
+        label: Hi!
+        concept: string
+        value: Hi!
+        bubble: The screen says Hi!
+        code: console.log("Hi!");
+      - id: seven
+        label: '7'
+        concept: number
+        value: '7'
+        bubble: The screen says 7. Numbers need no quotes!
+        code: console.log(7);
+      - id: cats
+        label: I like cats.
+        concept: string
+        value: I like cats.
+        bubble: The screen says I like cats. Me too!
+        code: console.log("I like cats.");
+  - id: quotes
+    type: watch
+    bubble: Words wear quotes. Numbers do not.
+    visual:
+      kind: screen
+      lines:
+        - Hi
+        - '7'
+    code: console.log("Hi", 7);
+    notes:
+      - term: '"Hi"'
+        text: is a word, so it has quotes
+      - term: '7'
+        text: is a number, so no quotes
+  - id: which-line
+    type: quiz
+    question: Which line makes the screen say Hi?
+    options:
+      - id: right
+        label: console.log("Hi");
+        concept: string
+        correct: true
+        feedback: Yes! console.log shows it, and Hi wears its quotes.
+      - id: no-quotes
+        label: console.log(Hi);
+        correct: false
+        feedback: So close! Words need quotes. Try another one!
+      - id: say
+        label: say Hi
+        correct: false
+        feedback: Good guess! JavaScript uses console.log to talk. Try another one!
