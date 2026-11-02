@@ -1,0 +1,171 @@
+/**
+ * The Variables lesson, end to end, with the keyboard only (real key events via cy.press),
+ * and an axe check on every scene. Runs at phone and desktop sizes, and once with
+ * prefers-reduced-motion emulated in the browser.
+ *
+ * Focus moves with real Tab key presses (cy.press). Cypress 15's cy.press does not trigger a
+ * button's default action for Enter/Space, so activation uses type('{enter}') / type(' ') on the
+ * focused element, which simulates the key (no pointer events; checked while writing this spec).
+ * Cypress has no Shift+Tab, so after each scene change the walk starts again from the top of
+ * <main> (where the "Skip to the lesson" link puts focus) and Tabs forward to the next target.
+ */
+const { TAB } = Cypress.Keyboard.Keys;
+
+/** Activate the focused control the way a keyboard user does. */
+const pressEnter = () => cy.focused().type('{enter}');
+const pressSpace = () => cy.focused().type(' ');
+
+/** Press Tab until the focused element matches (optionally containing `text`). */
+function tabTo(selector: string, text?: string, max = 40): void {
+  const step = (left: number): void => {
+    cy.press(TAB);
+    cy.focused({ log: false }).then(($el) => {
+      const found = $el.length > 0 && $el.is(selector) && (text === undefined || $el.text().includes(text));
+      if (found) return;
+      if (left <= 0) throw new Error(`Could not Tab to ${selector}${text ? ` "${text}"` : ''}`);
+      step(left - 1);
+    });
+  };
+  step(max);
+}
+
+function fromTopOfLesson(): void {
+  cy.get('#main').focus();
+}
+
+function pressNext(): void {
+  fromTopOfLesson();
+  tabTo('jic-scene-nav .next');
+  pressEnter();
+}
+
+function expectScene(n: number): void {
+  cy.get('jic-scene-nav .label').should('have.text', `Scene ${n} of 5`);
+  cy.get('[role="status"].u-visually-hidden').should('have.text', `Scene ${n} of 5`);
+}
+
+function walkThroughVariables(): void {
+  cy.visit('/lesson/variables');
+  cy.get('h1').should('have.text', 'Variables');
+
+  // 1. watch: the jar
+  expectScene(1);
+  cy.get('.bubble').should('have.text', 'This is a jar. A jar can hold one thing.');
+  cy.checkPageA11y();
+  fromTopOfLesson();
+  tabTo('button[jic-replay-button]');
+  pressSpace(); // "Play again" works from the keyboard too
+  pressNext();
+
+  // 2. watch: the name, with a peek at the code
+  expectScene(2);
+  fromTopOfLesson();
+  tabTo('button[jic-code-peek-toggle]');
+  pressEnter();
+  cy.focused().should('have.attr', 'aria-expanded', 'true');
+  cy.get('jic-code-panel code').should('have.text', 'let favorite;');
+  cy.checkPageA11y();
+  pressNext();
+
+  // 3. interact: fill the jar; picture, bubble and code change together
+  expectScene(3);
+  cy.get('button[jic-choice-button]').first().should('have.attr', 'aria-pressed', 'true'); // pre-picked
+  fromTopOfLesson();
+  tabTo('button[jic-choice-button]', 'Emma');
+  pressEnter();
+  cy.focused().should('have.attr', 'aria-pressed', 'true');
+  cy.get('.bubble').should('have.text', 'My favorite is Emma!');
+  cy.get('jic-jar-visual .value-text').should('have.text', 'Emma');
+  tabTo('button[jic-code-peek-toggle]');
+  pressEnter();
+  cy.get('jic-code-panel code').should('have.text', 'let favorite = "Emma";');
+  cy.checkPageA11y();
+  pressNext();
+
+  // 4. interact: swap the value, same name
+  expectScene(4);
+  fromTopOfLesson();
+  tabTo('button[jic-choice-button]', 'cat');
+  pressSpace();
+  cy.get('.bubble').should('contain.text', 'Now favorite holds cat');
+  cy.get('jic-jar-visual .tag-text').should('have.text', 'favorite');
+  cy.checkPageA11y();
+  pressNext();
+
+  // 5. quiz: a wrong answer gets kind feedback, then the right one
+  expectScene(5);
+  cy.get('jic-scene-nav .next').should('contain.text', 'Finish');
+  fromTopOfLesson();
+  tabTo('button[jic-choice-button]', '7');
+  pressEnter();
+  cy.get('jic-quiz-feedback').should('contain.text', 'Not quite. 7 is inside the jar.');
+  cy.checkPageA11y();
+  fromTopOfLesson(); // "favorite" comes before "7", so start the walk again
+  tabTo('button[jic-choice-button]', 'favorite');
+  pressEnter();
+  cy.get('jic-quiz-feedback').should('contain.text', 'Yes! favorite is the name');
+  cy.checkPageA11y();
+  pressNext();
+
+  // Done: the card takes focus and is announced
+  cy.focused().should('match', 'jic-lesson-done-card h2').and('have.text', 'You finished Variables!');
+  cy.checkPageA11y();
+}
+
+describe('Variables lesson with the keyboard', () => {
+  for (const [name, width, height] of [
+    ['phone', 390, 844],
+    ['desktop', 1440, 900],
+  ] as const) {
+    it(`goes through all 5 scenes at ${name} size`, () => {
+      cy.viewport(width, height);
+      walkThroughVariables();
+    });
+  }
+
+  it('marks the lesson finished in the menu', () => {
+    cy.viewport(1440, 900);
+    walkThroughVariables();
+    cy.get('[role="progressbar"]').should('have.attr', 'aria-valuenow', '1');
+    cy.contains('nav[aria-label="Lessons"] a', 'Variables').should('contain.text', '(finished)');
+  });
+});
+
+describe('reduced motion', () => {
+  const emulate = (value: 'reduce' | 'no-preference') =>
+    Cypress.automation('remote:debugger:protocol', {
+      command: 'Emulation.setEmulatedMedia',
+      params: { features: [{ name: 'prefers-reduced-motion', value }] },
+    });
+
+  afterEach(() => cy.then(() => emulate('no-preference')));
+
+  it('animates the jar normally (control)', () => {
+    cy.viewport(1440, 900);
+    cy.then(() => emulate('no-preference'));
+    cy.visit('/lesson/variables');
+    cy.get('h1').should('be.visible');
+    pressNext();
+    pressNext();
+    fromTopOfLesson();
+    tabTo('button[jic-choice-button]', 'Emma');
+    pressEnter();
+    cy.document().its('getAnimations').should('be.a', 'function');
+    cy.document().then((doc) => expect(doc.getAnimations().length).to.be.greaterThan(0));
+  });
+
+  it('runs no animations with prefers-reduced-motion, and still works', () => {
+    cy.viewport(1440, 900);
+    cy.then(() => emulate('reduce'));
+    cy.visit('/lesson/variables');
+    cy.get('h1').should('be.visible');
+    pressNext();
+    pressNext();
+    fromTopOfLesson();
+    tabTo('button[jic-choice-button]', 'Emma');
+    pressEnter();
+    cy.get('jic-jar-visual .value-text').should('have.text', 'Emma'); // the final state, right away
+    cy.document().then((doc) => expect(doc.getAnimations()).to.have.length(0));
+    cy.checkPageA11y();
+  });
+});

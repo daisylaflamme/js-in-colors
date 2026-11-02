@@ -20,7 +20,13 @@ for (const vp of VIEWPORTS) {
   describe(`lesson shell (${vp.name} ${vp.width}x${vp.height})`, () => {
     beforeEach(() => {
       cy.viewport(vp.width, vp.height);
+      cy.visit('/lesson/variables');
+    });
+
+    it('opens the first ready lesson from /', () => {
       cy.visit('/');
+      cy.location('pathname').should('eq', '/lesson/hello');
+      cy.get('h1').should('have.text', 'Hello, JavaScript!');
     });
 
     it('loads the lesson', () => {
