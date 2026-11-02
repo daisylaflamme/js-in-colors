@@ -2,7 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 /** Original, simple stroke icons used by the shell. Always decorative: pair with visible text or an aria-label. */
 export type IconName =
-  'menu' | 'close' | 'tip' | 'library' | 'speaker' | 'eye' | 'check' | 'play' | 'arrow-right';
+  | 'menu'
+  | 'close'
+  | 'tip'
+  | 'library'
+  | 'speaker'
+  | 'eye'
+  | 'check'
+  | 'play'
+  | 'arrow-right'
+  | 'retry'
+  | 'star';
 
 const PATHS: Record<IconName, string> = {
   menu: 'M4 7h16M4 12h16M4 17h16',
@@ -17,6 +27,9 @@ const PATHS: Record<IconName, string> = {
   check: 'M5 12.5l4.5 4.5L19 7.5',
   play: 'M8 5.5v13l10.5-6.5z',
   'arrow-right': 'M4 12h15M13 6l6 6-6 6',
+  // circular arrow
+  retry: 'M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9',
+  star: 'M12 2.8l2.8 5.8 6.4.8-4.7 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.7-4.4 6.4-.8z',
 };
 
 @Component({
