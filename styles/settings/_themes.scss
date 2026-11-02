@@ -7,7 +7,7 @@
 // Dark and high-contrast are NOT in the mockups. They are derived only from the
 // mockup palette (and mixes of it); no new hues. See docs/adr and the Tokens story.
 
-$concepts: number, string, boolean, object, array, function, variable, html;
+$concepts: number, string, boolean, object, array, function, variable, html, intro;
 
 @mixin dark-theme {
   color-scheme: dark;

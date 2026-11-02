@@ -3,6 +3,12 @@
 // never component CSS. Every value is built from the mockup palette in _tokens.scss.
 
 :root {
+  // "intro" is not a JavaScript type: the course opener (Hello, JavaScript!), drawn as a star.
+  // It reuses mockup colors (accent fill, array text/tint), so no new colors (ADR 0005).
+  --color-intro: var(--color-accent);
+  --color-intro-text: var(--color-array-text);
+  --color-intro-tint: var(--color-array-tint);
+
   // Surfaces and text
   --color-bg: var(--color-ground);
   --color-bg-raised: var(--color-surface);
@@ -30,6 +36,7 @@
   --color-function-on: #ffffff;
   --color-variable-on: #ffffff;
   --color-html-on: #ffffff;
+  --color-intro-on: var(--color-ink);
 
   // Concept shapes are decorative (aria-hidden, always next to a word).
   // Themes add an outline where a fill would fall under 3:1 against its surface.

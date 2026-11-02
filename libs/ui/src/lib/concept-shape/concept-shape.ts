@@ -35,6 +35,9 @@ import { CONCEPT_INFO, type Concept } from '@jic/shared';
         @case ('hexagon') {
           <path d="M6.5 3h11l5.5 9-5.5 9h-11L1 12z" />
         }
+        @case ('star') {
+          <path class="outlined" d="M12 1.8l3.1 6.4 7 .9-5.1 4.9 1.3 7L12 17.6 5.7 21l1.3-7-5.1-4.9 7-.9z" />
+        }
         @case ('capsule') {
           <rect x="5" y="1" width="14" height="22" rx="6" />
         }
@@ -50,6 +53,12 @@ import { CONCEPT_INFO, type Concept } from '@jic/shared';
       fill: var(--fill);
       stroke: var(--shape-stroke);
       stroke-width: var(--shape-stroke-width);
+    }
+    /* The yellow star is too light on white (1.5:1): always outlined, like the mockup's certificate star. */
+    svg > .outlined {
+      stroke: var(--color-border);
+      stroke-width: 1.5;
+      stroke-linejoin: round;
     }
   `,
 })
