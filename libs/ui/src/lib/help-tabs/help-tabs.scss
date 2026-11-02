@@ -1,0 +1,85 @@
+@use 'tools' as *;
+
+// Phone: bottom tab bar, pinned, above the home indicator.
+.tabs {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  padding-block-end: env(safe-area-inset-bottom);
+  border-block-start: var(--border-width) solid var(--color-border);
+  background: var(--color-bg-raised);
+}
+
+.tab {
+  @include button-reset;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-1);
+  min-block-size: var(--size-tabbar);
+  padding: var(--space-1) var(--space-2);
+  color: var(--color-ink);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.1;
+  text-align: center;
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--focus-ring-width) - 2px);
+  }
+
+  & + & {
+    border-inline-start: var(--border-width) solid var(--color-border);
+  }
+}
+
+.tip {
+  background: var(--color-accent);
+}
+
+.library {
+  background: var(--color-tab-library);
+}
+
+.read {
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+
+  &[aria-pressed='true'] {
+    background: var(--color-text);
+    color: var(--color-bg-raised);
+  }
+}
+
+@include mq-up(sm) {
+  // Right edge: three 88px squares stacked, attached to the edge (mockups 01, 12).
+  .tabs {
+    inset: 11.75rem 0 auto auto;
+    grid-auto-flow: row;
+    gap: var(--space-3);
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .tab {
+    inline-size: var(--size-tab);
+    min-block-size: var(--size-tab);
+    padding-inline: var(--space-2) max(var(--space-1), env(safe-area-inset-right));
+    border: var(--border-width) solid var(--color-border);
+    border-inline-end: 0;
+    border-radius: var(--radius-tab);
+
+    & + & {
+      border-inline-start: var(--border-width) solid var(--color-border);
+    }
+
+    &:focus-visible {
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+}

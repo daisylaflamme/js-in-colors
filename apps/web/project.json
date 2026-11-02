@@ -4,16 +4,11 @@
   "projectType": "application",
   "prefix": "jic",
   "sourceRoot": "apps/web/src",
-  "tags": [
-    "type:app",
-    "scope:web"
-  ],
+  "tags": ["type:app", "scope:web"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/web",
@@ -26,13 +21,9 @@
             "input": "apps/web/public"
           }
         ],
-        "styles": [
-          "apps/web/src/styles.scss"
-        ],
+        "styles": ["apps/web/src/styles.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": [
-            "styles"
-          ]
+          "includePaths": ["styles"]
         }
       },
       "configurations": {
@@ -85,9 +76,7 @@
       "readyWhen": {
         "signal": true
       },
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "web:build",

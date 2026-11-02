@@ -1,0 +1,71 @@
+<div class="top">
+  <jic-app-logo [stacked]="true" />
+  @if (closable()) {
+    <button type="button" class="close" aria-label="Close lesson menu" (click)="closeRequested.emit()">
+      <jic-icon name="close" [size]="28" />
+    </button>
+  }
+</div>
+
+<div class="progress">
+  <div class="progress-text">
+    <span [id]="progressLabelId">Your color path</span>
+    <span aria-hidden="true">{{ finishedCount() }} of {{ total() }}</span>
+  </div>
+  <div
+    class="bar"
+    role="progressbar"
+    [attr.aria-labelledby]="progressLabelId"
+    aria-valuemin="0"
+    [attr.aria-valuemax]="total()"
+    [attr.aria-valuenow]="finishedCount()"
+    [attr.aria-valuetext]="finishedCount() + ' of ' + total() + ' lessons finished'"
+  >
+    <span class="bar-fill" [style.inline-size.%]="percent()"></span>
+  </div>
+</div>
+
+<nav aria-label="Lessons">
+  <ol class="lessons">
+    @for (lesson of lessons(); track lesson.id) {
+      @let current = lesson.id === currentId();
+      <li>
+        <a
+          class="lesson"
+          [class.current]="current"
+          [routerLink]="lesson.link"
+          [attr.aria-current]="current ? 'page' : null"
+          [style.--item-text]="current ? 'var(--color-' + lesson.concept + '-text)' : null"
+          [style.--item-tint]="current ? 'var(--color-' + lesson.concept + '-tint)' : null"
+          (click)="lessonChosen.emit(lesson.id)"
+        >
+          <jic-concept-shape [concept]="lesson.concept" [size]="22" />
+          <span class="text">
+            <span class="title">{{ lesson.title }}</span>
+            @if (current) {
+              <span class="sub">You are here</span>
+            } @else {
+              <span class="sub subtitle">{{ lesson.subtitle }}</span>
+            }
+          </span>
+          @if (lesson.finished) {
+            <span class="done">
+              <jic-icon name="check" [size]="18" />
+              <span class="u-visually-hidden">(finished)</span>
+            </span>
+          }
+        </a>
+      </li>
+    }
+  </ol>
+</nav>
+
+<aside class="account" aria-label="Your progress">
+  <p>
+    <strong>No account needed.</strong>
+    <span class="detail"> Your progress saves on this device.</span>
+    @if (resumeCode(); as code) {
+      Resume code: <span class="code">{{ code }}</span>
+    }
+  </p>
+</aside>

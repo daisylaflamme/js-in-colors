@@ -1,0 +1,46 @@
+@use 'tools' as *;
+
+:host {
+  @include button-reset;
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--size-control);
+  padding-inline: var(--space-5);
+  border: var(--border-width) solid var(--c-fill);
+  border-radius: var(--radius-button);
+  background: var(--c-tint);
+  color: var(--c-text);
+  // Large text only (1.5rem bold): see the -on rule in settings/_semantic.scss.
+  font-size: var(--text-choice);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1;
+}
+
+:host([aria-pressed='true']) {
+  border-color: var(--color-border);
+  background: var(--c-fill);
+  color: var(--c-on);
+  box-shadow: var(--shadow-press);
+}
+
+@include motion-ok {
+  :host {
+    transition:
+      background-color var(--motion-fast) var(--ease-out),
+      transform var(--motion-fast) var(--ease-out);
+  }
+
+  :host(:active) {
+    transform: translateY(2px);
+  }
+}
+
+// High contrast / forced colors: the selected state must not rely on fill alone.
+@media (forced-colors: active) {
+  :host([aria-pressed='true']) {
+    outline: 3px solid CanvasText;
+    outline-offset: 2px;
+  }
+}

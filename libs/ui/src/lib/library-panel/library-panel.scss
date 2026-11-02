@@ -1,0 +1,129 @@
+@use 'tools' as *;
+
+// Phone: bottom sheet.
+.library {
+  position: fixed;
+  inset: auto 0 0;
+  inline-size: 100%;
+  max-inline-size: none;
+  block-size: min(var(--size-sheet), 75dvh);
+  max-block-size: none;
+  margin: 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-popover);
+
+  &::backdrop {
+    background: var(--color-scrim);
+  }
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  block-size: 100%;
+  padding: var(--space-3) var(--space-5);
+  padding-block-end: max(var(--space-5), env(safe-area-inset-bottom));
+}
+
+.handle {
+  align-self: center;
+  inline-size: 2.75rem;
+  block-size: 0.3rem;
+  border-radius: var(--radius-chip);
+  background: var(--color-border-soft);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 50%;
+  background: var(--color-tab-library);
+  color: var(--color-ink);
+}
+
+.title {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.close {
+  @include button-reset;
+  @include focus-ring;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: 50%;
+}
+
+.body {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+}
+
+.foot:empty {
+  display: none;
+}
+
+@include mq-up(sm) {
+  // Right drawer, full height (mockup 04). No dim: the lesson stays visible beside it.
+  .library {
+    inset: 0 0 0 auto;
+    inline-size: min(var(--size-drawer), 100%);
+    block-size: 100dvh;
+    border-radius: var(--radius-card) 0 0 var(--radius-card);
+    box-shadow: var(--shadow-drawer);
+
+    &::backdrop {
+      background: transparent;
+    }
+  }
+
+  .box {
+    padding: var(--space-5) var(--space-5) var(--space-6);
+  }
+
+  .handle {
+    display: none;
+  }
+}
+
+@include motion-ok {
+  .library[open] {
+    animation: sheet-in var(--motion-base) var(--ease-out);
+  }
+
+  @include mq-up(sm) {
+    .library[open] {
+      animation-name: drawer-in;
+    }
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-distance));
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--motion-distance));
+  }
+}

@@ -1,0 +1,87 @@
+@use 'tools' as *;
+
+.tip {
+  position: fixed;
+  inset: auto var(--space-4) calc(var(--size-tabbar) + env(safe-area-inset-bottom) + var(--space-4));
+  inline-size: auto;
+  max-inline-size: none;
+  margin: 0;
+  border: var(--border-width-heavy) solid var(--color-accent);
+  border-radius: var(--radius-chip);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-popover);
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+.box {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.badge {
+  display: none; // phone card has no bulb badge (mockup 16)
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.title {
+  flex: 1;
+  font-size: 1.5rem;
+}
+
+.close {
+  @include button-reset;
+  @include focus-ring;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: 50%;
+}
+
+.body {
+  font-size: var(--text-lead-fluid);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.3;
+}
+
+@include mq-up(sm) {
+  // Left of the right-edge tabs, level with the Tip tab (mockup 03).
+  .tip {
+    inset: 11.25rem calc(var(--size-tab) + var(--space-5)) auto auto;
+    inline-size: var(--size-tip);
+  }
+
+  .badge {
+    display: grid;
+  }
+}
+
+@include motion-ok {
+  .tip[open] {
+    animation: tip-in var(--motion-base) var(--ease-out);
+  }
+}
+
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-distance) / 2));
+  }
+}

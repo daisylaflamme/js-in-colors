@@ -1,0 +1,17 @@
+<div class="bar">
+  <ng-content select="[jicHeaderStart]" />
+  @if (showLogo()) {
+    <jic-app-logo class="logo" />
+  }
+  <p class="count"><span class="count-word">Lesson </span>{{ lessonNumber() }} of {{ lessonCount() }}</p>
+</div>
+
+<h1 class="title">{{ title() }}</h1>
+<p class="lead">
+  @let parts = leadParts();
+  {{ parts.before }}
+  @if (parts.word) {
+    <span class="highlight">{{ parts.word }}</span>
+  }
+  {{ parts.after }}
+</p>

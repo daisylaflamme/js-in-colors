@@ -17,7 +17,8 @@ export default [
       ],
       '@angular-eslint/component-selector': [
         'error',
-        { type: 'element', prefix: 'jic', style: 'kebab-case' },
+        // attribute selectors let presentational components sit on native <button>/<dialog>
+        { type: ['element', 'attribute'], prefix: 'jic', style: 'kebab-case' },
       ],
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/prefer-signals': 'error',
@@ -32,6 +33,11 @@ export default [
       '@angular-eslint/template/prefer-control-flow': 'error',
       '@angular-eslint/template/prefer-self-closing-tags': 'error',
       '@angular-eslint/template/button-has-type': 'error',
+      // These attribute components render their own accessible content.
+      '@angular-eslint/template/elements-content': [
+        'error',
+        { allowList: ['jic-menu-button', 'jic-code-peek-toggle'] },
+      ],
       '@angular-eslint/template/no-positive-tabindex': 'error',
     },
   },

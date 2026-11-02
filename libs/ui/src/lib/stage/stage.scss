@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  container: stage / inline-size;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-raised);
+  box-shadow: var(--shadow-stage);
+}
+
+.inner {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-5);
+  min-block-size: min(var(--size-stage-min), 60dvh);
+  padding: var(--space-5) var(--space-4);
+}
+
+.speaker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  justify-self: stretch;
+  justify-content: center;
+}
+
+.bubble {
+  position: relative;
+  max-inline-size: 18rem;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-chip);
+  background: var(--color-bg);
+  font-size: clamp(1.125rem, 1rem + 1cqi, 1.5rem);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.25;
+
+  &:empty {
+    visibility: hidden;
+  }
+
+  // the little tail pointing at the speaker
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -0.6rem;
+    inset-block-start: calc(50% - 0.5rem);
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-block-end: var(--border-width) solid var(--color-border);
+    border-inline-start: var(--border-width) solid var(--color-border);
+    background: inherit;
+    transform: rotate(45deg);
+  }
+}
+
+.art {
+  display: grid;
+  justify-items: center;
+}
+
+// Wide stage (desktop with the menu open, mockup 01): speaker left, art right.
+@container stage (min-width: 46rem) {
+  .inner {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: var(--space-6);
+  }
+}

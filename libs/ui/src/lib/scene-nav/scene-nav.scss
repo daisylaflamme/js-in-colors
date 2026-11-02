@@ -1,0 +1,89 @@
+@use 'tools' as *;
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+button {
+  @include button-reset;
+  @include focus-ring;
+  min-block-size: var(--size-control);
+  padding-inline: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-heavy);
+}
+
+.back {
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+
+  &:disabled {
+    border-color: var(--color-border-soft);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+}
+
+.next {
+  margin-inline-start: auto;
+  padding-inline: var(--space-6);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  box-shadow: var(--shadow-press);
+  font-size: 1.375rem;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-inline-size: 0;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dot {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border-radius: 50%;
+  background: var(--color-border-soft);
+
+  &.done {
+    background: var(--color-text);
+  }
+
+  // current scene: a longer yellow pill with an ink outline (shape, not only color)
+  &.current {
+    inline-size: 2rem;
+    border: 2px solid var(--color-text);
+    border-radius: var(--radius-chip);
+    background: var(--color-accent);
+  }
+}
+
+// Phone shows dots only (mockup 13); the text stays for screen readers.
+.label {
+  @include visually-hidden-until(sm);
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-heavy);
+  white-space: nowrap;
+}
+
+@include mq-up(sm) {
+  button {
+    padding-inline: var(--space-6);
+  }
+
+  .next {
+    padding-inline: var(--space-7);
+  }
+}

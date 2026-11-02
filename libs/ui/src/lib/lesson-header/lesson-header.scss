@@ -1,0 +1,54 @@
+@use 'tools' as *;
+
+:host {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-end: var(--space-2);
+}
+
+.logo {
+  font-size: 1.0625rem;
+}
+
+// Phone: "3 of 10" sits at the far right; the word "Lesson" is for screen readers only.
+.count {
+  margin-inline-start: auto;
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-heavy);
+}
+
+.count-word {
+  @include visually-hidden-until(sm);
+}
+
+.title {
+  color: var(--concept-text);
+  font-size: var(--text-title-fluid);
+}
+
+.lead {
+  font-size: var(--text-lead-fluid);
+  font-weight: var(--font-weight-heavy);
+  line-height: 1.3;
+}
+
+.highlight {
+  color: var(--concept-text);
+}
+
+@include mq-up(sm) {
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .count {
+    margin-inline-start: 0;
+  }
+}

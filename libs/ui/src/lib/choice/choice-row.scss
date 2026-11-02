@@ -1,0 +1,49 @@
+@use 'tools' as *;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+// Phone (mockup 13) shows the buttons only; the label is kept for screen readers.
+.label {
+  @include visually-hidden-until(sm);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-heavy);
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+// "Peek at the code" sits on its own line on phone and tablet,
+// and at the right end of the row on desktop.
+.end {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+@include mq-up(sm) {
+  .end {
+    justify-content: flex-end;
+  }
+}
+
+@include mq-up(lg) {
+  .end {
+    flex-basis: auto;
+    margin-inline-start: auto;
+  }
+}
