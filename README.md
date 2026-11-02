@@ -80,4 +80,8 @@ _Placeholder: notes on the workflow (plan mode, small commits, ADRs, the mockups
 
 ## License
 
-Code: to be decided. Fonts: SIL Open Font License 1.1 (Baloo 2, Nunito).
+- **Code:** [MIT](LICENSE).
+- **Content and artwork** (lesson text, Dot and other illustrations, mockups): [CC BY-NC 4.0](LICENSE-CONTENT.md).
+- **Fonts:** SIL Open Font License 1.1 (Baloo 2, Nunito).
+
+See [ADR 0006](docs/adr/0006-licensing.md) for what falls under which license.
