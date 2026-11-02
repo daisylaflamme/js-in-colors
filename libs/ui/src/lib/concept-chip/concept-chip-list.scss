@@ -30,6 +30,12 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-chip);
+  }
 }
 
 @include mq-up(sm) {

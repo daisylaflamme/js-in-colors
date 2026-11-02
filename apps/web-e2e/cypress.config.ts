@@ -1,6 +1,7 @@
-const { nxE2EPreset } = require('@nx/cypress/plugins/cypress-preset');
-const { defineConfig } = require('cypress');
-module.exports = defineConfig({
+import { nxE2EPreset } from '@nx/cypress/plugins/cypress-preset';
+import { defineConfig } from 'cypress';
+
+export default defineConfig({
   e2e: {
     ...nxE2EPreset(__filename, {
       cypressDir: 'src',
@@ -12,5 +13,14 @@ module.exports = defineConfig({
       ciBaseUrl: 'http://localhost:4200',
     }),
     baseUrl: 'http://localhost:4200',
+    setupNodeEvents(on) {
+      // Print axe violations in the terminal (CI logs), not only in the browser console.
+      on('task', {
+        table(rows: unknown[]) {
+          console.table(rows);
+          return null;
+        },
+      });
+    },
   },
 });
