@@ -1,0 +1,13 @@
+{
+  "name": "visuals",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/visuals/src",
+  "prefix": "jic",
+  "projectType": "library",
+  "tags": [
+    "type:ui",
+    "scope:shared"
+  ],
+  "// targets": "to see all targets run: nx show project visuals --web",
+  "targets": {}
+}

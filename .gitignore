@@ -26,3 +26,9 @@ dist/cypress/
 .DS_Store
 Thumbs.db
 *.log
+
+.angular
+
+__screenshots__/
+vitest.config.*.timestamp*
+.vitest
