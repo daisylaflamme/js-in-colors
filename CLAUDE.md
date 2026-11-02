@@ -108,4 +108,30 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 
 ## Commands
 
-(To be filled in after the scaffold: serve web, serve api, test, e2e, storybook, lint, build.)
+Node 24 (`.nvmrc`). Versions are pinned exactly in `package.json` (Nx 24.0.3, Angular 22.2, Storybook 10.6.5, Cypress 15.21.1: cypress-axe does not support Cypress 16 yet).
+
+```bash
+npm ci                                  # install
+npm start                               # serve the web app (http://localhost:4200)
+npx nx test <project>                   # Vitest unit tests: web, ui, shared, lesson-engine, data-access, visuals
+npx nx run-many -t lint test build      # what to run before finishing a task
+npm run format                          # Prettier (write); npm run format:check in CI
+npx nx build web                        # production build; budgets: initial warn 320 kB / error 400 kB
+npx nx e2e web-e2e                      # Cypress smoke + cypress-axe at phone, tablet, desktop (starts the app)
+npx nx e2e web-e2e --configuration=production   # same, against the production build (CI)
+npx nx storybook ui                     # Storybook (http://localhost:4400)
+npx nx build-storybook ui               # static Storybook in dist/storybook/ui (runs alone: shares .angular/cache)
+npx nx graph                            # project graph and module boundaries
+```
+
+There is no `serve api` yet: `apps/api` is not created until a feature needs it (ADR 0003).
+
+### Conventions added during the scaffold
+
+- Design tokens: `styles/settings/_tokens.scss` is a 1:1 copy of `docs/mockups/design-tokens.css`; components use the semantic tokens in `styles/settings/_semantic.scss`. Themes override tokens in `_themes.scss` only.
+- Component SCSS starts with `@use 'tools' as *;` for `mq-up()`, `focus-ring`, `visually-hidden-until()` and friends. Media queries are `mq-up()` only (min-width).
+- Breakpoints: phone is the base, tablet layout starts at `sm` (600px; the 820px tablet mockup falls here), desktop at `lg` (1200px, menu inline and open by default).
+- Text on a concept fill must be large (1.5rem bold): object and variable fills only reach 3:1. Use the `--color-<concept>-on` tokens.
+- Modals use native `<dialog>` with `ModalDialogDirective` (`libs/ui`): owner holds `open`, Esc/backdrop emit `dismissed`, focus returns to `returnFocusTo`. Mark the first control with `data-autofocus`.
+- Presentational components can sit on native elements via attribute selectors (`button[jic-choice-button]`); always write `type="button"` at the usage site.
+- Nx tags: `type:app | feature | ui | data-access | util | e2e`, enforced by `@nx/enforce-module-boundaries`.
