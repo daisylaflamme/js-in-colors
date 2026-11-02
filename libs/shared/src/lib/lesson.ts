@@ -118,6 +118,8 @@ export interface Lesson {
   /** A word in the lead drawn in the concept color. */
   readonly leadHighlight?: string;
   readonly concept: Concept;
+  /** Optional row of concept chips under the lead, e.g. "Jars can hold:" numbers, words, ... */
+  readonly chips?: { readonly label: string; readonly concepts: readonly Concept[] };
   /** One sentence. */
   readonly tip: string;
   readonly library: LibraryEntry;

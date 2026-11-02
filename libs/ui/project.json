@@ -47,7 +47,14 @@
           "quiet": true
         }
       },
-      "parallelism": false
+      "parallelism": false,
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/libs/visuals/src/**/*",
+        "{workspaceRoot}/libs/lesson-engine/src/**/*",
+        "{workspaceRoot}/styles/**/*"
+      ]
     }
   }
 }

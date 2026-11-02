@@ -323,7 +323,7 @@ export function validateLesson(data: unknown, opts: { expectedId?: string } = {}
     c.knownKeys(
       lesson,
       [],
-      ['id', 'title', 'topic', 'lead', 'leadHighlight', 'concept', 'tip', 'library', 'scenes'],
+      ['id', 'title', 'topic', 'lead', 'leadHighlight', 'concept', 'chips', 'tip', 'library', 'scenes'],
     );
     const id = c.id(lesson, 'id', []);
     if (id && opts.expectedId && id !== opts.expectedId) {
@@ -337,6 +337,21 @@ export function validateLesson(data: unknown, opts: { expectedId?: string } = {}
       c.error(['leadHighlight'], `"${highlight}" does not appear in the lead.`);
     }
     c.concept(lesson, 'concept', []);
+    if (lesson['chips'] !== undefined) {
+      const chips = c.object(lesson['chips'], ['chips']);
+      if (chips) {
+        c.knownKeys(chips, ['chips'], ['label', 'concepts']);
+        c.string(chips, 'label', ['chips']);
+        c.array(chips, 'concepts', ['chips'], { min: 1, max: 8 })?.forEach((value, i) => {
+          if (!isConcept(value)) {
+            c.error(
+              ['chips', 'concepts', i],
+              `${describe(value)} is not a concept. Use one of: ${CONCEPTS.join(', ')}.`,
+            );
+          }
+        });
+      }
+    }
     const tip = c.string(lesson, 'tip', [], { prose: true });
     if (tip && sentences(tip).length > 1) c.warn(['tip'], 'should be one sentence.');
     checkLibrary(c, lesson['library'], ['library']);

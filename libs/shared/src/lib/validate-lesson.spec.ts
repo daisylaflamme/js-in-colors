@@ -139,6 +139,13 @@ describe('validateLesson', () => {
     expect(errors(validateLesson(data))[0]).toMatch(/should be lowercase words joined by dashes/);
   });
 
+  it('validates the optional concept chips', () => {
+    const ok = { ...validLesson(), chips: { label: 'Jars can hold:', concepts: ['number', 'string'] } };
+    expect(errors(validateLesson(ok))).toEqual([]);
+    const bad = { ...validLesson(), chips: { label: 'Jars can hold:', concepts: ['number', 'cats'] } };
+    expect(errors(validateLesson(bad))[0]).toContain('chips.concepts[1]: "cats" is not a concept');
+  });
+
   it('checks that the highlight word is in the lead', () => {
     const data = { ...validLesson(), leadHighlight: 'box' };
     expect(errors(validateLesson(data))).toEqual(['leadHighlight: "box" does not appear in the lead.']);
