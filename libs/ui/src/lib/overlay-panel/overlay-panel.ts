@@ -45,7 +45,7 @@ import { ModalDialogDirective } from '../dialog/modal-dialog.directive';
       padding-inline-start: env(safe-area-inset-left);
     }
     @media (prefers-reduced-motion: no-preference) {
-      :root:not([data-motion='calm']) .panel[open] {
+      .panel[open] {
         animation: panel-in var(--motion-base) var(--ease-out);
       }
     }
