@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Kids' privacy rules apply to tooling too: no telemetry from the build tools.
+  NX_NO_CLOUD: true
+  STORYBOOK_DISABLE_TELEMETRY: 1
+  NG_CLI_ANALYTICS: false
+
+jobs:
+  checks:
+    name: Format, lint, unit tests, build, Storybook
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # nx affected needs history
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: 0 # not needed in this job
+
+      - name: Set Nx base and head for affected
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Format
+        run: npm run format:check
+
+      - name: Lint, unit tests, build (affected on PRs, everything on main)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npx nx affected -t lint test build
+          else
+            npx nx run-many -t lint test build
+          fi
+
+      - name: Build Storybook
+        run: npx nx build-storybook ui
+
+  e2e:
+    name: Cypress smoke + axe (phone, tablet, desktop)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - run: npm ci
+
+      - name: Cypress (against the production build)
+        run: npx nx e2e web-e2e --configuration=production
+        env:
+          CI: true
+
+      - name: Upload Cypress screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: dist/cypress/apps/web-e2e/screenshots
+          retention-days: 7
