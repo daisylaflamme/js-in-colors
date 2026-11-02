@@ -1,0 +1,163 @@
+@use 'tools' as *;
+
+// Mobile-first. Phone (base): one column, scene nav pinned above the bottom tab bar.
+:host {
+  display: block;
+}
+
+.page {
+  display: grid;
+  // minmax(0, 1fr): never let wide content (the sideways chip row) widen the page
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) 0;
+  padding-inline: max(var(--space-4), env(safe-area-inset-left))
+    max(var(--space-4), env(safe-area-inset-right));
+}
+
+.chips {
+  margin-block-end: var(--space-1);
+}
+
+// Pinned above the bottom tab bar on phone (mockup 13).
+.scene-nav {
+  position: sticky;
+  inset-block-end: calc(var(--size-tabbar) + env(safe-area-inset-bottom));
+  z-index: 5;
+  margin-inline: calc(-1 * var(--space-4));
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg);
+}
+
+// Room for the fixed tab bar under the content.
+.page::after {
+  content: '';
+  block-size: calc(var(--size-tabbar) + env(safe-area-inset-bottom));
+}
+
+@include mq-up(sm) {
+  // Tablet and up: tabs move to the right edge; keep content clear of them.
+  .page {
+    gap: var(--space-5);
+    padding: var(--space-5) calc(var(--size-tab) + var(--space-5)) var(--space-6) var(--space-6);
+  }
+
+  .scene-nav {
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .page::after {
+    display: none;
+  }
+}
+
+@include mq-up(lg) {
+  .page {
+    max-inline-size: 75rem;
+    padding: var(--space-5) calc(var(--size-tab) + var(--space-6)) var(--space-6) var(--space-7);
+  }
+}
+
+// --- Library content (projected into the panel) ---
+.library {
+  display: grid;
+  gap: var(--space-3);
+
+  h4 {
+    margin-block-start: var(--space-2);
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-heavy);
+  }
+}
+
+.library-title {
+  color: var(--color-variable-text);
+  font-size: 2rem;
+}
+
+.read-page,
+.ask-dot {
+  @include button-reset;
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: 3rem;
+  padding-inline: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-weight: var(--font-weight-heavy);
+}
+
+.read-page {
+  justify-self: start;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.ask-dot {
+  inline-size: 100%;
+  min-block-size: var(--size-control);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  flex-direction: column;
+  gap: 0;
+
+  .soon {
+    color: var(--color-text-muted);
+    font-size: var(--text-caption);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+.holds {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+
+  div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: var(--space-3);
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: var(--font-weight-heavy);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+.words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-chip);
+    background: var(--color-variable-tint);
+    color: var(--color-variable-text);
+    font-weight: var(--font-weight-bold);
+  }
+}

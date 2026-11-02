@@ -63,7 +63,18 @@ describe('ModalDialogDirective', () => {
     expect(document.activeElement?.id).toBe('trigger');
   });
 
-  it('turns Esc (cancel) into a dismiss request without closing by itself', async () => {
+  it('turns an Escape key press inside the dialog into one dismiss request', async () => {
+    const { dialog, host, setOpen } = await setup();
+    await setOpen(true);
+
+    const esc = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    dialog.querySelector('#close')?.dispatchEvent(esc);
+
+    expect(esc.defaultPrevented).toBe(true); // so the native cancel does not fire a second dismiss
+    expect(host.dismissals).toBe(1);
+  });
+
+  it('turns the native cancel into a dismiss request without closing by itself', async () => {
     const { dialog, host, setOpen } = await setup();
     await setOpen(true);
 

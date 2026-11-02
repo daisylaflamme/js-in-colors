@@ -73,8 +73,8 @@ nav {
   @include touch-target;
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-nav-item);
   color: var(--color-text);
   text-decoration: none;
@@ -96,8 +96,17 @@ nav {
 }
 
 .title {
+  font-size: var(--text-small);
   font-weight: var(--font-weight-heavy);
   line-height: 1.2;
+}
+
+// Shapes differ in width (pills are wide): give each the same slot so titles line up.
+.shape {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 2rem;
 }
 
 .sub {

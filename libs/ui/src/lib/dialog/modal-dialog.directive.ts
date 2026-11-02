@@ -13,6 +13,7 @@ import { Directive, ElementRef, effect, inject, input, output, untracked } from 
 @Directive({
   selector: 'dialog[jicModalDialog]',
   host: {
+    '(keydown.escape)': 'onEscape($event)',
     '(cancel)': 'onCancel($event)',
     '(close)': 'onNativeClose()',
     '(click)': 'onClick($event)',
@@ -55,6 +56,15 @@ export class ModalDialogDirective {
       this.el.removeAttribute('open');
     }
     this.returnFocusTo()?.focus();
+  }
+
+  /**
+   * Handle Esc ourselves (and stop the native cancel), so closing behaves the same in every
+   * browser and with assistive tech that sends key events, not only native dialog cancel.
+   */
+  protected onEscape(event: Event): void {
+    event.preventDefault();
+    this.dismissed.emit();
   }
 
   protected onCancel(event: Event): void {

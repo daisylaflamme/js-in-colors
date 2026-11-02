@@ -1,0 +1,149 @@
+<div class="page">
+  <jic-lesson-header
+    [lessonNumber]="number()"
+    [lessonCount]="lessonCount"
+    [title]="lesson().title"
+    [lead]="isDemo() ? scene.lead : comingSoon.lead"
+    [leadHighlight]="isDemo() ? scene.leadHighlight : undefined"
+    [concept]="lesson().concept"
+    [showLogo]="showHeaderLogo()"
+  >
+    <button
+      type="button"
+      jic-menu-button
+      jicHeaderStart
+      controls="lesson-menu"
+      [expanded]="shell.menuOpen()"
+      (click)="shell.toggleMenu($event.currentTarget)"
+    ></button>
+  </jic-lesson-header>
+
+  @if (isDemo()) {
+    <jic-concept-chip-list class="chips" [label]="scene.chipsLabel" [concepts]="scene.chips" />
+
+    <jic-stage [bubble]="picked().bubble">
+      <jic-dot-placeholder jicStageCharacter />
+      <jic-jar-placeholder
+        jicStageArt
+        [name]="scene.jarName"
+        [value]="picked().value"
+        [concept]="picked().concept"
+      />
+    </jic-stage>
+
+    <jic-choice-row [label]="scene.choicesLabel">
+      @for (choice of scene.choices; track choice.id) {
+        <button
+          type="button"
+          jic-choice-button
+          [concept]="choice.concept"
+          [pressed]="pickedId() === choice.id"
+          (click)="pickedId.set(choice.id)"
+        >
+          {{ choice.label }}
+          <span class="u-visually-hidden">({{ conceptInfo[choice.concept].kidWord }})</span>
+        </button>
+      }
+      <button
+        type="button"
+        jic-code-peek-toggle
+        jicChoiceRowEnd
+        controls="code-peek"
+        [expanded]="peekOpen()"
+        (click)="peekOpen.set(!peekOpen())"
+      ></button>
+    </jic-choice-row>
+
+    @if (peekOpen()) {
+      <jic-code-panel id="code-peek" [code]="code()" [notes]="notes" />
+    }
+  } @else {
+    <jic-stage [bubble]="comingSoon.bubble">
+      <jic-dot-placeholder jicStageCharacter />
+    </jic-stage>
+  }
+
+  <jic-scene-nav
+    class="scene-nav"
+    [scene]="sceneNumber()"
+    [sceneCount]="scene.sceneCount"
+    (back)="back()"
+    (next)="next()"
+  />
+</div>
+
+<jic-help-tabs
+  [tipOpen]="tipOpen()"
+  [libraryOpen]="libraryOpen()"
+  [readAloudAvailable]="speech.available"
+  [reading]="speech.speaking()"
+  (tipToggle)="toggleTip($event)"
+  (libraryToggle)="toggleLibrary($event)"
+  (readAloud)="readScene()"
+/>
+
+<jic-tip-card [open]="tipOpen()" [returnFocusTo]="tipTrigger()" (closed)="tipOpen.set(false)">
+  <p>{{ isDemo() ? scene.tip : comingSoon.tip }}</p>
+</jic-tip-card>
+
+<jic-library-panel
+  [open]="libraryOpen()"
+  [returnFocusTo]="libraryTrigger()"
+  (closed)="libraryOpen.set(false)"
+>
+  @if (isDemo()) {
+    <div class="library" #libraryText>
+      <h3 class="library-title">All about variables</h3>
+      @if (speech.available) {
+        <button type="button" class="read-page" (click)="readLibrary(libraryText.innerText)">
+          <jic-icon name="play" [size]="18" />
+          {{ speech.speaking() ? 'Stop reading' : 'Read this page to me' }}
+        </button>
+      }
+      <h4>What is a variable?</h4>
+      <p>
+        A variable is a jar. You write a name on the jar. Then you put something inside. Later, you can ask
+        the jar, "What is inside?"
+      </p>
+      <h4>Jars can hold many things</h4>
+      <dl class="holds">
+        <div>
+          <dt><jic-concept-shape concept="number" [size]="20" />Numbers</dt>
+          <dd>7</dd>
+        </div>
+        <div>
+          <dt><jic-concept-shape concept="string" [size]="20" />Words</dt>
+          <dd>Emma</dd>
+        </div>
+        <div>
+          <dt><jic-concept-shape concept="boolean" [size]="20" />Yes or no</dt>
+          <dd>true</dd>
+        </div>
+        <div>
+          <dt><jic-concept-shape concept="object" [size]="20" />Things</dt>
+          <dd>a cat with a name</dd>
+        </div>
+        <div>
+          <dt><jic-concept-shape concept="array" [size]="20" />Lists</dt>
+          <dd>red, blue, green</dd>
+        </div>
+        <div>
+          <dt><jic-concept-shape concept="function" [size]="20" />Helpers</dt>
+          <dd>a machine with a job</dd>
+        </div>
+      </dl>
+      <h4>Words to know</h4>
+      <ul class="words">
+        <li><strong>variable</strong> = the jar</li>
+        <li><strong>value</strong> = what is inside</li>
+        <li><strong>name</strong> = the label</li>
+      </ul>
+    </div>
+  } @else {
+    <p>The Library page for {{ lesson().title }} is coming soon.</p>
+  }
+  <button jicLibraryFooter type="button" class="ask-dot" disabled>
+    Still curious? Ask Dot
+    <span class="soon">Coming soon</span>
+  </button>
+</jic-library-panel>

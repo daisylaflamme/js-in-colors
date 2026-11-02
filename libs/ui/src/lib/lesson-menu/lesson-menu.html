@@ -1,7 +1,13 @@
 <div class="top">
   <jic-app-logo [stacked]="true" />
   @if (closable()) {
-    <button type="button" class="close" aria-label="Close lesson menu" (click)="closeRequested.emit()">
+    <button
+      type="button"
+      class="close"
+      aria-label="Close lesson menu"
+      data-autofocus
+      (click)="closeRequested.emit()"
+    >
       <jic-icon name="close" [size]="28" />
     </button>
   }
@@ -39,7 +45,7 @@
           [style.--item-tint]="current ? 'var(--color-' + lesson.concept + '-tint)' : null"
           (click)="lessonChosen.emit(lesson.id)"
         >
-          <jic-concept-shape [concept]="lesson.concept" [size]="22" />
+          <span class="shape"><jic-concept-shape [concept]="lesson.concept" [size]="22" /></span>
           <span class="text">
             <span class="title">{{ lesson.title }}</span>
             @if (current) {
