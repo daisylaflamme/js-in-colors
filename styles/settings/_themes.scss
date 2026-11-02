@@ -51,6 +51,7 @@ $concepts: number, string, boolean, object, array, function, variable, html;
   --focus-ring-width: 4px;
   --shape-stroke: var(--color-ink);
   --shape-stroke-width: 2px;
+  --current-outline: var(--color-ink);
 
   // Tints go away and concept text becomes ink (>= 7:1); the shape carries the color.
   @each $c in $concepts {
@@ -59,11 +60,13 @@ $concepts: number, string, boolean, object, array, function, variable, html;
   }
 }
 
-:root[data-theme='dark'] {
+// Any element can carry data-theme (not only <html>), so a page region or a Storybook
+// comparison panel can show a theme on its own. Light is the base: no attribute needed.
+[data-theme='dark'] {
   @include dark-theme;
 }
 
-:root[data-theme='high-contrast'] {
+[data-theme='high-contrast'] {
   @include high-contrast-theme;
 }
 

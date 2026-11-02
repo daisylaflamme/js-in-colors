@@ -86,6 +86,8 @@ nav {
   &.current {
     background: var(--item-tint);
     color: var(--item-text);
+    outline: 2px solid var(--current-outline);
+    outline-offset: -2px;
   }
 }
 
