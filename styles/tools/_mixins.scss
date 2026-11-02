@@ -1,0 +1,67 @@
+@use 'sass:map';
+@use '../settings/breakpoints' as bp;
+
+/// Mobile-first media query. Base styles are the phone; add larger layouts with this.
+/// No max-width queries in this project.
+@mixin mq-up($name) {
+  @if not map.has-key(bp.$breakpoints, $name) {
+    @error 'Unknown breakpoint `#{$name}`. Use sm, md or lg.';
+  }
+  @media (min-width: map.get(bp.$breakpoints, $name)) {
+    @content;
+  }
+}
+
+/// The one focus ring. Visible on every theme; never removed without a replacement.
+@mixin focus-ring {
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/// Minimum 44px target (most controls use --size-control, 56px).
+@mixin touch-target($size: var(--size-touch)) {
+  min-block-size: $size;
+  min-inline-size: $size;
+}
+
+/// Reset a <button> to a blank box we can style.
+@mixin button-reset {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/// Padding that respects notches and home indicators.
+@mixin safe-area-padding($sides...) {
+  @each $side in $sides {
+    padding-#{$side}: max(var(--space-4), env(safe-area-inset-#{$side}));
+  }
+}
+
+/// Only animate when motion is welcome. Reduced/calm motion gets the static styles.
+@mixin motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-motion='calm']) & {
+      @content;
+    }
+  }
+}

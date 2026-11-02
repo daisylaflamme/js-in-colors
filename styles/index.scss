@@ -1,0 +1,10 @@
+// Global stylesheet entry. ITCSS-lite layer order: settings -> generic -> elements -> utilities.
+// (tools/ has only mixins; it emits no CSS. Components @use 'tools' for media queries etc.)
+@use 'fonts';
+@use 'settings/tokens';
+@use 'settings/semantic';
+@use 'settings/themes';
+@use 'settings/motion';
+@use 'generic/reset';
+@use 'elements/base';
+@use 'utilities/utilities';

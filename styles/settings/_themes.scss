@@ -1,0 +1,90 @@
+// Themes = token overrides only. No component knows which theme is active.
+//
+// Selection order:
+//   1. An explicit [data-theme="light|dark|high-contrast"] on <html> wins.
+//   2. Otherwise the OS preference: prefers-contrast: more, then prefers-color-scheme: dark.
+//
+// Dark and high-contrast are NOT in the mockups. They are derived only from the
+// mockup palette (and mixes of it); no new hues. See docs/adr and the Tokens story.
+
+$concepts: number, string, boolean, object, array, function, variable, html;
+
+@mixin dark-theme {
+  color-scheme: dark;
+  --color-bg: var(--color-ink);
+  --color-bg-raised: color-mix(in srgb, var(--color-ink) 82%, var(--color-muted));
+  --color-bg-sunken: color-mix(in srgb, var(--color-ink) 92%, var(--color-muted));
+  --color-text: var(--color-ground);
+  --color-text-muted: var(--color-code-text);
+  --color-border: var(--color-code-text);
+  --color-border-soft: var(--color-muted);
+  --color-divider: var(--color-muted);
+  --color-focus: var(--color-accent);
+  --color-stage-shadow: var(--color-muted);
+  --color-code-bg: var(--color-bg-sunken);
+  --shadow-stage: 0 8px 0 var(--color-stage-shadow);
+  --shadow-press: 0 4px 0 var(--color-muted);
+  --shape-stroke: var(--color-ground);
+  --shape-stroke-width: 1.5px;
+
+  // On dark, text is a pale version of the fill (fill + ground),
+  // and the tint backgrounds become a soft wash of the fill.
+  @each $c in $concepts {
+    --color-#{$c}-text: color-mix(in srgb, var(--color-#{$c}) 25%, var(--color-ground));
+    --color-#{$c}-tint: color-mix(in srgb, var(--color-#{$c}) 30%, var(--color-bg-raised));
+  }
+}
+
+@mixin high-contrast-theme {
+  color-scheme: light;
+  --color-bg: var(--color-surface);
+  --color-bg-raised: var(--color-surface);
+  --color-bg-sunken: var(--color-surface);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-ink);
+  --color-border: var(--color-ink);
+  --color-border-soft: var(--color-ink);
+  --color-divider: var(--color-ink);
+  --color-focus: var(--color-ink);
+  --color-stage-shadow: var(--color-ink);
+  --shadow-stage: 0 0 0 var(--border-width) var(--color-ink);
+  --focus-ring-width: 4px;
+  --shape-stroke: var(--color-ink);
+  --shape-stroke-width: 2px;
+
+  // Tints go away and concept text becomes ink (>= 7:1); the shape carries the color.
+  @each $c in $concepts {
+    --color-#{$c}-text: var(--color-ink);
+    --color-#{$c}-tint: var(--color-surface);
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark-theme;
+}
+
+:root[data-theme='high-contrast'] {
+  @include high-contrast-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    @include dark-theme;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root:not([data-theme]) {
+    @include high-contrast-theme;
+  }
+}
+
+// Windows High Contrast / forced colors: let the system palette win,
+// but keep borders and focus rings visible.
+@media (forced-colors: active) {
+  :root {
+    --color-focus: Highlight;
+    --color-border: CanvasText;
+    --color-border-soft: CanvasText;
+  }
+}

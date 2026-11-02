@@ -9,6 +9,7 @@ export default defineConfig(() => ({
     tsconfigPaths: true,
   },
   plugins: [angular()],
+  css: { preprocessorOptions: { scss: { loadPaths: ['../../styles'] } } },
   // Uncomment this if you are using workers.
   // worker: {
   //  plugins: [],

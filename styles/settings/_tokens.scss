@@ -1,0 +1,109 @@
+// Generated 1:1 from docs/mockups/design-tokens.css (the visual source of truth).
+// Change colors there first, then copy here. Do not invent new colors.
+
+:root {
+  /* Numbers: circle */
+  --color-number: #2457e6;
+  --color-number-text: #1d3fb0;
+  --color-number-tint: #dce8ff;
+  /* Words (strings): pill */
+  --color-string: #0b7a3b;
+  --color-string-text: #0b6b34;
+  --color-string-tint: #d8f5e2;
+  /* Yes/no (booleans): diamond */
+  --color-boolean: #6d3bd2;
+  --color-boolean-text: #5b2fb8;
+  --color-boolean-tint: #eadfff;
+  /* Things (objects): rounded square */
+  --color-object: #c25a00;
+  --color-object-text: #9a4a00;
+  --color-object-tint: #ffe7cc;
+  /* Lists (arrays): triangle */
+  --color-array: #e0a100;
+  --color-array-text: #7a5600;
+  --color-array-tint: #fff0b8;
+  /* Helpers (functions): hexagon */
+  --color-function: #c2187a;
+  --color-function-text: #a3125f;
+  --color-function-tint: #ffe1f1;
+  /* Jars (variables): tall capsule */
+  --color-variable: #0e8f94;
+  --color-variable-text: #0a6e73;
+  --color-variable-tint: #d5f4f5;
+  /*
+   * Page magic (the DOM, "html"): the mockups draw a hexagon in the boolean
+   * purple. TODO (first design task): give it its own color and re-check contrast.
+   */
+  --color-html: #6d3bd2;
+  --color-html-text: #5b2fb8;
+  --color-html-tint: #eadfff;
+
+  /* Neutrals */
+  --color-ink: #1b1f4b; /* text, outlines (14.5:1 on ground) */
+  --color-muted: #4a4f7a; /* secondary text (7.8:1 on white) */
+  --color-ground: #f5f6ff; /* page background */
+  --color-surface: #ffffff; /* cards, stage, nav, drawer */
+  --color-line: #e4e7ff; /* dividers, progress track */
+  --color-line-strong: #d5d9ff; /* chip borders */
+  --color-accent: #ffc93c; /* Next button, Tip tab, current scene dot */
+  --color-accent-ink: #1b1f4b; /* text on accent (10.2:1) */
+  --color-tab-library: #8ce3e6; /* Library tab and icon bubble */
+  --color-code-bg: #1b1f4b; /* "Peek at the code" panel */
+  --color-code-text: #c9cef5;
+  --color-success: #0b7a3b; /* finished-lesson check */
+
+  /* Typography (self-host both; the mockups load them from Google Fonts only for preview) */
+  --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif; /* 600, 700, 800 */
+  --font-body: 'Nunito', system-ui, sans-serif; /* 500, 700, 800 */
+  --font-code: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
+  --text-title: 3.75rem; /* lesson title, 60px */
+  --text-lead: 1.5rem; /* one-sentence lead, 24px */
+  --text-choice: 1.5rem; /* choice buttons, 24px */
+  --text-body: 1.125rem; /* 18px */
+  --text-small: 1rem; /* 16px, never smaller for body copy */
+  --text-caption: 0.8125rem; /* 13px, nav subtitles only */
+
+  /* Spacing, radii, elevation */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --radius-chip: 20px;
+  --radius-button: 28px; /* pill buttons, 56px high */
+  --radius-card: 32px; /* the stage */
+  --radius-nav-item: 16px;
+  --radius-tab: 28px 0 0 28px; /* right-edge tabs */
+  --border-width: 3px; /* outlined controls */
+  --border-width-heavy: 5px; /* drawings (jar, Dot) */
+  --shadow-press: 0 4px 0 var(--color-ink); /* primary button */
+  --shadow-stage: 0 8px 0 #dce0ff;
+  --shadow-popover: 0 14px 32px rgba(27, 31, 75, 0.22);
+  --shadow-drawer: -12px 0 32px rgba(27, 31, 75, 0.2);
+
+  /* Layout */
+  --size-touch: 44px; /* minimum; most controls are 52-56px */
+  --size-control: 56px;
+  --size-nav: 280px;
+  --size-tab: 88px;
+  --size-tip: 300px;
+  --size-drawer: 420px;
+  --size-stage-min: 380px;
+
+  /* Breakpoints (mobile-first, use as min-width). CSS custom properties cannot be used in
+     media queries, so mirror these as SCSS variables or mixins in styles/tools. */
+  --bp-sm: 600px;
+  --bp-md: 900px;
+  --bp-lg: 1200px;
+  --size-tabbar: 62px; /* phone bottom tab bar */
+  --size-sheet: 620px; /* phone Library sheet height, max 75vh */
+  --size-menu-overlay: 322px;
+
+  /* Motion (every animation needs a prefers-reduced-motion alternative) */
+  --motion-fast: 120ms;
+  --motion-base: 240ms;
+  --motion-slow: 480ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

@@ -1,0 +1,50 @@
+@use '../tools/mixins' as *;
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 100%; // respect the user's text size setting
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  accent-color: var(--color-variable);
+  color-scheme: light;
+}
+
+body {
+  font-size: var(--text-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-heavy);
+  line-height: var(--line-height-tight);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+a,
+button,
+[tabindex],
+summary,
+input,
+select,
+textarea {
+  @include focus-ring;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-code);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
