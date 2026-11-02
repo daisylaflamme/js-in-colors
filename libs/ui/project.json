@@ -46,7 +46,8 @@
         "ci": {
           "quiet": true
         }
-      }
+      },
+      "parallelism": false
     }
   }
 }

@@ -1,9 +1,8 @@
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  type ElementRef,
+  ElementRef,
   inject,
   input,
   signal,
@@ -42,18 +41,18 @@ export class ConceptChipListComponent {
 
   protected readonly labelId = `jic-chip-list-${nextId++}`;
   protected readonly scrollable = signal(false);
-  private readonly list = viewChild.required<ElementRef<HTMLUListElement>>('list');
+  private readonly list = viewChild<ElementRef<HTMLUListElement>>('list');
 
   constructor() {
-    const destroyRef = inject(DestroyRef);
-    afterNextRender(() => {
-      const el = this.list().nativeElement;
-      const measure = () => this.scrollable.set(el.scrollWidth > el.clientWidth + 1);
-      measure();
-      if (typeof ResizeObserver === 'undefined') return;
-      const observer = new ResizeObserver(measure);
-      observer.observe(el);
-      destroyRef.onDestroy(() => observer.disconnect());
+    // A ResizeObserver reports once after first layout and again on every resize,
+    // so no render hook is needed. (Absent on the server and in very old browsers: stay unfocusable.)
+    if (typeof ResizeObserver === 'undefined') return;
+    const host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const observer = new ResizeObserver(() => {
+      const el = this.list()?.nativeElement;
+      if (el) this.scrollable.set(el.scrollWidth > el.clientWidth + 1);
     });
+    observer.observe(host);
+    inject(DestroyRef).onDestroy(() => observer.disconnect());
   }
 }
