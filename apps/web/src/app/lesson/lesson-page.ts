@@ -1,14 +1,30 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { CONCEPT_INFO } from '@jic/shared';
 import {
-  ChoiceButtonComponent,
-  ChoiceRowComponent,
-  CodePanelComponent,
-  CodePeekToggleComponent,
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { CourseStore, LessonStore } from '@jic/data-access';
+import {
+  LibraryContentComponent,
+  provideDefaultSceneTypes,
+  type SceneAction,
+  SceneHostComponent,
+  type SceneState,
+} from '@jic/lesson-engine';
+import type { Scene } from '@jic/shared';
+import {
   ConceptChipListComponent,
-  ConceptShapeComponent,
   HelpTabsComponent,
-  IconComponent,
+  LessonDoneCardComponent,
   LessonHeaderComponent,
   LibraryPanelComponent,
   MenuButtonComponent,
@@ -16,34 +32,30 @@ import {
   StageComponent,
   TipCardComponent,
 } from '@jic/ui';
-import { DEFAULT_LESSON_ID, findLesson, LESSONS, lessonNumber } from '../lessons/lesson-catalog';
+import { DotCharacterComponent } from '@jic/visuals';
 import { ShellState } from '../shell/shell-state';
 import { SpeechService } from '../shell/speech.service';
-import { DotCharacterComponent, JarVisualComponent } from '@jic/visuals';
-import { codeLine, codeNotes, DEMO_SCENE, type DemoChoice } from './demo-scene';
 
 /**
- * The lesson screen (smart component). Lazy-loaded by /lesson/:lessonId.
- * Owns the scene's local UI state in signals: picked choice, peek, tip, library.
- * Content is PLACEHOLDER (see demo-scene.ts) until the lesson engine exists.
+ * The lesson screen (smart). Lazy-loaded by /lesson/:lessonId.
+ * Lesson data and progress come from the LessonStore and CourseStore; the scene itself is drawn
+ * by the lesson engine from data. Local UI state (Tip, Library) stays in signals here.
  */
 @Component({
   selector: 'jic-lesson-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // One LessonStore per lesson page; the engine's scene types live in this lazy chunk.
+  providers: [LessonStore, provideDefaultSceneTypes()],
   imports: [
-    ChoiceButtonComponent,
-    ChoiceRowComponent,
-    CodePanelComponent,
-    CodePeekToggleComponent,
     ConceptChipListComponent,
-    ConceptShapeComponent,
     DotCharacterComponent,
     HelpTabsComponent,
-    IconComponent,
-    JarVisualComponent,
+    LessonDoneCardComponent,
     LessonHeaderComponent,
+    LibraryContentComponent,
     LibraryPanelComponent,
     MenuButtonComponent,
+    SceneHostComponent,
     SceneNavComponent,
     StageComponent,
     TipCardComponent,
@@ -54,32 +66,43 @@ import { codeLine, codeNotes, DEMO_SCENE, type DemoChoice } from './demo-scene';
 export class LessonPage {
   protected readonly shell = inject(ShellState);
   protected readonly speech = inject(SpeechService);
+  protected readonly store = inject(LessonStore);
+  protected readonly course = inject(CourseStore);
+  private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
+  private readonly host: HTMLElement = inject(ElementRef).nativeElement;
 
-  /** From the route (withComponentInputBinding). */
-  readonly lessonId = input(DEFAULT_LESSON_ID);
+  /** From the route (withComponentInputBinding). The guard guarantees it is in the course. */
+  readonly lessonId = input.required<string>();
 
-  protected readonly lesson = computed(() => findLesson(this.lessonId()) ?? LESSONS[2]);
-  protected readonly number = computed(() => lessonNumber(this.lesson().id));
-  protected readonly lessonCount = LESSONS.length;
-  protected readonly scene = DEMO_SCENE;
-  protected readonly conceptInfo = CONCEPT_INFO;
-  /** Only the Variables lesson has placeholder scene content so far. */
-  protected readonly isDemo = computed(() => this.lesson().id === DEFAULT_LESSON_ID);
+  /** The menu entry (always there), and whether the full lesson exists yet. */
+  protected readonly entry = computed(() => this.course.find(this.lessonId()));
+  protected readonly ready = computed(() => this.entry()?.status === 'ready');
+  /** The loaded lesson, once it matches the route. */
+  protected readonly lesson = computed(() => {
+    const lesson = this.store.lesson();
+    return lesson?.id === this.lessonId() ? lesson : null;
+  });
+  protected readonly number = computed(() => this.course.position(this.lessonId()));
+  protected readonly lessonCount = computed(() => this.course.lessons().length);
+  protected readonly nextLesson = computed(() => this.course.nextReadyAfter(this.lessonId()));
+
+  protected readonly sceneState = computed<SceneState>(() => ({
+    pickedChoiceId: this.store.pickedChoice()?.id ?? null,
+    answeredOptionId: this.store.answeredOption()?.id ?? null,
+  }));
+  /** Polite announcement when the scene changes: "Scene 2 of 5". */
+  protected readonly sceneStatus = computed(() =>
+    this.lesson() && !this.store.done()
+      ? `Scene ${this.store.sceneNumber()} of ${this.store.sceneCount()}`
+      : '',
+  );
+
   protected readonly comingSoon = {
     lead: 'This lesson is coming soon.',
     bubble: 'I am still getting this lesson ready!',
-    tip: 'Try the Variables lesson while this one is being made.',
+    tip: 'Try one of the ready lessons while this one is being made.',
   } as const;
-
-  // Scene state (local UI state: signals, not a store)
-  protected readonly pickedId = signal<string>(DEMO_SCENE.choices[0].id);
-  protected readonly picked = computed<DemoChoice>(
-    () => DEMO_SCENE.choices.find((c) => c.id === this.pickedId()) ?? DEMO_SCENE.choices[0],
-  );
-  protected readonly code = computed(() => codeLine(this.picked(), DEMO_SCENE.jarName));
-  protected readonly notes = codeNotes(DEMO_SCENE.jarName);
-  protected readonly peekOpen = signal(false);
-  protected readonly sceneNumber = signal<number>(DEMO_SCENE.scene);
 
   // Tip and Library are mutually exclusive; each remembers the tab that opened it.
   protected readonly tipOpen = signal(false);
@@ -89,6 +112,49 @@ export class LessonPage {
 
   /** Show the small logo beside the hamburger unless the full menu (with its logo) is inline. */
   protected readonly showHeaderLogo = computed(() => !this.shell.menuInline());
+
+  constructor() {
+    // Load the lesson for the route; a new lesson closes Tip and Library.
+    // Only the lesson id is tracked: load() reads store signals, and tracking those would re-run
+    // this effect when the lesson arrives (and close a Tip the child just opened).
+    effect(() => {
+      const id = this.lessonId();
+      untracked(() => {
+        this.tipOpen.set(false);
+        this.libraryOpen.set(false);
+        if (this.course.find(id)?.status === 'ready') void this.store.load(id);
+      });
+    });
+  }
+
+  protected onAction(action: SceneAction): void {
+    if (action.kind === 'pick') this.store.pick(action.id);
+    else this.store.answer(action.id);
+  }
+
+  protected next(): void {
+    this.store.next(); // on the last scene this shows the "done" card, which takes focus itself
+  }
+
+  protected back(): void {
+    this.store.back();
+  }
+
+  /** From the done card: back to the last scene, with focus on Next so the keyboard flow continues. */
+  protected backFromDone(): void {
+    this.store.back();
+    this.focusAfterRender('jic-scene-nav .next');
+  }
+
+  protected restart(): void {
+    this.store.restart();
+    this.focusAfterRender('jic-scene-nav .next');
+  }
+
+  protected goToNextLesson(): void {
+    const next = this.nextLesson();
+    if (next) void this.router.navigate(['/lesson', next.id]);
+  }
 
   protected toggleTip(trigger: HTMLElement): void {
     this.tipTrigger.set(trigger);
@@ -102,23 +168,36 @@ export class LessonPage {
     this.libraryOpen.update((open) => !open);
   }
 
+  /** "Read to me": the title, the lead and what Dot says in this scene. */
   protected readScene(): void {
-    const l = this.lesson();
-    const text = this.isDemo()
-      ? `${l.title}. ${DEMO_SCENE.lead} ${this.picked().bubble}`
-      : `${l.title}. ${this.comingSoon.lead}`;
-    this.speech.toggle(text);
+    const lesson = this.lesson();
+    const entry = this.entry();
+    if (!lesson) {
+      this.speech.toggle(`${entry?.title ?? ''}. ${this.comingSoon.lead}`);
+      return;
+    }
+    const scene = this.store.scene();
+    this.speech.toggle([lesson.title, lesson.lead, scene ? this.spoken(scene) : ''].join(' '));
   }
 
   protected readLibrary(text: string): void {
     this.speech.toggle(text);
   }
 
-  protected back(): void {
-    this.sceneNumber.update((n) => Math.max(1, n - 1));
+  private spoken(scene: Scene): string {
+    switch (scene.type) {
+      case 'watch':
+        return scene.bubble;
+      case 'interact':
+        return this.store.pickedChoice()?.bubble ?? '';
+      case 'quiz':
+        return scene.question;
+    }
   }
 
-  protected next(): void {
-    this.sceneNumber.update((n) => Math.min(DEMO_SCENE.sceneCount, n + 1));
+  private focusAfterRender(selector: string): void {
+    afterNextRender(() => this.host.querySelector<HTMLElement>(selector)?.focus(), {
+      injector: this.injector,
+    });
   }
 }

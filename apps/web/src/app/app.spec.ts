@@ -19,10 +19,26 @@ describe('App shell', () => {
     return { fixture, el: fixture.nativeElement as HTMLElement };
   }
 
-  it('redirects / to the default lesson and renders it lazily', async () => {
+  it('redirects / to the first ready lesson and renders it lazily', async () => {
     const { el } = await setup('/');
-    expect(TestBed.inject(Router).url).toBe('/lesson/variables');
-    expect(el.querySelector('main h1')?.textContent).toBe('Variables');
+    expect(TestBed.inject(Router).url).toBe('/lesson/hello');
+    expect(el.querySelector('main h1')?.textContent).toBe('Hello, JavaScript!');
+  });
+
+  it('builds the menu from the course: 10 lessons, 7 coming soon, none finished yet', async () => {
+    // Desktop layout, so the menu is drawn inline (jsdom has no matchMedia of its own).
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+    const { el } = await setup('/lesson/variables');
+    vi.unstubAllGlobals();
+    const links = el.querySelectorAll('nav[aria-label="Lessons"] a');
+    expect(links).toHaveLength(10);
+    expect(Array.from(links).filter((a) => a.textContent?.includes('Coming soon'))).toHaveLength(7);
+    expect(el.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('0');
   });
 
   it('sets the page title with the app name', async () => {

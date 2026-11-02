@@ -127,7 +127,7 @@ npx nx test ui --watch                  # watch mode while working on components
 
 # Lint and build
 npx nx lint <project>
-npx nx build web                        # production build; budgets: initial warn 320 kB / error 400 kB
+npx nx build web                        # production build; budgets: initial warn 340 kB / error 400 kB
 
 # End-to-end (Cypress + cypress-axe; starts the app itself)
 npx nx e2e web-e2e                      # smoke + a11y at phone/tablet/desktop and in dark + high contrast

@@ -1,13 +1,19 @@
 import { inject } from '@angular/core';
-import { type CanMatchFn, type ResolveFn, Router } from '@angular/router';
-import { findLesson } from './lesson-catalog';
+import { type CanMatchFn, type RedirectFunction, type ResolveFn, Router } from '@angular/router';
+import { CourseStore } from '@jic/data-access';
 
-/** Only match /lesson/:lessonId for lessons that exist; anything else goes to the not-found page. */
+/** Only match /lesson/:lessonId for lessons in the course (ready or coming soon); others go to /not-found. */
 export const lessonExistsGuard: CanMatchFn = (_route, segments) => {
   const id = segments[1]?.path;
-  return findLesson(id) ? true : inject(Router).parseUrl('/not-found');
+  return inject(CourseStore).find(id) ? true : inject(Router).parseUrl('/not-found');
 };
 
 /** Page title for a lesson route, e.g. "Variables". The TitleStrategy adds the app name. */
 export const lessonTitleResolver: ResolveFn<string> = (route) =>
-  findLesson(route.paramMap.get('lessonId'))?.title ?? 'Lesson';
+  inject(CourseStore).find(route.paramMap.get('lessonId'))?.title ?? 'Lesson';
+
+/** "/" opens the first lesson that is ready (the home "color path" comes later). */
+export const firstLessonRedirect: RedirectFunction = () => {
+  const id = inject(CourseStore).firstReadyId();
+  return id ? `/lesson/${id}` : '/not-found';
+};

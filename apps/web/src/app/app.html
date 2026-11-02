@@ -4,7 +4,7 @@
   <jic-lesson-menu
     id="lesson-menu"
     class="menu"
-    [lessons]="menuItems"
+    [lessons]="menuItems()"
     [currentId]="currentLessonId()"
     [resumeCode]="resumeCode"
   />
@@ -18,7 +18,7 @@
   >
     @if (shell.overlayMenuOpen()) {
       <jic-lesson-menu
-        [lessons]="menuItems"
+        [lessons]="menuItems()"
         [currentId]="currentLessonId()"
         [resumeCode]="resumeCode"
         [closable]="true"
