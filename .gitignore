@@ -1,0 +1,28 @@
+# deps / build
+node_modules/
+dist/
+tmp/
+out-tsc/
+coverage/
+storybook-static/
+.angular/
+.nx/cache/
+.nx/workspace-data/
+
+# cypress
+apps/web-e2e/cypress/videos/
+apps/web-e2e/cypress/screenshots/
+dist/cypress/
+
+# env
+.env
+.env.*
+!.env.example
+
+# editor / os
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.log
