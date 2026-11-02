@@ -1,0 +1,54 @@
+# The course, in menu order. "ready" lessons need a file in content/lessons/<id>.yaml
+# with the same title, topic and concept. "soon" lessons show as "Coming soon".
+# Topic order follows the usual JavaScript tutorial path; all wording is original.
+lessons:
+  - id: hello
+    title: Hello, JavaScript!
+    topic: Introduction
+    concept: intro
+    status: soon
+  - id: output
+    title: Say it out loud
+    topic: Output
+    concept: string
+    status: soon
+  - id: variables
+    title: Variables
+    topic: Variables
+    concept: variable
+    status: soon
+  - id: data-types
+    title: Numbers, words, yes/no
+    topic: Data types
+    concept: number
+    status: soon
+  - id: functions
+    title: Magic machines
+    topic: Functions
+    concept: function
+    status: soon
+  - id: conditions
+    title: Yes or no paths
+    topic: Conditions
+    concept: boolean
+    status: soon
+  - id: loops
+    title: Again and again
+    topic: Loops
+    concept: number
+    status: soon
+  - id: arrays
+    title: Lists of things
+    topic: Arrays
+    concept: array
+    status: soon
+  - id: objects
+    title: Things with details
+    topic: Objects
+    concept: object
+    status: soon
+  - id: dom
+    title: Page magic
+    topic: The DOM
+    concept: html
+    status: soon

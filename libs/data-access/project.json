@@ -6,5 +6,15 @@
   "projectType": "library",
   "tags": ["type:data-access", "scope:shared"],
   "// targets": "to see all targets run: nx show project data-access --web",
-  "targets": {}
+  "targets": {
+    "test": {
+      "dependsOn": [
+        {
+          "projects": ["content"],
+          "target": "build"
+        }
+      ]
+    }
+  },
+  "implicitDependencies": ["content"]
 }
