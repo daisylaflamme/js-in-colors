@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { memoryProgressStorage } from '@jic/data-access';
 import {
   type ActivatedRouteSnapshot,
   convertToParamMap,
@@ -9,7 +10,9 @@ import {
 import { lessonExistsGuard, lessonTitleResolver } from './lesson-routing';
 
 describe('lesson routing', () => {
-  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({ providers: [provideRouter([]), memoryProgressStorage().provider] }),
+  );
 
   const segments = (...paths: string[]) => paths.map((path) => ({ path }) as UrlSegment);
   const runGuard = (...paths: string[]) =>

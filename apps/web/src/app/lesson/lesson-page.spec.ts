@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { memoryProgressStorage } from '@jic/data-access';
 import { provideRouter } from '@angular/router';
 import { LessonPage } from './lesson-page';
 
 /** These tests use the real lessons compiled from content/ (Variables, Hello). */
 describe('LessonPage', () => {
   async function setup(lessonId: string) {
-    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    TestBed.configureTestingModule({ providers: [provideRouter([]), memoryProgressStorage().provider] });
     const fixture = TestBed.createComponent(LessonPage);
     fixture.componentRef.setInput('lessonId', lessonId);
     document.body.appendChild(fixture.nativeElement);
@@ -84,7 +85,7 @@ describe('LessonPage', () => {
   });
 
   it('keeps a Tip opened while the lesson is still loading (regression)', async () => {
-    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    TestBed.configureTestingModule({ providers: [provideRouter([]), memoryProgressStorage().provider] });
     const fixture = TestBed.createComponent(LessonPage);
     fixture.componentRef.setInput('lessonId', 'variables');
     fixture.detectChanges(); // first render; the lesson is still loading

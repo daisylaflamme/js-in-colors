@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, TitleStrategy, withComponentInputBinding } from '@angular/router';
+import { memoryProgressStorage } from '@jic/data-access';
 import { App } from './app';
 import { AppTitleStrategy } from './app-title.strategy';
 import { appRoutes } from './app.routes';
@@ -11,6 +12,7 @@ describe('App shell', () => {
       providers: [
         provideRouter(appRoutes, withComponentInputBinding()),
         { provide: TitleStrategy, useClass: AppTitleStrategy },
+        memoryProgressStorage().provider,
       ],
     });
     const fixture = TestBed.createComponent(App);
