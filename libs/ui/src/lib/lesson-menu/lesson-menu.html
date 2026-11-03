@@ -1,5 +1,5 @@
 <div class="top">
-  <jic-app-logo [stacked]="true" />
+  <jic-app-logo [stacked]="true" [link]="homeLink()" />
   @if (closable()) {
     <button
       type="button"
@@ -15,7 +15,11 @@
 
 <div class="progress">
   <div class="progress-text">
-    <span [id]="progressLabelId">Your color path</span>
+    @if (homeLink(); as home) {
+      <a class="home-link" [id]="progressLabelId" [routerLink]="home">Your color path</a>
+    } @else {
+      <span [id]="progressLabelId">Your color path</span>
+    }
     <span aria-hidden="true">{{ finishedCount() }} of {{ total() }}</span>
   </div>
   <div

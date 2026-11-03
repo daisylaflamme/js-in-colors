@@ -1,0 +1,52 @@
+<ol class="path" [attr.aria-label]="label()">
+  @for (node of nodes(); track node.id; let i = $index) {
+    <li class="stop" [attr.data-state]="node.state" [class.walked]="walked()[i]">
+      <a
+        class="node"
+        [routerLink]="node.link"
+        [attr.aria-current]="node.state === 'current' ? 'step' : null"
+        [style.--here]="'var(--color-' + node.concept + '-text)'"
+      >
+        <span class="shape">
+          <jic-concept-shape [concept]="node.concept" [size]="64" />
+          @if (node.state === 'finished') {
+            <span class="check"><jic-icon name="check" [size]="18" /></span>
+          }
+        </span>
+        <span class="text">
+          <span class="title">{{ node.title }}</span
+          ><span class="u-visually-hidden">, </span>
+          @switch (node.state) {
+            @case ('current') {
+              <span class="topic">You are here</span>
+            }
+            @case ('finished') {
+              <span class="topic">{{ node.topic }}<span class="u-visually-hidden">, finished</span></span>
+            }
+            @case ('soon') {
+              <span class="topic">{{ node.topic }}<span class="u-visually-hidden">, coming soon</span></span>
+            }
+            @default {
+              <span class="topic">{{ node.topic }}</span>
+            }
+          }
+        </span>
+      </a>
+      @if (node.state === 'current') {
+        <span class="guide"><ng-content select="[jicPathGuide]" /></span>
+      }
+    </li>
+  }
+  <li class="stop goal">
+    <div class="node">
+      <span class="shape"><jic-concept-shape concept="intro" [size]="64" /></span>
+      <span class="text">
+        <span class="title">{{ goalTitle() }}</span
+        ><span class="u-visually-hidden">, </span>
+        @if (goalNote(); as note) {
+          <span class="topic">{{ note }}</span>
+        }
+      </span>
+    </div>
+  </li>
+</ol>

@@ -21,3 +21,6 @@ export * from './lib/overlay-panel/overlay-panel';
 export * from './lib/quiz-feedback/quiz-feedback';
 export * from './lib/replay-button/replay-button';
 export * from './lib/lesson-done/lesson-done-card';
+export * from './lib/color-path/color-path';
+export * from './lib/resume-code/resume-code-pill';
+export * from './lib/setting-toggle/setting-toggle';

@@ -163,3 +163,13 @@ nav {
     content: '· ';
   }
 }
+
+.home-link {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--size-touch);
+  border-radius: var(--radius-chip);
+  color: inherit;
+  text-underline-offset: 0.2em;
+}

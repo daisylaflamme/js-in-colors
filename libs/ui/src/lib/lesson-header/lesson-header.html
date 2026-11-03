@@ -1,7 +1,7 @@
 <div class="bar">
   <ng-content select="[jicHeaderStart]" />
   @if (showLogo()) {
-    <jic-app-logo class="logo" />
+    <jic-app-logo class="logo" [link]="homeLink()" />
   }
   <p class="count"><span class="count-word">Lesson </span>{{ lessonNumber() }} of {{ lessonCount() }}</p>
 </div>
