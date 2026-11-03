@@ -1,0 +1,5 @@
+{
+  "name": "@jic/shared",
+  "private": true,
+  "sideEffects": false
+}

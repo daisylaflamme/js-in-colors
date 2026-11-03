@@ -1,0 +1,5 @@
+{
+  "name": "@jic/data-access",
+  "private": true,
+  "sideEffects": false
+}

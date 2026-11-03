@@ -8,7 +8,8 @@ export default defineConfig(() => ({
   resolve: {
     tsconfigPaths: true,
   },
-  plugins: [angular()],
+  // Test-only config: name the spec tsconfig so loading it outside Vitest (Nx graph) works too.
+  plugins: [angular({ tsconfig: `${import.meta.dirname}/tsconfig.spec.json` })],
   css: { preprocessorOptions: { scss: { loadPaths: ['../../styles'] } } },
   // Uncomment this if you are using workers.
   // worker: {
