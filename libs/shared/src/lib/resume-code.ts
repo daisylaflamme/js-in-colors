@@ -25,7 +25,7 @@ export const RESUME_CODE_ANIMALS = [
 const PATTERN = /^[a-z]{2,8}-[a-z]{3,7}-[1-9][0-9]$/;
 
 /** Fills a Uint32Array with random values. Defaults to the Web Crypto API (browser and Node). */
-export type RandomSource = (buffer: Uint32Array) => Uint32Array;
+export type RandomSource = (buffer: Uint32Array<ArrayBuffer>) => Uint32Array<ArrayBuffer>;
 
 const cryptoRandom: RandomSource = (buffer) => globalThis.crypto.getRandomValues(buffer);
 
