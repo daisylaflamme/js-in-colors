@@ -134,7 +134,7 @@ npx nx lint <project>
 npx nx build web                        # production build; budgets: initial warn 340 kB / error 400 kB
 
 # End-to-end (Cypress + cypress-axe; starts the app itself)
-npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Variables keyboard walkthrough with axe per scene + reduced motion
+npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Home/progress/settings + Variables keyboard walkthrough with axe per scene + reduced motion
 npx nx e2e web-e2e --spec src/e2e/lesson-variables.cy.ts   # one spec
 npx nx e2e web-e2e --configuration=production   # against the production build (what CI runs)
 
@@ -159,11 +159,20 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Smart/dumb: `LessonPage` (apps/web) owns the stores; scene components only get `scene` + `state` and emit `action`.
 - Concepts: the eight JS concepts plus `intro` (accent + outlined star, course opener only).
 
+### Home, progress and settings (ADR 0008)
+
+- `/` is Home (the color path). Route data `{ shell: 'full' }` hides the lesson menu. The logo and "Your color path" link home (`homeLink` input on `AppLogo`, `LessonMenu`, `LessonHeader`).
+- Progress: `CourseStore` + `withProgress()` (SignalStore): `markFinished` / `markOpened`, `continueLesson`, `pathLessons`. Saved after every change.
+- Settings: classic NgRx (`settingsFeature`, `SettingsActions`, functional effects, `provideSettings()`). Components read with `store.selectSignal(...)` and dispatch; the effects own storage and the `<html>` attributes.
+- localStorage keys: `jic.progress` (versioned by `PROGRESS_VERSION`), `jic.settings`, `jic.menuOpen`. Never touch storage in components: go through `PROGRESS_STORAGE` / `SETTINGS_STORAGE` (tests: `memoryProgressStorage()`), and get the object with `browserLocalStorage()`, because even reading `window.localStorage` can throw.
+- The resume code is a local key only. There is no restore box until the sync milestone, which needs a new ADR.
+- E2E: Cypress does not follow links on a simulated Enter, so Tab to the link and use `followFocusedLink()` (`support/keyboard.ts`). `checkPageA11y` waits for chip rows to settle first.
+
 ### Conventions added during the scaffold
 
 - Design tokens: `styles/settings/_tokens.scss` is a 1:1 copy of `docs/mockups/design-tokens.css`; components use the semantic tokens in `styles/settings/_semantic.scss`. Themes override tokens in `_themes.scss` only.
 - Component SCSS starts with `@use 'tools' as *;` for `mq-up()`, `focus-ring`, `visually-hidden-until()` and friends. Media queries are `mq-up()` only (min-width).
-- Motion: wrap animations in `@include motion-ok` and use `var(--motion-*)` durations (Calm motion zeroes them). Never select on `:root`/`html` inside component styles: emulated encapsulation makes it never match.
+- Motion: wrap animations in `@include motion-ok` and use `var(--motion-*)` durations (Calm motion zeroes them). Looping (`infinite`) animations also set `animation-play-state: var(--motion-loop)`, which Calm and reduced motion set to `paused`. Never select on `:root`/`html` inside component styles: emulated encapsulation makes it never match.
 - Breakpoints: phone is the base, tablet layout starts at `sm` (600px; the 820px tablet mockup falls here), desktop at `lg` (1200px, menu inline and open by default).
 - Text on fills (ADR 0005): on the orange (object) and teal (variable) fills, text must be large and bold only (at least 1.5rem, weight 700+), using `--color-<concept>-on`. Anything smaller uses `--color-<concept>-text` on `--color-<concept>-tint`. Never white on orange or yellow.
 - Themes (ADR 0005): light/dark/high contrast are token overrides in `styles/settings/_themes.scss`. Any element may carry `data-theme`. New UI must pass axe in all three themes (the smoke spec checks them).
@@ -172,3 +181,5 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Modals use native `<dialog>` with `ModalDialogDirective` (`libs/ui`): owner holds `open`, Esc/backdrop emit `dismissed`, focus returns to `returnFocusTo`. Mark the first control with `data-autofocus`.
 - Presentational components can sit on native elements via attribute selectors (`button[jic-choice-button]`); always write `type="button"` at the usage site.
 - Nx tags: `type:app | feature | ui | data-access | util | e2e`, enforced by `@nx/enforce-module-boundaries`.
+- Every lib has a private `package.json` with `"sideEffects": false`, so code only lazy routes use stays out of the initial bundle (without it, the whole `@jic/ui` barrel shipped in `main`). A new lib needs one too, and its `vite.config.mts` names `tsconfig.spec.json` for analogjs.
+- Stories are only typechecked by `npx nx build-storybook ui`: run it when you touch a story.

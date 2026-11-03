@@ -3,6 +3,46 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-03 · Home color path, local progress, settings
+
+Branch `feat/home-progress` (stacked on `feat/lesson-engine`).
+
+**Built**
+
+- Home at `/` (mockup 08):
+  - The resume code with Copy, plus the Calm motion and Text size toggles.
+  - A greeting from Dot and one big Start / Continue / Visit again link.
+  - The color path, with checks, a dashed ring and Dot on the current lesson, ending in the certificate star.
+  - The color legend.
+  - Phone and tablet get one lesson per row; lg gets the zigzag, drawn with subgrid and CSS `hypot()` / `atan2()` lines.
+- Progress in `CourseStore` (`withProgress()`): the resume code, finished lessons and the last lesson opened, saved to `jic.progress` and validated on load. Codes look like `blue-fox-42`, from two hand-checked word lists.
+- Settings in classic NgRx Store + Effects: Calm motion and Text size (100 / 112.5 / 125%), saved to `jic.settings` and applied as attributes on `<html>`.
+- New ui pieces: `ColorPath`, `ResumeCodePill`, `SettingToggle`. The logo and "Your color path" link home. ADR 0008.
+
+**Decided** (with the owner)
+
+- The resume code is a local key only: no restore box until the sync milestone.
+- Settings use classic NgRx (installed `@ngrx/store` and `@ngrx/effects` 22.0.1).
+- Calm motion only adds calm; it never overrides the device's reduced-motion setting.
+
+**Found and fixed along the way**
+
+- The whole `@jic/ui` barrel was in the initial bundle, lesson-only components included, because the libs weren't marked side-effect free. Adding a private `package.json` with `sideEffects: false` per lib took the initial bundle from 374 to 324 kB, which more than paid for classic NgRx (+27 kB).
+- With storage blocked, reading `window.localStorage` itself throws. The storage token factories read it unguarded, so the app crashed on start. Found by the new blocked-storage e2e test.
+- The color path overflowed 320px, because it reserved room for Dot beside every stop. Below lg, Dot now peeks over the corner of the current shape.
+- A 1 ms infinite animation still flickers. Looping animations now pause with `--motion-loop` under Calm or reduced motion.
+- Prettier's line breaks in two templates ran words together ("VariablesVariables" in a link name). There's now a hidden comma between title and topic.
+- A TS 6 typed-array type error in the resume code generator. The shared lib's tests don't typecheck; the web build caught it.
+- A story type error that only the Storybook build typechecks.
+- An axe race: chip rows become focusable a frame after layout. `checkPageA11y` now waits for that.
+- Cypress doesn't follow links on a simulated Enter, so specs Tab to the link and click the focused element (`followFocusedLink`).
+
+**Checks**
+
+- Lint (no warnings), 170 unit tests and the build: green. Initial bundle 324 kB raw, 88 kB gzipped.
+- Storybook build: green.
+- Cypress: 40 tests green against the production build, including Home at three sizes and three themes, persistence across reloads, broken and blocked storage, and the settings.
+
 ## 2026-11-02 · Lesson engine and the first real lessons
 
 Branch `feat/lesson-engine` (stacked on `chore/decisions-themes-licenses`).

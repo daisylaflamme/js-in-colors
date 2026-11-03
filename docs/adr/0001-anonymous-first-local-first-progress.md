@@ -1,6 +1,6 @@
 # 0001. Anonymous-first, local-first progress
 
-- Status: Accepted
+- Status: Accepted (storage choice refined by [0008](0008-local-progress-and-settings.md))
 - Date: 2026-11-02
 
 ## Context

@@ -6,7 +6,7 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
-> Status: three real lessons (Hello, Say it out loud, Variables) run on a data-driven lesson engine; seven more are "coming soon". The home color path, the chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
+> Status: three real lessons (Hello, Say it out loud, Variables) run on a data-driven lesson engine; seven more are "coming soon". Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. The chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
 
 ## Stack
 
@@ -27,11 +27,11 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 ## Repo layout
 
 ```
-apps/web            Angular app (shell, lesson route)
+apps/web            Angular app (shell, Home, lesson route)
 apps/web-e2e        Cypress smoke + accessibility tests
 libs/ui             Design-system components (each has a Storybook story)
 libs/lesson-engine  Renders lessons from data (scene-type registry)
-libs/data-access    Lesson and course SignalStores (GraphQL later)
+libs/data-access    Course and lesson SignalStores, saved progress, settings store (GraphQL later)
 libs/visuals        Lesson pictures: jar, screen, Dot
 libs/shared         Concepts, lesson types, content validator
 content/            Lessons as YAML (see content/README.md)
@@ -59,7 +59,7 @@ The full command list is in [CLAUDE.md](CLAUDE.md#commands).
 
 The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-anonymous-first-local-first-progress.md)):
 
-- No account and no login. Progress stays in the browser.
+- No account and no login. Progress stays in the browser, under a random resume code such as `blue-fox-42` that says nothing about the child ([ADR 0008](docs/adr/0008-local-progress-and-settings.md)).
 - No personal data, no analytics, no tracking, no third-party scripts or CDN assets.
 - The certificate name is typed and rendered on the device and never sent anywhere.
 - Chat (later) runs through a server-side proxy, is never stored, and answers only about JavaScript.
@@ -68,16 +68,18 @@ The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-ano
 
 Built to WCAG 2.2 AA. Every interaction works with the keyboard, color is never the only signal (each concept has a shape and a word), every animation has a calm alternative, touch targets are 44px or more, and the layout works from 320px wide and at 200% text size.
 
-| Check                                                                                  | Result                                                                                            |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| cypress-axe (WCAG 2.x A/AA), phone / tablet / desktop, Tip and Library open and closed | 0 violations                                                                                      |
-| cypress-axe on every scene of Variables, keyboard only, phone and desktop              | 0 violations                                                                                      |
-| cypress-axe in the dark and high-contrast themes                                       | 0 violations                                                                                      |
-| prefers-reduced-motion (emulated in the browser)                                       | No animations run; final states shown at once                                                     |
-| Storybook a11y addon                                                                   | Runs on every story (`test: 'error'`)                                                             |
-| Lighthouse performance (mobile)                                                        | _to be measured_                                                                                  |
-| Lighthouse accessibility                                                               | _to be measured_                                                                                  |
-| Initial JS + CSS (production build)                                                    | 329 kB raw, 84 kB gzipped (each lesson is a separate ~1 kB lazy chunk); the build fails at 400 kB |
+| Check                                                                                  | Result                                                                                                |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| cypress-axe (WCAG 2.x A/AA), phone / tablet / desktop, Tip and Library open and closed | 0 violations                                                                                          |
+| cypress-axe on every scene of Variables, keyboard only, phone and desktop              | 0 violations                                                                                          |
+| cypress-axe in the dark and high-contrast themes                                       | 0 violations                                                                                          |
+| cypress-axe on Home, phone / tablet / desktop, all three themes                        | 0 violations                                                                                          |
+| Blocked or broken browser storage (e2e)                                                | The app still works; progress lasts for the visit                                                     |
+| prefers-reduced-motion (emulated in the browser), or the Calm motion setting           | No animations run; final states shown at once                                                         |
+| Storybook a11y addon                                                                   | Runs on every story (`test: 'error'`)                                                                 |
+| Lighthouse performance (mobile)                                                        | _to be measured_                                                                                      |
+| Lighthouse accessibility                                                               | _to be measured_                                                                                      |
+| Initial JS + CSS (production build)                                                    | 324 kB raw, 88 kB gzipped (Home, the lesson page and each lesson are lazy); the build fails at 400 kB |
 
 ## How I built this with Claude Code
 
