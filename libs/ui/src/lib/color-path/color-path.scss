@@ -42,7 +42,6 @@
   grid-template-columns: var(--box) 1fr;
   align-items: start; // the box stays at the top, so the line math holds when words wrap
   gap: var(--space-4);
-  padding-inline-end: 5rem; // room for Dot on the current stop
   border-radius: var(--radius-nav-item);
   color: var(--color-text);
   text-decoration: none;
@@ -105,13 +104,14 @@ a.node {
   color: var(--here);
 }
 
+// Phone and tablet: Dot peeks over the corner of the current box (it stays next to the
+// lesson, and needs no room of its own at 320px). lg: Dot stands beside the box (below).
 .guide {
   position: absolute;
-  inset-block-start: 0;
-  inset-inline-end: 0;
+  inset-block-start: -0.75rem;
+  inset-inline-start: calc(var(--box) - 2rem);
   display: flex;
   align-items: center;
-  block-size: var(--box);
   pointer-events: none;
 }
 

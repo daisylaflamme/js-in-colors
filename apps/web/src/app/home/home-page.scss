@@ -123,7 +123,11 @@ h1 {
   }
 }
 
-// Dot beside the current lesson on the path: small.
+// Dot beside the current lesson on the path: peeking over its corner, full size at lg.
 .path-dot {
-  inline-size: 4rem;
+  inline-size: 2.75rem;
+
+  @include mq-up(lg) {
+    inline-size: 4rem;
+  }
 }
