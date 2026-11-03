@@ -24,7 +24,22 @@ function logViolations(violations: Result[]): void {
   );
 }
 
+/**
+ * Concept chip rows become focusable (tabindex 0) only while they scroll, which a ResizeObserver
+ * reports a frame after layout. Wait for that state so axe never sees the in-between frame.
+ */
+function chipRowsSettled(): void {
+  cy.document({ log: false }).should((doc) => {
+    doc.querySelectorAll('jic-concept-chip-list ul').forEach((ul) => {
+      if (ul.scrollWidth > ul.clientWidth + 1)
+        expect(ul.getAttribute('tabindex'), 'scrolling chip row is focusable').to.eq('0');
+      else expect(ul.hasAttribute('tabindex'), 'wrapped chip row is not a tab stop').to.eq(false);
+    });
+  });
+}
+
 Cypress.Commands.add('checkPageA11y', (context?: string) => {
+  chipRowsSettled();
   cy.injectAxe();
   cy.checkA11y(
     context,

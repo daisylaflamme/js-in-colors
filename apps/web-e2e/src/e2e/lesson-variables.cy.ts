@@ -3,31 +3,11 @@
  * and an axe check on every scene. Runs at phone and desktop sizes, and once with
  * prefers-reduced-motion emulated in the browser.
  *
- * Focus moves with real Tab key presses (cy.press). Cypress 15's cy.press does not trigger a
- * button's default action for Enter/Space, so activation uses type('{enter}') / type(' ') on the
- * focused element, which simulates the key (no pointer events; checked while writing this spec).
- * Cypress has no Shift+Tab, so after each scene change the walk starts again from the top of
- * <main> (where the "Skip to the lesson" link puts focus) and Tabs forward to the next target.
+ * Keyboard helpers (real Tab presses, simulated Enter/Space) are in support/keyboard.ts.
+ * After each scene change the walk starts again from the top of <main> (where the
+ * "Skip to main content" link puts focus) and Tabs forward to the next target.
  */
-const { TAB } = Cypress.Keyboard.Keys;
-
-/** Activate the focused control the way a keyboard user does. */
-const pressEnter = () => cy.focused().type('{enter}');
-const pressSpace = () => cy.focused().type(' ');
-
-/** Press Tab until the focused element matches (optionally containing `text`). */
-function tabTo(selector: string, text?: string, max = 40): void {
-  const step = (left: number): void => {
-    cy.press(TAB);
-    cy.focused({ log: false }).then(($el) => {
-      const found = $el.length > 0 && $el.is(selector) && (text === undefined || $el.text().includes(text));
-      if (found) return;
-      if (left <= 0) throw new Error(`Could not Tab to ${selector}${text ? ` "${text}"` : ''}`);
-      step(left - 1);
-    });
-  };
-  step(max);
-}
+import { emulateReducedMotion, pressEnter, pressSpace, tabTo } from '../support/keyboard';
 
 function fromTopOfLesson(): void {
   cy.get('#main').focus();
@@ -132,11 +112,7 @@ describe('Variables lesson with the keyboard', () => {
 });
 
 describe('reduced motion', () => {
-  const emulate = (value: 'reduce' | 'no-preference') =>
-    Cypress.automation('remote:debugger:protocol', {
-      command: 'Emulation.setEmulatedMedia',
-      params: { features: [{ name: 'prefers-reduced-motion', value }] },
-    });
+  const emulate = emulateReducedMotion;
 
   afterEach(() => cy.then(() => emulate('no-preference')));
 
