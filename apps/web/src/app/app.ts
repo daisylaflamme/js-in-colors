@@ -1,15 +1,19 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, untracked } from '@angular/core';
+import { type ActivatedRouteSnapshot, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { LessonMenuComponent, type LessonMenuItem, OverlayPanelComponent } from '@jic/ui';
 import { CourseStore } from '@jic/data-access';
+import type { ShellRouteData } from './app.routes';
 import { ShellState } from './shell/shell-state';
+
+const deepest = (route: ActivatedRouteSnapshot): ActivatedRouteSnapshot =>
+  route.firstChild ? deepest(route.firstChild) : route;
 
 /**
  * The app shell (smart). Owns layout and where the lesson menu lives:
- * inline beside the page on desktop, a modal overlay below lg.
+ * inline beside the page on desktop, a modal overlay below lg, and none on full pages (Home).
  * The page itself is routed into <main>.
  */
 @Component({
@@ -18,18 +22,15 @@ import { ShellState } from './shell/shell-state';
   imports: [RouterOutlet, LessonMenuComponent, OverlayPanelComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
-  host: { '[class.menu-inline]': 'shell.menuInline()' },
+  host: { '[class.menu-inline]': 'menuInline()' },
 })
 export class App {
   protected readonly shell = inject(ShellState);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  protected readonly course = inject(CourseStore);
 
-  protected readonly resumeCode = 'blue-fox-42'; // PLACEHOLDER until the resume-code milestone
-
-  private readonly course = inject(CourseStore);
-
-  /** The menu, from content/course.yaml. Finished = finished in this visit (no persistence yet). */
+  /** The menu, from content/course.yaml, with progress saved on this device. */
   protected readonly menuItems = computed<readonly LessonMenuItem[]>(() => {
     const finished = this.course.finishedIds();
     return this.course.lessons().map((l) => ({
@@ -42,16 +43,32 @@ export class App {
     }));
   });
 
-  private readonly url = toSignal(
+  private readonly navigation = toSignal(
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-      map((e) => e.urlAfterRedirects),
+      map((e) => ({
+        url: e.urlAfterRedirects,
+        data: deepest(this.router.routerState.snapshot.root).data as ShellRouteData,
+      })),
     ),
-    { initialValue: this.router.url },
+    { initialValue: { url: this.router.url, data: {} as ShellRouteData } },
   );
 
-  protected readonly currentLessonId = computed(() => /^\/lesson\/([^/?#]+)/.exec(this.url())?.[1]);
+  protected readonly currentLessonId = computed(
+    () => /^\/lesson\/([^/?#]+)/.exec(this.navigation().url)?.[1],
+  );
+  /** Pages such as Home draw their own header and have no lesson menu. */
+  protected readonly fullPage = computed(() => this.navigation().data.shell === 'full');
+  protected readonly menuInline = computed(() => this.shell.menuInline() && !this.fullPage());
   protected readonly compactMenu = computed(() => this.shell.layout() === 'phone');
+
+  constructor() {
+    // Any navigation (a lesson link, the logo, "Your color path") closes the overlay menu.
+    effect(() => {
+      this.navigation();
+      untracked(() => this.shell.closeOverlayMenu());
+    });
+  }
 
   /** With <base href="/">, a bare #main link would leave the page. Move focus instead. */
   protected skipToMain(event: Event): void {
