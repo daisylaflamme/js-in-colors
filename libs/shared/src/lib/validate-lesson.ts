@@ -171,10 +171,6 @@ function describe(value: unknown): string {
   return String(value);
 }
 
-function plural(n: number, word: string): string {
-  return n === 1 ? word : `${word}s`;
-}
-
 function truncate(text: string): string {
   return text.length > 40 ? `${text.slice(0, 37)}...` : text;
 }
