@@ -52,7 +52,7 @@ export const ColorPath: StoryObj<PathArgs> = {
 
 export const ColorPathNewVisitor: StoryObj<PathArgs> = { ...ColorPath, args: { finished: 0 } };
 
-type PillArgs = { code: string; copyState: 'idle' | 'copied' | 'failed' };
+type PillArgs = { code: string; copyState: 'idle' | 'copied' | 'failed'; copyRequested?: () => void };
 
 export const ResumeCode: StoryObj<PillArgs> = {
   args: { code: 'blue-fox-42', copyState: 'idle' },
