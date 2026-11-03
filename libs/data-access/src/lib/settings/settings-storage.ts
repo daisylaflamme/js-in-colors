@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, InjectionToken } from '@angular/core';
+import { browserLocalStorage } from '../browser-storage';
 import { initialSettings, type SettingsState, TEXT_SIZES, type TextSize } from './settings.feature';
 
 export const SETTINGS_KEY = 'jic.settings';
@@ -12,7 +13,7 @@ export interface SettingsStorage {
 
 export const SETTINGS_STORAGE = new InjectionToken<SettingsStorage>('SettingsStorage', {
   providedIn: 'root',
-  factory: () => localSettingsStorage(inject(DOCUMENT).defaultView?.localStorage),
+  factory: () => localSettingsStorage(browserLocalStorage(inject(DOCUMENT).defaultView)),
 });
 
 /** Anything readable becomes valid settings; unknown or broken values fall back to the defaults. */

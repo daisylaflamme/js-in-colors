@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, InjectionToken } from '@angular/core';
 import { isResumeCode } from '@jic/shared';
+import { browserLocalStorage } from '../browser-storage';
 
 /** What is saved on this device (ADR 0008). Never anything about the child. */
 export interface SavedProgress {
@@ -21,7 +22,7 @@ export interface ProgressStorage {
 
 export const PROGRESS_STORAGE = new InjectionToken<ProgressStorage>('ProgressStorage', {
   providedIn: 'root',
-  factory: () => localProgressStorage(inject(DOCUMENT).defaultView?.localStorage),
+  factory: () => localProgressStorage(browserLocalStorage(inject(DOCUMENT).defaultView)),
 });
 
 /** localStorage, wrapped: private mode or strict settings can make every access throw. */

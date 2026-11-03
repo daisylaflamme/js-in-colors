@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { isResumeCode, type Course } from '@jic/shared';
+import { browserLocalStorage } from '../browser-storage';
 import { CourseStore } from '../course.store';
 import { LESSON_SOURCE } from '../lesson-source';
 import { memoryProgressStorage } from '../testing/memory-progress-storage';
@@ -149,5 +150,18 @@ describe('CourseStore progress', () => {
       'jars:todo',
       'loops:soon',
     ]);
+  });
+});
+
+describe('browserLocalStorage', () => {
+  it('returns undefined instead of throwing when the browser blocks storage', () => {
+    const blocked = Object.defineProperty({}, 'localStorage', {
+      get() {
+        throw new DOMException('Storage is blocked', 'SecurityError');
+      },
+    }) as Window;
+    expect(browserLocalStorage(blocked)).toBeUndefined();
+    expect(browserLocalStorage(null)).toBeUndefined();
+    expect(browserLocalStorage(window)).toBe(window.localStorage);
   });
 });
