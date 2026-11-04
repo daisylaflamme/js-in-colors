@@ -122,7 +122,9 @@ describe('reduced motion', () => {
     cy.visit('/lesson/variables');
     cy.get('h1').should('be.visible');
     pressNext();
+    expectScene(2); // wait for each scene before tabbing, or focus can land on a node being swapped out
     pressNext();
+    expectScene(3);
     fromTopOfLesson();
     tabTo('button[jic-choice-button]', 'Emma');
     pressEnter();
@@ -136,7 +138,9 @@ describe('reduced motion', () => {
     cy.visit('/lesson/variables');
     cy.get('h1').should('be.visible');
     pressNext();
+    expectScene(2);
     pressNext();
+    expectScene(3);
     fromTopOfLesson();
     tabTo('button[jic-choice-button]', 'Emma');
     pressEnter();
