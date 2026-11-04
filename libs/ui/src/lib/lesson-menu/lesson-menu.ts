@@ -35,6 +35,8 @@ export class LessonMenuComponent {
   readonly lessons = input.required<readonly LessonMenuItem[]>();
   readonly currentId = input<string>();
   readonly resumeCode = input<string>();
+  /** Where the logo and "Your color path" link to (Home). No link when unset. */
+  readonly homeLink = input<string>();
   /** Shows the X button (overlay mode). */
   readonly closable = input(false);
   /** Hides subtitles to fit the phone overlay (mockup 14). */

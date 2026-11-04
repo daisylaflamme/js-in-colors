@@ -1,16 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, TitleStrategy, withComponentInputBinding } from '@angular/router';
+import { provideStore } from '@ngrx/store';
+import { initialSettings, memoryProgressStorage, provideSettings, SETTINGS_STORAGE } from '@jic/data-access';
 import { App } from './app';
 import { AppTitleStrategy } from './app-title.strategy';
 import { appRoutes } from './app.routes';
 
 describe('App shell', () => {
-  async function setup(url: string) {
+  async function setup(url: string, progress: unknown = null) {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(appRoutes, withComponentInputBinding()),
         { provide: TitleStrategy, useClass: AppTitleStrategy },
+        memoryProgressStorage(progress).provider,
+        provideStore(),
+        provideSettings(),
+        { provide: SETTINGS_STORAGE, useValue: { read: () => initialSettings, write: () => undefined } },
       ],
     });
     const fixture = TestBed.createComponent(App);
@@ -19,10 +25,28 @@ describe('App shell', () => {
     return { fixture, el: fixture.nativeElement as HTMLElement };
   }
 
-  it('redirects / to the first ready lesson and renders it lazily', async () => {
+  it('opens Home at / without the lesson menu', async () => {
     const { el } = await setup('/');
-    expect(TestBed.inject(Router).url).toBe('/lesson/hello');
-    expect(el.querySelector('main h1')?.textContent).toBe('Hello, JavaScript!');
+    expect(TestBed.inject(Router).url).toBe('/');
+    expect(el.querySelector('main h1')?.textContent).toBe('Hi, explorer!');
+    expect(el.querySelector('jic-lesson-menu, jic-overlay-panel')).toBeNull();
+    expect(TestBed.inject(Title).getTitle()).toBe('Your color path · JavaScript in Colors');
+  });
+
+  it('shows saved progress and the resume code in the lesson menu, with links home', async () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+    const saved = { v: 1, resumeCode: 'brave-otter-37', finishedIds: ['hello'], lastLessonId: 'output' };
+    const { el } = await setup('/lesson/output', saved);
+    vi.unstubAllGlobals();
+    expect(el.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('1');
+    expect(el.querySelector('jic-lesson-menu .code')?.textContent).toBe('brave-otter-37');
+    expect(el.querySelector('jic-lesson-menu .home-link')?.getAttribute('href')).toBe('/');
+    expect(el.querySelector('jic-lesson-menu jic-app-logo a')?.getAttribute('href')).toBe('/');
   });
 
   it('builds the menu from the course: 10 lessons, 7 coming soon, none finished yet', async () => {

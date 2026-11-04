@@ -1,33 +1,37 @@
-<a class="skip-link" href="#main" (click)="skipToMain($event)">Skip to the lesson</a>
+<a class="skip-link" href="#main" (click)="skipToMain($event)">Skip to main content</a>
 
-@if (shell.menuInline()) {
-  <jic-lesson-menu
-    id="lesson-menu"
-    class="menu"
-    [lessons]="menuItems()"
-    [currentId]="currentLessonId()"
-    [resumeCode]="resumeCode"
-  />
-} @else {
-  <jic-overlay-panel
-    dialogId="lesson-menu"
-    label="Lesson menu"
-    [open]="shell.overlayMenuOpen()"
-    [returnFocusTo]="shell.menuTrigger()"
-    (closed)="shell.closeOverlayMenu()"
-  >
-    @if (shell.overlayMenuOpen()) {
-      <jic-lesson-menu
-        [lessons]="menuItems()"
-        [currentId]="currentLessonId()"
-        [resumeCode]="resumeCode"
-        [closable]="true"
-        [compact]="compactMenu()"
-        (closeRequested)="shell.closeOverlayMenu()"
-        (lessonChosen)="shell.closeOverlayMenu()"
-      />
-    }
-  </jic-overlay-panel>
+@if (!fullPage()) {
+  @if (shell.menuInline()) {
+    <jic-lesson-menu
+      id="lesson-menu"
+      class="menu"
+      homeLink="/"
+      [lessons]="menuItems()"
+      [currentId]="currentLessonId()"
+      [resumeCode]="course.resumeCode()"
+    />
+  } @else {
+    <jic-overlay-panel
+      dialogId="lesson-menu"
+      label="Lesson menu"
+      [open]="shell.overlayMenuOpen()"
+      [returnFocusTo]="shell.menuTrigger()"
+      (closed)="shell.closeOverlayMenu()"
+    >
+      @if (shell.overlayMenuOpen()) {
+        <jic-lesson-menu
+          homeLink="/"
+          [lessons]="menuItems()"
+          [currentId]="currentLessonId()"
+          [resumeCode]="course.resumeCode()"
+          [closable]="true"
+          [compact]="compactMenu()"
+          (closeRequested)="shell.closeOverlayMenu()"
+          (lessonChosen)="shell.closeOverlayMenu()"
+        />
+      }
+    </jic-overlay-panel>
+  }
 }
 
 <main id="main" tabindex="-1">

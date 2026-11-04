@@ -11,6 +11,7 @@ Short records of decisions that shape the project. One decision per file, number
 | [0005](0005-themes.md)                               | Themes: light, dark, high contrast as token overrides | Accepted |
 | [0006](0006-licensing.md)                            | Licensing: MIT for code, CC BY-NC 4.0 for content     | Accepted |
 | [0007](0007-lessons-as-validated-yaml.md)            | Lessons as validated YAML, compiled at build time     | Accepted |
+| [0008](0008-local-progress-and-settings.md)          | Local progress, the resume code, and global settings  | Accepted |
 
 ## Template
 

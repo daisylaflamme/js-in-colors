@@ -24,6 +24,8 @@ export class LessonHeaderComponent {
   readonly concept = input.required<Concept>();
   /** Show the small logo beside the hamburger (when the menu is closed). */
   readonly showLogo = input(true);
+  /** Where the small logo links to (Home). No link when unset. */
+  readonly homeLink = input<string>();
 
   protected readonly conceptText = computed(() => `var(--color-${this.concept()}-text)`);
 

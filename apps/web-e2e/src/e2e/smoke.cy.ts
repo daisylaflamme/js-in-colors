@@ -23,12 +23,6 @@ for (const vp of VIEWPORTS) {
       cy.visit('/lesson/variables');
     });
 
-    it('opens the first ready lesson from /', () => {
-      cy.visit('/');
-      cy.location('pathname').should('eq', '/lesson/hello');
-      cy.get('h1').should('have.text', 'Hello, JavaScript!');
-    });
-
     it('loads the lesson', () => {
       cy.location('pathname').should('eq', '/lesson/variables');
       cy.title().should('eq', 'Variables · JavaScript in Colors');
@@ -98,14 +92,16 @@ for (const vp of VIEWPORTS) {
 }
 
 describe('small screens', () => {
-  it('has no horizontal page scroll at 320px', () => {
-    cy.viewport(320, 640);
-    cy.visit('/');
-    cy.get('h1').should('be.visible');
-    cy.document().then((doc) => {
-      expect(doc.documentElement.scrollWidth).to.be.at.most(doc.documentElement.clientWidth);
+  for (const path of ['/', '/lesson/variables']) {
+    it(`has no horizontal page scroll at 320px on ${path}`, () => {
+      cy.viewport(320, 640);
+      cy.visit(path);
+      cy.get('h1').should('be.visible');
+      cy.document().then((doc) => {
+        expect(doc.documentElement.scrollWidth).to.be.at.most(doc.documentElement.clientWidth);
+      });
     });
-  });
+  }
 });
 
 describe('themes', () => {
@@ -116,7 +112,7 @@ describe('themes', () => {
         [1440, 900],
       ] as const) {
         cy.viewport(w, h);
-        cy.visit('/');
+        cy.visit('/lesson/variables');
         cy.document().then((doc) => doc.documentElement.setAttribute('data-theme', theme));
         cy.get('h1').should('be.visible');
         cy.checkPageA11y();

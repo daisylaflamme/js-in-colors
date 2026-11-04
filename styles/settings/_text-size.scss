@@ -1,0 +1,10 @@
+// The in-app "Text size" setting ([data-text-size] on <html>, set by the settings store).
+// Percentages scale the browser's own default, so a child's device setting still counts.
+// Everything is sized in rem, so the whole layout grows with it.
+:root[data-text-size='large'] {
+  font-size: 112.5%;
+}
+
+:root[data-text-size='larger'] {
+  font-size: 125%;
+}

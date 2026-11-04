@@ -1,11 +1,20 @@
 // Reduced motion: keep transitions (so state changes still feel smooth) but
-// make them near-instant and drop movement. Slides become fades.
-// [data-motion='calm'] is the in-app "Calm motion" toggle (later milestone).
+// make them near-instant and drop movement. Slides become fades. Looping animations stop.
+// [data-motion='calm'] is the in-app "Calm motion" toggle (settings store). It can only add calm:
+// a device that asks for reduced motion always gets it.
+//
+// Looping animations (`infinite`) must also set `animation-play-state: var(--motion-loop)`,
+// because a 1ms loop would still run, as a flicker.
+:root {
+  --motion-loop: running;
+}
+
 @mixin calm-motion {
   --motion-fast: 1ms;
   --motion-base: 1ms;
   --motion-slow: 1ms;
   --motion-distance: 0;
+  --motion-loop: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {

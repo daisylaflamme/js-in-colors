@@ -1,0 +1,55 @@
+<header class="top">
+  <jic-app-logo />
+  <div class="settings">
+    <jic-resume-code-pill
+      [code]="course.resumeCode()"
+      [copyState]="copyState()"
+      (copyRequested)="copyResumeCode()"
+    />
+    <button
+      type="button"
+      jic-setting-toggle
+      label="Calm motion"
+      [pressed]="calmMotion()"
+      (click)="toggleCalmMotion()"
+    ></button>
+    <button
+      type="button"
+      jic-setting-toggle
+      label="Text size"
+      [value]="textSizeWord()"
+      (click)="cycleTextSize()"
+    ></button>
+    <p class="u-visually-hidden settings-status" role="status">{{ settingsStatus() }}</p>
+  </div>
+</header>
+
+<section class="welcome" aria-labelledby="home-title">
+  <jic-dot-character class="welcome-dot" />
+  <div class="welcome-text">
+    <h1 id="home-title">{{ course.isNewVisitor() ? 'Hi, explorer!' : 'Welcome back, explorer!' }}</h1>
+    <p class="lead">{{ lead() }}</p>
+  </div>
+  @if (continueAction(); as action) {
+    <a class="continue" [routerLink]="['/lesson', action.lesson.id]">
+      {{ action.verb }}: {{ action.lesson.title }}
+      <jic-icon name="arrow-right" [size]="28" />
+    </a>
+  }
+</section>
+
+<section class="path-card" aria-labelledby="path-title">
+  <div class="path-head">
+    <h2 id="path-title">Your color path</h2>
+    <p>Tap any color to explore. No rush, no locks.</p>
+  </div>
+  <jic-color-path
+    label="Lessons on your color path"
+    [nodes]="pathNodes()"
+    [goalNote]="'Finish all ' + course.lessons().length"
+  >
+    <jic-dot-character jicPathGuide class="path-dot" />
+  </jic-color-path>
+</section>
+
+<jic-concept-chip-list class="legend" label="What the colors mean:" [concepts]="legend" />

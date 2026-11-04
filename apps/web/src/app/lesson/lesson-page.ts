@@ -122,7 +122,9 @@ export class LessonPage {
       untracked(() => {
         this.tipOpen.set(false);
         this.libraryOpen.set(false);
-        if (this.course.find(id)?.status === 'ready') void this.store.load(id);
+        if (this.course.find(id)?.status !== 'ready') return;
+        this.course.markOpened(id);
+        void this.store.load(id);
       });
     });
   }

@@ -1,0 +1,239 @@
+@use 'tools' as *;
+
+// One stop = a shape box (--box) plus its words. The line to the next stop starts at the centre
+// of this stop's box and is drawn under the shapes (z-index -1 inside the isolated list).
+:host {
+  --box: 5.5rem;
+  --line-dotted: var(--color-border-soft);
+  --line-walked: var(--color-accent);
+  display: block;
+}
+
+.path {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  isolation: isolate;
+}
+
+// Phone and tablet: one stop per row, a straight line down to the next box.
+.stop {
+  position: relative;
+  padding-block-end: var(--space-4);
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-block: calc(var(--box) / 2) calc(var(--box) / -2);
+    inset-inline-start: calc(var(--box) / 2 - 2px);
+    border-inline-start: 4px dotted var(--line-dotted);
+  }
+
+  &.walked::before {
+    inset-inline-start: calc(var(--box) / 2 - 3px);
+    border-inline-start: 6px solid var(--line-walked);
+  }
+}
+
+.node {
+  display: grid;
+  grid-template-columns: var(--box) 1fr;
+  align-items: start; // the box stays at the top, so the line math holds when words wrap
+  gap: var(--space-4);
+  border-radius: var(--radius-nav-item);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+a.node {
+  @include focus-ring;
+}
+
+.shape {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: var(--box);
+  block-size: var(--box);
+  border-radius: 50%;
+}
+
+[data-state='current'] .shape {
+  outline: 4px dashed var(--line-walked);
+  outline-offset: -2px;
+}
+
+.check {
+  position: absolute;
+  inset-block-start: 0.35rem;
+  inset-inline-end: 0.35rem;
+  display: grid;
+  place-items: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border: 2px solid var(--color-bg-raised);
+  border-radius: 50%;
+  background: var(--color-success);
+  color: var(--color-surface);
+}
+
+.text {
+  display: grid;
+  align-content: center;
+  gap: 0.1rem;
+  min-block-size: var(--box);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.topic {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-bold);
+}
+
+[data-state='current'] .title,
+[data-state='current'] .topic {
+  color: var(--here);
+}
+
+// Phone and tablet: Dot peeks over the corner of the current box (it stays next to the
+// lesson, and needs no room of its own at 320px). lg: Dot stands beside the box (below).
+.guide {
+  position: absolute;
+  inset-block-start: -0.75rem;
+  inset-inline-start: calc(var(--box) - 2rem);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.goal .shape {
+  transform: scale(1.25); // the star is the prize
+}
+
+// lg: the zigzag. Every stop is a column; odd stops (1st, 3rd, ...) sit low, even stops high.
+// Rows: [words above] [high boxes] [low boxes] [words below]. Stops and links use subgrid so
+// words and boxes line up across columns. Diagonal lines get their length and angle from
+// hypot()/atan2() with the column width in container units, so they fit any width or text size.
+@include mq-up(lg) {
+  .path {
+    container-type: inline-size;
+    grid-template-columns: repeat(var(--stops), minmax(0, 1fr));
+    grid-template-rows: auto var(--box) var(--box) auto;
+    row-gap: var(--space-3);
+  }
+
+  .stop {
+    display: grid;
+    grid-row: 1 / -1;
+    grid-template-rows: subgrid;
+    padding: 0;
+
+    &:not(:last-child)::before {
+      content: none;
+    }
+  }
+
+  .node {
+    grid-row: 1 / -1;
+    grid-column: 1;
+    grid-template-rows: subgrid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--space-3) 0;
+    padding-inline: var(--space-1);
+    text-align: center;
+  }
+
+  .text {
+    min-block-size: 0;
+  }
+
+  .stop:nth-child(odd) {
+    .shape {
+      grid-row: 3;
+    }
+    .text {
+      grid-row: 4;
+      align-self: start;
+    }
+  }
+
+  .stop:nth-child(even) {
+    .shape {
+      grid-row: 2;
+    }
+    .text {
+      grid-row: 1;
+      align-self: end;
+    }
+  }
+
+  .stop:not(:last-child) .shape::before {
+    --col: calc(100cqi / var(--stops));
+    --rise: calc(var(--box) + var(--space-3));
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-block-start: calc(50% - 2px);
+    inset-inline-start: 50%;
+    inline-size: hypot(var(--col), var(--rise));
+    border-block-start: 4px dotted var(--line-dotted);
+    transform-origin: 0 50%;
+  }
+
+  .stop.walked .shape::before {
+    inset-block-start: calc(50% - 3px);
+    border-block-start: 6px solid var(--line-walked);
+  }
+
+  .stop:nth-child(odd) .shape::before {
+    transform: rotate(calc(-1 * atan2(var(--rise), var(--col))));
+  }
+
+  .stop:nth-child(even) .shape::before {
+    transform: rotate(atan2(var(--rise), var(--col)));
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+
+  // Dot stands on the same row as the current box, towards the next stop.
+  .guide {
+    position: static;
+    grid-column: 1;
+    justify-self: start;
+    margin-inline-start: calc(50% + var(--box) / 2);
+  }
+
+  .stop:nth-child(odd) .guide {
+    grid-row: 3;
+  }
+
+  .stop:nth-child(even) .guide {
+    grid-row: 2;
+  }
+}
+
+// The current stop's ring breathes gently. Calm or reduced motion: it simply stays.
+@include motion-ok {
+  [data-state='current'] .shape {
+    animation: breathe calc(var(--motion-slow) * 6) ease-in-out infinite alternate;
+    animation-play-state: var(--motion-loop);
+  }
+}
+
+@keyframes breathe {
+  to {
+    outline-offset: 3px;
+  }
+}

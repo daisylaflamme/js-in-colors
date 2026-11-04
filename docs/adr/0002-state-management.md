@@ -1,6 +1,6 @@
 # 0002. State management: signals, SignalStore, classic NgRx
 
-- Status: Accepted
+- Status: Accepted (the resume code lives with progress, see [0008](0008-local-progress-and-settings.md))
 - Date: 2026-11-02
 
 ## Context

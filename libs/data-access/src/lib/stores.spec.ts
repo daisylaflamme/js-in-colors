@@ -3,6 +3,7 @@ import type { Course, Lesson } from '@jic/shared';
 import { CourseStore } from './course.store';
 import { LESSON_SOURCE, type LessonSource } from './lesson-source';
 import { LessonStore } from './lesson.store';
+import { memoryProgressStorage } from './testing/memory-progress-storage';
 
 const lesson: Lesson = {
   id: 'jars',
@@ -48,7 +49,9 @@ const course: Course = {
 
 function setup() {
   const source: LessonSource = { course, loaders: { jars: async () => lesson } };
-  TestBed.configureTestingModule({ providers: [{ provide: LESSON_SOURCE, useValue: source }, LessonStore] });
+  TestBed.configureTestingModule({
+    providers: [{ provide: LESSON_SOURCE, useValue: source }, memoryProgressStorage().provider, LessonStore],
+  });
   return { store: TestBed.inject(LessonStore), courseStore: TestBed.inject(CourseStore) };
 }
 

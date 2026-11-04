@@ -25,7 +25,8 @@ describe('content/', () => {
     const course = validateCourse(read(join(CONTENT, 'course.yaml')));
     expect(describeIssues(course.issues)).toEqual([]);
     const lessons = lessonFiles.map((f) => read(join(CONTENT, 'lessons', f)) as Lesson);
-    expect(describeIssues(checkCourseAgainstLessons(course.value!, lessons))).toEqual([]);
+    if (!course.value) throw new Error('course.yaml did not validate');
+    expect(describeIssues(checkCourseAgainstLessons(course.value, lessons))).toEqual([]);
     expect(course.value?.lessons.filter((l) => l.status === 'ready').map((l) => l.id)).toEqual([
       'hello',
       'output',

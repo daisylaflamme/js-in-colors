@@ -9,6 +9,8 @@ import {
   withComponentInputBinding,
   withInMemoryScrolling,
 } from '@angular/router';
+import { provideStore } from '@ngrx/store';
+import { provideSettings } from '@jic/data-access';
 import { AppTitleStrategy } from './app-title.strategy';
 import { appRoutes } from './app.routes';
 
@@ -23,5 +25,8 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
     ),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
+    // Classic NgRx for cross-cutting state (ADR 0002): today the global settings.
+    provideStore(),
+    provideSettings(),
   ],
 };

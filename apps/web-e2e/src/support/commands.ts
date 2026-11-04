@@ -25,6 +25,20 @@ function logViolations(violations: Result[]): void {
 }
 
 /**
+ * Concept chip rows become focusable (tabindex 0) only while they scroll, which a ResizeObserver
+ * reports a frame after layout. Wait for that state so axe never sees the in-between frame.
+ */
+function chipRowsSettled(): void {
+  cy.document({ log: false }).should((doc) => {
+    doc.querySelectorAll('jic-concept-chip-list ul').forEach((ul) => {
+      if (ul.scrollWidth > ul.clientWidth + 1)
+        expect(ul.getAttribute('tabindex'), 'scrolling chip row is focusable').to.eq('0');
+      else expect(ul.hasAttribute('tabindex'), 'wrapped chip row is not a tab stop').to.eq(false);
+    });
+  });
+}
+
+/**
  * Dialogs and sheets fade in from opacity 0. If axe runs mid-fade it measures faded text and
  * reports false color-contrast failures, so wait for every finite animation to end first.
  * Looping animations (Dot, the path ring) never finish and are skipped.
@@ -40,6 +54,7 @@ function animationsSettled(): void {
 
 Cypress.Commands.add('checkPageA11y', (context?: string) => {
   animationsSettled();
+  chipRowsSettled();
   cy.injectAxe();
   cy.checkA11y(
     context,
