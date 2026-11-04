@@ -105,6 +105,7 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 - Before finishing a task, run lint, unit tests, and a build, and report the results.
 - Record significant decisions as short ADRs in `docs/adr/`.
 - Keep this file current: when you add a command or convention, update it.
+- Review and ship: the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) reviews a branch against these rules, read-only. `/commit-push-pr [base] [notes]` (`.claude/skills/commit-push-pr/`) runs the reviewer and the checks, commits, pushes, and opens a PR against the stacked base branch. It stops on blocking findings or failed checks.
 
 ## Commands
 
