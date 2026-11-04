@@ -114,6 +114,7 @@ describe('progress on this device', () => {
     cy.focused().should('match', 'jic-lesson-done-card h2');
 
     cy.reload(); // progress survives a reload
+    cy.get('h1').should('have.text', 'Hello, JavaScript!'); // wait for the lesson before tabbing
     cy.get('#main').focus();
     tabTo('jic-lesson-header a', 'JavaScript in Colors'); // the logo links home
     followFocusedLink();
