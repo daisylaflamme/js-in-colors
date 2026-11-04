@@ -83,6 +83,8 @@ export class InteractSceneComponent implements SceneComponent<InteractScene> {
         return { ...visual, value: choice.value, concept: choice.concept };
       case 'screen':
         return { ...visual, lines: [choice.value] };
+      case 'machine':
+        return { ...visual, input: choice.value, output: choice.result, concept: choice.concept };
       default:
         return visual;
     }

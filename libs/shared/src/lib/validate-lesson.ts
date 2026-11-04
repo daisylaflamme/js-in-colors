@@ -203,8 +203,24 @@ function checkVisual(c: Checker, value: unknown, path: IssuePath): void {
     case 'dot':
       c.knownKeys(v, path, ['kind']);
       return;
+    case 'machine':
+      c.knownKeys(v, path, ['kind', 'name', 'input', 'output', 'concept']);
+      c.string(v, 'name', path);
+      c.string(v, 'input', path, { optional: true });
+      c.string(v, 'output', path, { optional: true });
+      c.concept(v, 'concept', path, true);
+      if ((v['input'] !== undefined || v['output'] !== undefined) && v['concept'] === undefined) {
+        c.error(
+          [...path, 'concept'],
+          'is required when the machine has an input or output (it colors them).',
+        );
+      }
+      return;
     default:
-      c.error([...path, 'kind'], `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot.`);
+      c.error(
+        [...path, 'kind'],
+        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine.`,
+      );
   }
 }
 
@@ -236,17 +252,23 @@ function checkScene(c: Checker, value: unknown, path: IssuePath): void {
       c.string(s, 'prompt', path, { prose: true });
       checkVisual(c, s['visual'], [...path, 'visual']);
       const choices = c.array(s, 'choices', path, { min: 2, max: 4 });
+      const visual = s['visual'];
+      const isMachine =
+        typeof visual === 'object' && visual !== null && (visual as Obj)['kind'] === 'machine';
       choices?.forEach((ch, i) => {
         const at = [...path, 'choices', i];
         const choice = c.object(ch, at);
         if (!choice) return;
-        c.knownKeys(choice, at, ['id', 'label', 'concept', 'value', 'bubble', 'code']);
+        c.knownKeys(choice, at, ['id', 'label', 'concept', 'value', 'bubble', 'code', 'result']);
         c.id(choice, 'id', at);
         c.string(choice, 'label', at);
         c.concept(choice, 'concept', at);
         c.string(choice, 'value', at);
         c.string(choice, 'bubble', at, { prose: true });
         c.string(choice, 'code', at);
+        if (isMachine) c.string(choice, 'result', at);
+        else if (choice['result'] !== undefined)
+          c.error([...at, 'result'], 'is only for machine scenes (what comes out of the machine).');
       });
       if (choices) c.uniqueIds(choices, [...path, 'choices']);
       checkNotes(c, s, path);

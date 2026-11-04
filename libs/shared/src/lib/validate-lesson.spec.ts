@@ -127,8 +127,51 @@ describe('validateLesson', () => {
     scenes[1]['visual'] = { kind: 'box' };
     expect(errors(validateLesson(data))).toEqual([
       'scenes[0].type: "video" is not a scene type. Use one of: watch, interact, quiz.',
-      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot.',
+      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine.',
     ]);
+  });
+
+  describe('machine scenes', () => {
+    /** The interact scene, turned into a machine scene with a result on each choice. */
+    function withMachine(): { data: Record<string, unknown>; pick: Record<string, unknown> } {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      pick['visual'] = { kind: 'machine', name: 'double' };
+      (pick['choices'] as Record<string, unknown>[])[0]['result'] = '14';
+      (pick['choices'] as Record<string, unknown>[])[1]['result'] = 'HiHi';
+      return { data, pick };
+    }
+
+    it('accepts a machine with a result on every choice', () => {
+      expect(errors(validateLesson(withMachine().data))).toEqual([]);
+    });
+
+    it('requires a result on each choice of a machine scene', () => {
+      const { data, pick } = withMachine();
+      delete (pick['choices'] as Record<string, unknown>[])[1]['result'];
+      expect(errors(validateLesson(data))).toEqual(['scenes[2].choices[1].result: is required.']);
+    });
+
+    it('allows a result only in machine scenes', () => {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      (pick['choices'] as Record<string, unknown>[])[0]['result'] = '14';
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].result: is only for machine scenes (what comes out of the machine).',
+      ]);
+    });
+
+    it('needs a concept when a machine shows an input or output', () => {
+      const data = validLesson();
+      (data['scenes'] as Record<string, unknown>[])[0]['visual'] = {
+        kind: 'machine',
+        name: 'double',
+        input: '3',
+      };
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[0].visual.concept: is required when the machine has an input or output (it colors them).',
+      ]);
+    });
   });
 
   it('checks the id against the file name and the id format', () => {
