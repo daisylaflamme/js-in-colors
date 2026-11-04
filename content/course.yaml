@@ -21,7 +21,7 @@ lessons:
     title: Numbers, words, yes/no
     topic: Data types
     concept: number
-    status: soon
+    status: ready
   - id: functions
     title: Magic machines
     topic: Functions
