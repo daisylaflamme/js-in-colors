@@ -2,13 +2,14 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import type { Visual } from '@jic/shared';
 import { DotCharacterComponent } from '../dot/dot-character';
 import { JarVisualComponent } from '../jar/jar-visual';
+import { MachineVisualComponent } from '../machine/machine-visual';
 import { ScreenVisualComponent } from '../screen/screen-visual';
 
 /** Renders a lesson Visual by kind. Adding a kind = one component + one case here + the type. */
 @Component({
   selector: 'jic-visual',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DotCharacterComponent, JarVisualComponent, ScreenVisualComponent],
+  imports: [DotCharacterComponent, JarVisualComponent, MachineVisualComponent, ScreenVisualComponent],
   host: { style: 'display: contents' },
   template: `
     @let v = visual();
@@ -26,6 +27,15 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
       }
       @case ('dot') {
         <jic-dot-character class="big-dot" />
+      }
+      @case ('machine') {
+        <jic-machine-visual
+          [name]="v.name"
+          [input]="v.input"
+          [output]="v.output"
+          [concept]="v.concept ?? 'number'"
+          [replayKey]="replayKey()"
+        />
       }
     }
   `,

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { JarVisualComponent } from './jar/jar-visual';
+import { MachineVisualComponent } from './machine/machine-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
 import { VisualComponent } from './visual/visual';
 
@@ -39,6 +40,49 @@ describe('JarVisualComponent', () => {
   });
 });
 
+describe('MachineVisualComponent', () => {
+  const caption = (el: HTMLElement) =>
+    el.querySelector('figcaption')?.textContent?.replace(/\s+/g, ' ').trim();
+
+  it('shows the name, what goes in and what comes out, and says it in words', async () => {
+    const { el } = await render(MachineVisualComponent, {
+      name: 'double',
+      input: '3',
+      output: '6',
+      concept: 'number',
+    });
+    expect(el.querySelector('.plate-text')?.textContent).toBe('double');
+    expect(el.querySelector('.in .token-text')?.textContent).toBe('3');
+    expect(el.querySelector('.out .token-text')?.textContent).toBe('6');
+    expect(el.querySelectorAll('circle.token-shape')).toHaveLength(2); // numbers are circles
+    expect(caption(el)).toBe('A machine called double. In: 3. Out: 6.');
+    expect(el.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('draws words as pills, and waits empty with no input', async () => {
+    const { el } = await render(MachineVisualComponent, {
+      name: 'shout',
+      input: 'hi',
+      output: 'HI!',
+      concept: 'string',
+    });
+    expect(el.querySelectorAll('rect.token-shape')).toHaveLength(2);
+
+    const { el: idle } = await render(MachineVisualComponent, { name: 'double' });
+    expect(idle.querySelector('.in')).toBeNull();
+    expect(idle.querySelector('.out')).toBeNull();
+    expect(caption(idle)).toBe('A machine called double');
+  });
+
+  it('re-creates the tokens (restarting their animation) when replayKey changes', async () => {
+    const { fixture, el } = await render(MachineVisualComponent, { name: 'double', input: '3', output: '6' });
+    const before = el.querySelector('.in');
+    fixture.componentRef.setInput('replayKey', 1);
+    await fixture.whenStable();
+    expect(el.querySelector('.in')).not.toBe(before);
+  });
+});
+
 describe('ScreenVisualComponent', () => {
   it('shows output lines as real text', async () => {
     const { el } = await render(ScreenVisualComponent, { lines: ['Hi!', '7'] });
@@ -53,6 +97,7 @@ describe('VisualComponent', () => {
     [{ kind: 'jar', name: 'box' }, 'jic-jar-visual'],
     [{ kind: 'screen', lines: ['Hi'] }, 'jic-screen-visual'],
     [{ kind: 'dot' }, 'jic-dot-character'],
+    [{ kind: 'machine', name: 'double' }, 'jic-machine-visual'],
   ])('renders %o with %s', async (visual, selector) => {
     const { el } = await render(VisualComponent, { visual });
     expect(el.querySelector(selector)).not.toBeNull();

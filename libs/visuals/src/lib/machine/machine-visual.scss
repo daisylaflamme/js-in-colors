@@ -1,0 +1,103 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(20rem, 85cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+svg {
+  inline-size: 100%;
+  overflow: visible;
+}
+
+.ink {
+  stroke: var(--color-ink);
+  stroke-width: 6;
+  stroke-linejoin: round;
+}
+
+.thin {
+  stroke-width: 3;
+}
+
+.body {
+  fill: var(--color-function-tint);
+}
+
+.mouth {
+  fill: var(--color-surface);
+}
+
+// The function shape (hexagon) in the function color: color is never the only signal.
+.badge {
+  fill: var(--color-function);
+}
+
+.plate {
+  fill: var(--color-surface);
+}
+
+.plate-text {
+  fill: var(--color-ink);
+  font-family: var(--font-code);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.token-shape {
+  fill: var(--fill);
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.token-text {
+  fill: var(--on);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+// The input slides into the machine, then the output pops out. Reduced or calm motion: both
+// are simply there.
+@include motion-ok {
+  .in {
+    animation: slide-in var(--motion-slow) var(--ease-out) both;
+  }
+
+  .out {
+    animation: pop-out var(--motion-slow) var(--ease-out) var(--motion-slow) both;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+
+@keyframes pop-out {
+  from {
+    opacity: 0;
+    transform: translateX(-40px) scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(4px) scale(1.05);
+  }
+}

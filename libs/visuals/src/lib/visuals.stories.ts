@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { CONCEPTS } from '@jic/shared';
 import { DotCharacterComponent } from './dot/dot-character';
 import { JarVisualComponent } from './jar/jar-visual';
+import { MachineVisualComponent } from './machine/machine-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
 
 /** Lesson pictures (libs/visuals). Animations respect reduced motion and the calm-motion setting. */
@@ -60,6 +61,39 @@ export const Screen: StoryObj<ScreenArgs> = {
     moduleMetadata: { imports: [ScreenVisualComponent] },
     template: `<jic-screen-visual [lines]="lines" [caption]="caption" [replayKey]="replayKey" />`,
   }),
+};
+
+type MachineArgs = {
+  name: string;
+  input: string;
+  output: string;
+  concept: (typeof CONCEPTS)[number];
+  replayKey: number;
+};
+
+export const Machine: StoryObj<MachineArgs> = {
+  args: { name: 'double', input: '3', output: '6', concept: 'number', replayKey: 0 },
+  argTypes: {
+    name: { control: 'text', description: 'Name plate (the function name)' },
+    input: { control: 'text', description: 'Goes in (empty = nothing)' },
+    output: { control: 'text', description: 'Comes out (empty = nothing)' },
+    concept: { control: 'select', options: CONCEPTS },
+    replayKey: { control: { type: 'number', min: 0 }, description: 'Change to replay in and out' },
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports: [MachineVisualComponent] },
+    template: `<jic-machine-visual [name]="name" [input]="input || undefined" [output]="output || undefined" [concept]="concept" [replayKey]="replayKey" />`,
+  }),
+};
+
+export const IdleMachine: StoryObj<MachineArgs> = {
+  ...Machine,
+  args: { ...Machine.args, input: '', output: '' },
+};
+export const MachineWithWords: StoryObj<MachineArgs> = {
+  ...Machine,
+  args: { ...Machine.args, name: 'shout', input: 'hi', output: 'HI!', concept: 'string' },
 };
 
 export const Dot: StoryObj = {
