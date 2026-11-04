@@ -38,7 +38,22 @@ function chipRowsSettled(): void {
   });
 }
 
+/**
+ * Dialogs and sheets fade in from opacity 0. If axe runs mid-fade it measures faded text and
+ * reports false color-contrast failures, so wait for every finite animation to end first.
+ * Looping animations (Dot, the path ring) never finish and are skipped.
+ */
+function animationsSettled(): void {
+  cy.document({ log: false }).should((doc) => {
+    const running = doc
+      .getAnimations()
+      .filter((a) => a.playState === 'running' && a.effect?.getComputedTiming().iterations !== Infinity);
+    expect(running, 'finite animations still running').to.have.length(0);
+  });
+}
+
 Cypress.Commands.add('checkPageA11y', (context?: string) => {
+  animationsSettled();
   chipRowsSettled();
   cy.injectAxe();
   cy.checkA11y(
