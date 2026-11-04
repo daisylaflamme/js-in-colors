@@ -1,5 +1,38 @@
 import { nxE2EPreset } from '@nx/cypress/plugins/cypress-preset';
 import { defineConfig } from 'cypress';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { parse } from 'yaml';
+import type { ReadyLesson } from './src/support/lessons';
+
+const CONTENT = join(__dirname, '../../content');
+
+/**
+ * Every ready lesson, read from content/ when Cypress starts, so specs can build one test per
+ * lesson synchronously (Cypress.env('lessons')). A new lesson is walked without touching the spec.
+ */
+function readyLessons(): ReadyLesson[] {
+  const read = (file: string) => parse(readFileSync(join(CONTENT, file), 'utf8'));
+  const course = read('course.yaml') as { lessons: { id: string; status: string }[] };
+  return course.lessons
+    .filter((entry) => entry.status === 'ready')
+    .map((entry) => {
+      const lesson = read(`lessons/${entry.id}.yaml`) as {
+        title: string;
+        scenes: { type: string; options?: { label: string; correct: boolean; feedback: string }[] }[];
+      };
+      return {
+        id: entry.id,
+        title: lesson.title,
+        scenes: lesson.scenes.map((scene) => {
+          const right = scene.options?.find((option) => option.correct);
+          return right
+            ? { type: scene.type, answer: right.label, feedback: right.feedback }
+            : { type: scene.type };
+        }),
+      };
+    });
+}
 
 export default defineConfig({
   e2e: {
@@ -13,7 +46,8 @@ export default defineConfig({
       ciBaseUrl: 'http://localhost:4200',
     }),
     baseUrl: 'http://localhost:4200',
-    setupNodeEvents(on) {
+    setupNodeEvents(on, config) {
+      config.env['lessons'] = readyLessons();
       // Print axe violations in the terminal (CI logs), not only in the browser console.
       on('task', {
         table(rows: unknown[]) {
@@ -21,6 +55,7 @@ export default defineConfig({
           return null;
         },
       });
+      return config;
     },
   },
 });

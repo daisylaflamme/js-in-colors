@@ -27,10 +27,7 @@ describe('content/', () => {
     const lessons = lessonFiles.map((f) => read(join(CONTENT, 'lessons', f)) as Lesson);
     if (!course.value) throw new Error('course.yaml did not validate');
     expect(describeIssues(checkCourseAgainstLessons(course.value, lessons))).toEqual([]);
-    expect(course.value?.lessons.filter((l) => l.status === 'ready').map((l) => l.id)).toEqual([
-      'hello',
-      'output',
-      'variables',
-    ]);
+    const ready = course.value.lessons.filter((l) => l.status === 'ready').map((l) => l.id);
+    expect(ready.toSorted()).toEqual(lessonFiles.map((f) => basename(f, '.yaml')).toSorted());
   });
 });

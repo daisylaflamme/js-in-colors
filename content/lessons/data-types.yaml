@@ -1,0 +1,145 @@
+id: data-types
+title: Numbers, words, yes/no
+topic: Data types
+lead: Every value has a kind. Numbers, words, or yes and no.
+leadHighlight: kind
+concept: number
+chips:
+  label: 'Three kinds:'
+  concepts:
+    - number
+    - string
+    - boolean
+tip: Quotes turn anything into a word.
+library:
+  title: All about kinds
+  sections:
+    - heading: What is a kind?
+      text: Every value has a kind. The kind tells the computer what it can do with it.
+    - heading: Numbers
+      text: Numbers are for counting and adding. They never wear quotes.
+    - heading: Words
+      text: Words wear quotes. In JavaScript, a word is called a string. Even "7" with quotes is a word!
+    - heading: Yes or no
+      text: Some questions have two answers. true means yes. false means no. This kind is called a boolean.
+    - heading: Asking for the kind
+      text: typeof asks a value, "What kind are you?" The value tells you.
+  examples:
+    - concept: number
+      label: Numbers
+      value: '42'
+    - concept: string
+      label: Words
+      value: '"Hi!"'
+    - concept: boolean
+      label: Yes or no
+      value: true, false
+  words:
+    - term: number
+      meaning: for counting
+    - term: string
+      meaning: a word in quotes
+    - term: boolean
+      meaning: yes or no
+    - term: typeof
+      meaning: what kind is it?
+scenes:
+  - id: every-value-has-a-kind
+    type: watch
+    bubble: Every value has a kind. This 7 is a number.
+    visual:
+      kind: jar
+      name: age
+      value: '7'
+      concept: number
+    code: let age = 7;
+    notes:
+      - term: '7'
+        text: is a number, so no quotes
+  - id: pick-a-kind
+    type: interact
+    prompt: 'Pick a kind for the jar:'
+    visual:
+      kind: jar
+      name: thing
+    choices:
+      - id: number
+        label: '7'
+        concept: number
+        value: '7'
+        bubble: This 7 is a number. You can count with it!
+        code: let thing = 7;
+      - id: string
+        label: '"7"'
+        concept: string
+        value: '"7"'
+        bubble: Look, quotes! Now 7 is a word, not a number.
+        code: let thing = "7";
+      - id: boolean
+        label: 'true'
+        concept: boolean
+        value: 'true'
+        bubble: true is a yes. Yes or no is its own kind.
+        code: let thing = true;
+    notes:
+      - term: '"7"'
+        text: has quotes, so it is a word
+  - id: yes-or-no
+    type: interact
+    prompt: 'Is it sunny today?'
+    visual:
+      kind: jar
+      name: sunny
+    choices:
+      - id: 'true'
+        label: 'true'
+        concept: boolean
+        value: 'true'
+        bubble: true means yes. Time for sunglasses!
+        code: let sunny = true;
+      - id: 'false'
+        label: 'false'
+        concept: boolean
+        value: 'false'
+        bubble: false means no. Maybe take an umbrella!
+        code: let sunny = false;
+    notes:
+      - term: 'true'
+        text: 'means: yes'
+      - term: 'false'
+        text: 'means: no'
+  - id: ask-the-kind
+    type: watch
+    bubble: typeof asks, "What kind are you?" 7 says, "A number!"
+    visual:
+      kind: screen
+      lines:
+        - number
+    code: console.log(typeof 7);
+    notes:
+      - term: typeof
+        text: asks for the kind
+  - id: kind-check
+    type: quiz
+    question: What kind is "7" with quotes?
+    visual:
+      kind: jar
+      name: thing
+      value: '"7"'
+      concept: string
+    options:
+      - id: word
+        label: a word
+        concept: string
+        correct: true
+        feedback: Yes! Quotes make it a word, a string.
+      - id: number
+        label: a number
+        concept: number
+        correct: false
+        feedback: Not quite. It looks like a number, but it wears quotes. Try another one!
+      - id: yes-or-no
+        label: yes or no
+        concept: boolean
+        correct: false
+        feedback: Good guess! Yes or no is only true or false. Try another one!

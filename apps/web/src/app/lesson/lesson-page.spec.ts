@@ -56,7 +56,9 @@ describe('LessonPage', () => {
     await next(); // Finish
     expect(el.querySelector('jic-lesson-done-card h2')?.textContent).toBe('You finished Variables!');
     expect(document.activeElement?.tagName).toBe('H2');
-    expect(el.querySelector('jic-lesson-done-card button.next')).toBeNull(); // no ready lesson after Variables
+    expect(el.querySelector('jic-lesson-done-card button.next')?.textContent?.trim()).toBe(
+      'Next lesson: Numbers, words, yes/no',
+    );
   });
 
   it('remembers a pick when going Back and forth', async () => {
