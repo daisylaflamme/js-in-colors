@@ -12,12 +12,14 @@ export const CONCEPTS = [
   'function',
   'variable',
   'html',
+  // Not a JavaScript type: the course opener ("Hello, JavaScript!"). Accent yellow + star.
+  'intro',
 ] as const;
 
 export type Concept = (typeof CONCEPTS)[number];
 
 export type ConceptShape =
-  'circle' | 'pill' | 'diamond' | 'rounded-square' | 'triangle' | 'hexagon' | 'capsule';
+  'circle' | 'pill' | 'diamond' | 'rounded-square' | 'triangle' | 'hexagon' | 'capsule' | 'star';
 
 export interface ConceptInfo {
   readonly concept: Concept;
@@ -37,6 +39,7 @@ export const CONCEPT_INFO: Readonly<Record<Concept, ConceptInfo>> = {
   function: { concept: 'function', kidWord: 'helpers', jsWord: 'Function', shape: 'hexagon' },
   variable: { concept: 'variable', kidWord: 'jars', jsWord: 'Variable', shape: 'capsule' },
   html: { concept: 'html', kidWord: 'page magic', jsWord: 'DOM', shape: 'hexagon' },
+  intro: { concept: 'intro', kidWord: 'start here', jsWord: 'JavaScript', shape: 'star' },
 };
 
 export function isConcept(value: unknown): value is Concept {

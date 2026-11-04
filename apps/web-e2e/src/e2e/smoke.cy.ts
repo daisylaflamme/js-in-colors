@@ -20,7 +20,13 @@ for (const vp of VIEWPORTS) {
   describe(`lesson shell (${vp.name} ${vp.width}x${vp.height})`, () => {
     beforeEach(() => {
       cy.viewport(vp.width, vp.height);
+      cy.visit('/lesson/variables');
+    });
+
+    it('opens the first ready lesson from /', () => {
       cy.visit('/');
+      cy.location('pathname').should('eq', '/lesson/hello');
+      cy.get('h1').should('have.text', 'Hello, JavaScript!');
     });
 
     it('loads the lesson', () => {
@@ -100,4 +106,24 @@ describe('small screens', () => {
       expect(doc.documentElement.scrollWidth).to.be.at.most(doc.documentElement.clientWidth);
     });
   });
+});
+
+describe('themes', () => {
+  for (const theme of ['dark', 'high-contrast'] as const) {
+    it(`has no detectable a11y violations in the ${theme} theme (phone and desktop)`, () => {
+      for (const [w, h] of [
+        [390, 844],
+        [1440, 900],
+      ] as const) {
+        cy.viewport(w, h);
+        cy.visit('/');
+        cy.document().then((doc) => doc.documentElement.setAttribute('data-theme', theme));
+        cy.get('h1').should('be.visible');
+        cy.checkPageA11y();
+        cy.get('jic-help-tabs button.library').click();
+        cy.get('dialog.library').should('match', '[open]');
+        cy.checkPageA11y();
+      }
+    });
+  }
 });

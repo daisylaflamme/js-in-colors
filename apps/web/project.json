@@ -31,7 +31,7 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "320kb",
+              "maximumWarning": "340kb",
               "maximumError": "400kb"
             },
             {
@@ -47,7 +47,13 @@
           "extractLicenses": false,
           "sourceMap": true
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "projects": ["content"],
+          "target": "build"
+        }
+      ]
     },
     "serve": {
       "continuous": true,
@@ -63,13 +69,25 @@
         "development": {
           "buildTarget": "web:build:development"
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "projects": ["content"],
+          "target": "build"
+        }
+      ]
     },
     "test": {
       "executor": "@angular/build:unit-test",
       "options": {
         "watch": false
-      }
+      },
+      "dependsOn": [
+        {
+          "projects": ["content"],
+          "target": "build"
+        }
+      ]
     },
     "serve-static": {
       "continuous": true,

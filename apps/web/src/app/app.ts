@@ -4,7 +4,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { LessonMenuComponent, type LessonMenuItem, OverlayPanelComponent } from '@jic/ui';
-import { LESSONS } from './lessons/lesson-catalog';
+import { CourseStore } from '@jic/data-access';
 import { ShellState } from './shell/shell-state';
 
 /**
@@ -27,14 +27,20 @@ export class App {
 
   protected readonly resumeCode = 'blue-fox-42'; // PLACEHOLDER until the resume-code milestone
 
-  protected readonly menuItems: readonly LessonMenuItem[] = LESSONS.map((l) => ({
-    id: l.id,
-    title: l.title,
-    subtitle: l.topic,
-    concept: l.concept,
-    link: ['/lesson', l.id],
-    finished: l.finished,
-  }));
+  private readonly course = inject(CourseStore);
+
+  /** The menu, from content/course.yaml. Finished = finished in this visit (no persistence yet). */
+  protected readonly menuItems = computed<readonly LessonMenuItem[]>(() => {
+    const finished = this.course.finishedIds();
+    return this.course.lessons().map((l) => ({
+      id: l.id,
+      title: l.title,
+      subtitle: l.status === 'ready' ? l.topic : `${l.topic} · Coming soon`,
+      concept: l.concept,
+      link: ['/lesson', l.id],
+      finished: finished.includes(l.id),
+    }));
+  });
 
   private readonly url = toSignal(
     this.router.events.pipe(

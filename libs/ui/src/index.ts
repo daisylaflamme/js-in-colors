@@ -18,3 +18,6 @@ export * from './lib/dialog/modal-dialog.directive';
 export * from './lib/tip-card/tip-card';
 export * from './lib/library-panel/library-panel';
 export * from './lib/overlay-panel/overlay-panel';
+export * from './lib/quiz-feedback/quiz-feedback';
+export * from './lib/replay-button/replay-button';
+export * from './lib/lesson-done/lesson-done-card';

@@ -1,9 +1,8 @@
 import type { Route } from '@angular/router';
-import { DEFAULT_LESSON_ID } from './lessons/lesson-catalog';
-import { lessonExistsGuard, lessonTitleResolver } from './lessons/lesson-routing';
+import { firstLessonRedirect, lessonExistsGuard, lessonTitleResolver } from './lessons/lesson-routing';
 
 export const appRoutes: Route[] = [
-  { path: '', pathMatch: 'full', redirectTo: `lesson/${DEFAULT_LESSON_ID}` },
+  { path: '', pathMatch: 'full', redirectTo: firstLessonRedirect },
   {
     path: 'lesson/:lessonId',
     canMatch: [lessonExistsGuard],

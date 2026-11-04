@@ -77,11 +77,16 @@
   }
 }
 
-/// Only animate when motion is welcome. Reduced/calm motion gets the static styles.
+/// Only animate when motion is welcome: with prefers-reduced-motion the static styles apply.
+/// The in-app "Calm motion" setting ([data-motion='calm'] on <html>) works through the tokens
+/// instead (settings/_motion.scss sets every --motion-* duration to 1ms and the distance to 0).
+///
+/// Do NOT select on :root/html here: Angular's emulated encapsulation adds a component attribute
+/// to every part of a component selector, so `:root:not(...) .x` can never match <html>
+/// (this silently disabled every animation once; the reduced-motion e2e spec guards it now).
+/// Animations must use var(--motion-*) durations so Calm motion can zero them.
 @mixin motion-ok {
   @media (prefers-reduced-motion: no-preference) {
-    :root:not([data-motion='calm']) & {
-      @content;
-    }
+    @content;
   }
 }

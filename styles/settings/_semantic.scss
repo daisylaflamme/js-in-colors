@@ -3,6 +3,12 @@
 // never component CSS. Every value is built from the mockup palette in _tokens.scss.
 
 :root {
+  // "intro" is not a JavaScript type: the course opener (Hello, JavaScript!), drawn as a star.
+  // It reuses mockup colors (accent fill, array text/tint), so no new colors (ADR 0005).
+  --color-intro: var(--color-accent);
+  --color-intro-text: var(--color-array-text);
+  --color-intro-tint: var(--color-array-tint);
+
   // Surfaces and text
   --color-bg: var(--color-ground);
   --color-bg-raised: var(--color-surface);
@@ -17,8 +23,10 @@
   --color-stage-shadow: #dce0ff; // from --shadow-stage
 
   // Text that sits ON a concept fill (selected choice, jar contents).
-  // RULE: text on a fill is LARGE only (>= 1.5rem bold), which needs 3:1.
-  // Measured: object + ink 3.54:1, variable + white 3.91:1 (both fail 4.5:1 for small text).
+  // RULE (docs/adr/0005): text on the orange (object) and teal (variable) fills must be
+  // LARGE AND BOLD only (>= 1.5rem, weight >= 700), which needs 3:1.
+  // Measured: object + ink 3.54:1, variable + white 3.91:1 (both fail 4.5:1 for normal text).
+  // Anything smaller: use --color-<concept>-text on --color-<concept>-tint instead.
   // Never put white on object or array.
   --color-number-on: #ffffff;
   --color-string-on: #ffffff;
@@ -28,11 +36,15 @@
   --color-function-on: #ffffff;
   --color-variable-on: #ffffff;
   --color-html-on: #ffffff;
+  --color-intro-on: var(--color-ink);
 
   // Concept shapes are decorative (aria-hidden, always next to a word).
   // Themes add an outline where a fill would fall under 3:1 against its surface.
   --shape-stroke: transparent;
   --shape-stroke-width: 0;
+
+  // Marks the current item (e.g. the lesson you are on) when tints alone are not enough.
+  --current-outline: transparent;
 
   // Type
   --text-title-fluid: clamp(2.625rem, 1.9rem + 3vw, var(--text-title)); // 42px phone -> 60px md+

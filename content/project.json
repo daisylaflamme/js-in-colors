@@ -1,0 +1,45 @@
+{
+  "name": "content",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "content",
+  "tags": ["type:content"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*.yaml",
+        "{workspaceRoot}/tools/content/**/*",
+        "{workspaceRoot}/libs/shared/src/lib/*.ts"
+      ],
+      "outputs": ["{workspaceRoot}/libs/data-access/src/generated"],
+      "options": {
+        "command": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tools/content/ts-resolve.mjs tools/content/build-content.ts",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "validate": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*.yaml",
+        "{workspaceRoot}/tools/content/**/*",
+        "{workspaceRoot}/libs/shared/src/lib/*.ts"
+      ],
+      "options": {
+        "command": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tools/content/ts-resolve.mjs tools/content/build-content.ts --check",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["{workspaceRoot}/tools/content/**/*", "{workspaceRoot}/libs/shared/src/lib/*.ts"],
+      "options": {
+        "command": "tsc -p tools/content/tsconfig.json",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

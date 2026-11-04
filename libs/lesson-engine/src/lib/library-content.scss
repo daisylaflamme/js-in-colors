@@ -1,0 +1,80 @@
+@use 'tools' as *;
+
+:host {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.title {
+  font-size: 2rem;
+}
+
+.body {
+  display: grid;
+  gap: var(--space-3);
+}
+
+h4 {
+  margin-block-start: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-heavy);
+}
+
+.read {
+  @include button-reset;
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-block-size: 3rem;
+  padding-inline: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-button);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: var(--font-weight-heavy);
+}
+
+.examples {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+
+  div {
+    display: grid;
+    grid-template-columns: minmax(7rem, 9rem) 1fr;
+    gap: var(--space-3);
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: var(--font-weight-heavy);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+.words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-chip);
+    background: var(--color-variable-tint);
+    color: var(--color-variable-text);
+    font-weight: var(--font-weight-bold);
+  }
+}

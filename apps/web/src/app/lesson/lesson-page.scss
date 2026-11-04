@@ -61,57 +61,26 @@
   }
 }
 
-// --- Library content (projected into the panel) ---
-.library {
-  display: grid;
-  gap: var(--space-3);
-
-  h4 {
-    margin-block-start: var(--space-2);
-    font-family: var(--font-body);
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-heavy);
-  }
-}
-
-.library-title {
-  color: var(--color-variable-text);
-  font-size: 2rem;
-}
-
-.read-page,
+// --- Library footer (the Ask Dot chat comes later) ---
 .ask-dot {
   @include button-reset;
   @include focus-ring;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  min-block-size: 3rem;
+  inline-size: 100%;
+  min-block-size: var(--size-control);
   padding-inline: var(--space-5);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-button);
-  font-weight: var(--font-weight-heavy);
-}
-
-.read-page {
-  justify-self: start;
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
-}
-
-.ask-dot {
-  inline-size: 100%;
-  min-block-size: var(--size-control);
   background: var(--color-bg-raised);
   color: var(--color-text);
+  font-weight: var(--font-weight-heavy);
 
   &:disabled {
     cursor: not-allowed;
   }
-
-  flex-direction: column;
-  gap: 0;
 
   .soon {
     color: var(--color-text-muted);
@@ -120,44 +89,8 @@
   }
 }
 
-.holds {
-  display: grid;
-  gap: var(--space-1);
-  margin: 0;
-
-  div {
-    display: grid;
-    grid-template-columns: 9rem 1fr;
-    gap: var(--space-3);
-  }
-
-  dt {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-weight: var(--font-weight-heavy);
-  }
-
-  dd {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-weight: var(--font-weight-bold);
-  }
-}
-
-.words {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-chip);
-    background: var(--color-variable-tint);
-    color: var(--color-variable-text);
-    font-weight: var(--font-weight-bold);
-  }
+.loading {
+  padding: var(--space-6) 0;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
 }

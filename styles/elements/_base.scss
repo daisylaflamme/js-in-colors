@@ -48,3 +48,9 @@ pre {
   background: var(--color-accent);
   color: var(--color-accent-ink);
 }
+
+// A themed region repaints itself with its own tokens.
+[data-theme]:not(html) {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}

@@ -1,0 +1,28 @@
+@use 'tools' as *;
+
+// Shared layout for scene components: stage, then a row of controls, then the code peek.
+:host {
+  display: grid;
+  gap: var(--space-4);
+  min-inline-size: 0;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.controls-end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-inline-start: auto;
+}
+
+@include mq-up(sm) {
+  :host {
+    gap: var(--space-5);
+  }
+}

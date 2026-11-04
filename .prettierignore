@@ -10,3 +10,4 @@ package-lock.json
 /docs/mockups
 /CLAUDE.md
 /FIRST_PROMPT.md
+/libs/data-access/src/generated

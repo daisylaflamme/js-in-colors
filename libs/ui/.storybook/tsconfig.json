@@ -11,6 +11,9 @@
     "../src/**/*.stories.tsx",
     "../src/**/*.stories.mdx",
     "*.js",
-    "*.ts"
+    "*.ts",
+    "../../visuals/src/**/*.stories.ts",
+    "../../lesson-engine/src/**/*.stories.ts",
+    "../../lesson-engine/src/lib/testing/*.ts"
   ]
 }

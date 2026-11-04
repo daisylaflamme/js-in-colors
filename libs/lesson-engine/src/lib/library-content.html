@@ -1,0 +1,35 @@
+<h3 class="title" [style.color]="'var(--color-' + concept() + '-text)'">{{ entry().title }}</h3>
+@if (canRead()) {
+  <button type="button" class="read" [attr.aria-pressed]="reading()" (click)="read()">
+    <jic-icon name="play" [size]="18" />
+    {{ reading() ? 'Stop reading' : 'Read this page to me' }}
+  </button>
+}
+<div class="body">
+  @for (section of entry().sections; track section.heading) {
+    <h4>{{ section.heading }}</h4>
+    <p>{{ section.text }}</p>
+  }
+  @if (entry().examples?.length) {
+    <dl class="examples">
+      @for (example of entry().examples; track example.label) {
+        <div>
+          <dt [style.color]="'var(--color-' + example.concept + '-text)'">
+            <jic-concept-shape [concept]="example.concept" [size]="20" />{{ example.label }}
+          </dt>
+          <dd>{{ example.value }}</dd>
+        </div>
+      }
+    </dl>
+  }
+  @if (entry().words?.length) {
+    <h4>Words to know</h4>
+    <ul class="words">
+      @for (word of entry().words; track word.term) {
+        <li>
+          <strong>{{ word.term }}</strong> = {{ word.meaning }}
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -32,3 +32,6 @@ Thumbs.db
 __screenshots__/
 vitest.config.*.timestamp*
 .vitest
+
+# generated from content/ by tools/content/build-content.ts
+libs/data-access/src/generated/

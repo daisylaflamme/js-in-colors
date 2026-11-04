@@ -36,7 +36,7 @@ export default [
       // These attribute components render their own accessible content.
       '@angular-eslint/template/elements-content': [
         'error',
-        { allowList: ['jic-menu-button', 'jic-code-peek-toggle'] },
+        { allowList: ['jic-menu-button', 'jic-code-peek-toggle', 'jic-replay-button'] },
       ],
       '@angular-eslint/template/no-positive-tabindex': 'error',
     },

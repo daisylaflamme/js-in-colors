@@ -6,7 +6,7 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
-> Status: walking skeleton. The lesson shell is built and tested at phone, tablet and desktop sizes with placeholder content. Real lessons, the home "color path", the chat and the certificate come next.
+> Status: three real lessons (Hello, Say it out loud, Variables) run on a data-driven lesson engine; seven more are "coming soon". The home color path, the chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
 
 ## Stack
 
@@ -30,10 +30,12 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 apps/web            Angular app (shell, lesson route)
 apps/web-e2e        Cypress smoke + accessibility tests
 libs/ui             Design-system components (each has a Storybook story)
-libs/lesson-engine  Renders lessons from data (coming)
-libs/data-access    GraphQL client, stores, persistence (coming)
-libs/visuals        D3 concept visuals (coming)
-libs/shared         Shared types (concepts, later the GraphQL schema)
+libs/lesson-engine  Renders lessons from data (scene-type registry)
+libs/data-access    Lesson and course SignalStores (GraphQL later)
+libs/visuals        Lesson pictures: jar, screen, Dot
+libs/shared         Concepts, lesson types, content validator
+content/            Lessons as YAML (see content/README.md)
+tools/content       Content build: validate YAML, compile to typed modules
 styles/             Design tokens and global SCSS layers
 docs/mockups        The visual source of truth
 docs/adr            Architecture decision records
@@ -66,18 +68,25 @@ The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-ano
 
 Built to WCAG 2.2 AA. Every interaction works with the keyboard, color is never the only signal (each concept has a shape and a word), every animation has a calm alternative, touch targets are 44px or more, and the layout works from 320px wide and at 200% text size.
 
-| Check                                                                                  | Result                                                                  |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| cypress-axe (WCAG 2.x A/AA), phone / tablet / desktop, Tip and Library open and closed | 0 violations                                                            |
-| Storybook a11y addon                                                                   | Runs on every story (`test: 'error'`)                                   |
-| Lighthouse performance (mobile)                                                        | _to be measured_                                                        |
-| Lighthouse accessibility                                                               | _to be measured_                                                        |
-| Initial JS + CSS (production build)                                                    | about 300 kB raw, about 78 kB gzipped; budget fails the build at 400 kB |
+| Check                                                                                  | Result                                                                                            |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| cypress-axe (WCAG 2.x A/AA), phone / tablet / desktop, Tip and Library open and closed | 0 violations                                                                                      |
+| cypress-axe on every scene of Variables, keyboard only, phone and desktop              | 0 violations                                                                                      |
+| cypress-axe in the dark and high-contrast themes                                       | 0 violations                                                                                      |
+| prefers-reduced-motion (emulated in the browser)                                       | No animations run; final states shown at once                                                     |
+| Storybook a11y addon                                                                   | Runs on every story (`test: 'error'`)                                                             |
+| Lighthouse performance (mobile)                                                        | _to be measured_                                                                                  |
+| Lighthouse accessibility                                                               | _to be measured_                                                                                  |
+| Initial JS + CSS (production build)                                                    | 329 kB raw, 84 kB gzipped (each lesson is a separate ~1 kB lazy chunk); the build fails at 400 kB |
 
 ## How I built this with Claude Code
 
-_Placeholder: notes on the workflow (plan mode, small commits, ADRs, the mockups as the source of truth, and where human judgment mattered) will go here._
+_Placeholder: a short write-up will go here. The raw notes are in [docs/build-log.md](docs/build-log.md): plan mode before each task, small commits, ADRs, the mockups as the source of truth, and where tests and human judgment caught problems._
 
 ## License
 
-Code: to be decided. Fonts: SIL Open Font License 1.1 (Baloo 2, Nunito).
+- **Code:** [MIT](LICENSE).
+- **Content and artwork** (lesson text, Dot and other illustrations, mockups): [CC BY-NC 4.0](LICENSE-CONTENT.md).
+- **Fonts:** SIL Open Font License 1.1 (Baloo 2, Nunito).
+
+See [ADR 0006](docs/adr/0006-licensing.md) for what falls under which license.

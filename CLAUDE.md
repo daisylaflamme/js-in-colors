@@ -112,27 +112,64 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 Node 24 (`.nvmrc`). Versions are pinned exactly in `package.json` (Nx 24.0.3, Angular 22.2, Storybook 10.6.5, Cypress 15.21.1: cypress-axe does not support Cypress 16 yet).
 
 ```bash
-npm ci                                  # install
-npm start                               # serve the web app (http://localhost:4200)
-npx nx test <project>                   # Vitest unit tests: web, ui, shared, lesson-engine, data-access, visuals
-npx nx run-many -t lint test build      # what to run before finishing a task
-npm run format                          # Prettier (write); npm run format:check in CI
-npx nx build web                        # production build; budgets: initial warn 320 kB / error 400 kB
-npx nx e2e web-e2e                      # Cypress smoke + cypress-axe at phone, tablet, desktop (starts the app)
-npx nx e2e web-e2e --configuration=production   # same, against the production build (CI)
-npx nx storybook ui                     # Storybook (http://localhost:4400)
-npx nx build-storybook ui               # static Storybook in dist/storybook/ui (runs alone: shares .angular/cache)
+# Setup and run
+npm ci                                  # install (exact versions from package-lock.json)
+npm start                               # serve web: http://localhost:4200 (same as: npx nx serve web)
+npx nx run web:serve-static             # serve the production build on :4200
+
+# Before finishing any task
+npx nx run-many -t lint test build      # lint + unit tests + build, all projects
+npm run format:check                    # Prettier check (npm run format writes)
+npx nx affected -t lint test build      # only what changed vs main
+
+# Lesson content (content/, see content/README.md and ADR 0007)
+npx nx run content:validate             # check every lesson; errors print as file:line:col, exit 1
+npx nx run content:build                # validate + write libs/data-access/src/generated (gitignored; serve/build/test run it for you)
+
+# Unit tests (Vitest)
+npx nx test <project>                   # web, ui, shared, lesson-engine, data-access, visuals (shared also validates content/)
+npx nx test ui --watch                  # watch mode while working on components
+
+# Lint and build
+npx nx lint <project>
+npx nx build web                        # production build; budgets: initial warn 340 kB / error 400 kB
+
+# End-to-end (Cypress + cypress-axe; starts the app itself)
+npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Variables keyboard walkthrough with axe per scene + reduced motion
+npx nx e2e web-e2e --spec src/e2e/lesson-variables.cy.ts   # one spec
+npx nx e2e web-e2e --configuration=production   # against the production build (what CI runs)
+
+# Storybook (libs/ui)
+npx nx storybook ui                     # http://localhost:4400 (ui + visuals + lesson-engine stories; Theme toolbar)
+npx nx build-storybook ui               # static build in dist/storybook/ui (never runs in parallel: shares .angular/cache)
+
+# Workspace
 npx nx graph                            # project graph and module boundaries
+npx nx show project <project>           # every target a project has
 ```
 
 There is no `serve api` yet: `apps/api` is not created until a feature needs it (ADR 0003).
+
+Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_CLOSING`, exit 127). If that happens, run with `NX_DAEMON=false`. CI (Linux) is not affected.
+
+### Lessons and the engine (ADR 0007)
+
+- Lessons are data: add or edit YAML in `content/`, then `npx nx run content:validate`. No code for a new lesson unless it needs a new visual or scene type.
+- Scene types: `watch`, `interact`, `quiz`. A new type = one component implementing `SceneComponent` (`libs/lesson-engine`) + a `provideSceneTypes()` entry + the type in `libs/shared/src/lib/lesson.ts` + a validator rule and test.
+- Visuals: `jar`, `screen`, `dot` in `libs/visuals`; add the kind to the `Visual` type, the validator and `VisualComponent`.
+- Smart/dumb: `LessonPage` (apps/web) owns the stores; scene components only get `scene` + `state` and emit `action`.
+- Concepts: the eight JS concepts plus `intro` (accent + outlined star, course opener only).
 
 ### Conventions added during the scaffold
 
 - Design tokens: `styles/settings/_tokens.scss` is a 1:1 copy of `docs/mockups/design-tokens.css`; components use the semantic tokens in `styles/settings/_semantic.scss`. Themes override tokens in `_themes.scss` only.
 - Component SCSS starts with `@use 'tools' as *;` for `mq-up()`, `focus-ring`, `visually-hidden-until()` and friends. Media queries are `mq-up()` only (min-width).
+- Motion: wrap animations in `@include motion-ok` and use `var(--motion-*)` durations (Calm motion zeroes them). Never select on `:root`/`html` inside component styles: emulated encapsulation makes it never match.
 - Breakpoints: phone is the base, tablet layout starts at `sm` (600px; the 820px tablet mockup falls here), desktop at `lg` (1200px, menu inline and open by default).
-- Text on a concept fill must be large (1.5rem bold): object and variable fills only reach 3:1. Use the `--color-<concept>-on` tokens.
+- Text on fills (ADR 0005): on the orange (object) and teal (variable) fills, text must be large and bold only (at least 1.5rem, weight 700+), using `--color-<concept>-on`. Anything smaller uses `--color-<concept>-text` on `--color-<concept>-tint`. Never white on orange or yellow.
+- Themes (ADR 0005): light/dark/high contrast are token overrides in `styles/settings/_themes.scss`. Any element may carry `data-theme`. New UI must pass axe in all three themes (the smoke spec checks them).
+- Fonts (ADR 0004): Baloo 2 for display, Nunito for body, bundled from `@fontsource`; add weights in `styles/fonts.scss` only.
+- Licenses (ADR 0006): code is MIT (`LICENSE`); lesson text, Dot and other artwork, and `docs/mockups/` are CC BY-NC 4.0 (`LICENSE-CONTENT.md`).
 - Modals use native `<dialog>` with `ModalDialogDirective` (`libs/ui`): owner holds `open`, Esc/backdrop emit `dismissed`, focus returns to `returnFocusTo`. Mark the first control with `data-autofocus`.
 - Presentational components can sit on native elements via attribute selectors (`button[jic-choice-button]`); always write `type="button"` at the usage site.
 - Nx tags: `type:app | feature | ui | data-access | util | e2e`, enforced by `@nx/enforce-module-boundaries`.
