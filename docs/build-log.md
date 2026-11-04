@@ -3,6 +3,26 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-04 · Lesson 5: Magic machines (functions)
+
+Branch `feat/lesson-functions`.
+
+**Built**
+
+- A new `machine` visual: a function as a machine with a name plate and a hexagon badge (the function shape). The input goes in on the left and the output comes out on the right, each in its concept's shape and color. It slides in and pops out; with Calm or reduced motion both are simply there. The caption says it in words: "A machine called double. In: 3. Out: 6."
+- Added through the documented extension points: the `Visual` type, the validator (plus `result` on choices, allowed only in machine scenes), `VisualComponent`, and the interact merge. Stories and unit tests included.
+- `content/lessons/functions.yaml`, 5 scenes: meet `double`, feed it numbers, see how it's built (`function` / `return`), a `shout` machine for words, and a quiz on `return`.
+
+**Found and fixed along the way**
+
+- A `<ng-template>` placed outside `<svg>` makes Angular create its shapes in the HTML namespace (NG8001 "'circle' is not a known element"). It has to sit inside the `<svg>`.
+- On Windows PowerShell 5.1, `Get-Content | Set-Content -Encoding utf8` re-encodes files (BOM, and `·` turned into `Â·`). Edit files with the editor tools, not PowerShell pipes.
+
+**Checks**
+
+- Content valid: 5 lessons, 0 warnings. Lint, unit tests, build (16 tasks) and the Storybook build: green.
+- `lessons.cy.ts` walked the new lesson with no spec change: 10 of 10. The smoke theme checks now cover the machine in dark and high contrast: 19 of 19. No horizontal overflow from 320 to 1440 px.
+
 ## 2026-11-04 · Lesson 4: Numbers, words, yes/no
 
 Branch `feat/lesson-data-types`.
