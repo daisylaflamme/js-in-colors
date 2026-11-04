@@ -3,6 +3,19 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-04 · Lesson 4: Numbers, words, yes/no
+
+Branch `feat/lesson-data-types`.
+
+**Built**
+
+- `content/lessons/data-types.yaml`, 5 scenes: a number in a jar, picking a kind (`7`, `"7"`, `true`), a yes-or-no jar, `typeof` on the screen, and a quiz on `"7"` with quotes. YAML only: the jar already draws each kind in its own shape and color.
+- `lessons.cy.ts` walks **every ready lesson** with the keyboard at phone and desktop sizes, with axe on every scene and the right quiz answer. `cypress.config.ts` reads the list from `content/` at startup, so later lessons are covered with no spec change.
+
+**Checks**
+
+- Content valid: 4 lessons, 0 errors, 0 warnings. The new spec: 8 of 8 green.
+
 ## 2026-11-03 · Home color path, local progress, settings
 
 Branch `feat/home-progress` (stacked on `feat/lesson-engine`).

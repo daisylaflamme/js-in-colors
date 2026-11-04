@@ -135,7 +135,7 @@ npx nx lint <project>
 npx nx build web                        # production build; budgets: initial warn 340 kB / error 400 kB
 
 # End-to-end (Cypress + cypress-axe; starts the app itself)
-npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Home/progress/settings + Variables keyboard walkthrough with axe per scene + reduced motion
+npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Home/progress/settings + every ready lesson with the keyboard and axe per scene + the deep Variables walkthrough + reduced motion
 npx nx e2e web-e2e --spec src/e2e/lesson-variables.cy.ts   # one spec
 npx nx e2e web-e2e --configuration=production   # against the production build (what CI runs)
 
@@ -155,6 +155,7 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 ### Lessons and the engine (ADR 0007)
 
 - Lessons are data: add or edit YAML in `content/`, then `npx nx run content:validate`. No code for a new lesson unless it needs a new visual or scene type.
+- E2E coverage is automatic: `cypress.config.ts` reads the ready lessons from `content/` at startup, and `lessons.cy.ts` walks each one with the keyboard (axe per scene, the correct quiz answer). No spec change for a new lesson.
 - Scene types: `watch`, `interact`, `quiz`. A new type = one component implementing `SceneComponent` (`libs/lesson-engine`) + a `provideSceneTypes()` entry + the type in `libs/shared/src/lib/lesson.ts` + a validator rule and test.
 - Visuals: `jar`, `screen`, `dot` in `libs/visuals`; add the kind to the `Visual` type, the validator and `VisualComponent`.
 - Smart/dumb: `LessonPage` (apps/web) owns the stores; scene components only get `scene` + `state` and emit `action`.
