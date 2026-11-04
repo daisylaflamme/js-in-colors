@@ -26,7 +26,7 @@ lessons:
     title: Magic machines
     topic: Functions
     concept: function
-    status: soon
+    status: ready
   - id: conditions
     title: Yes or no paths
     topic: Conditions

@@ -1,0 +1,158 @@
+id: functions
+title: Magic machines
+topic: Functions
+lead: A function is a machine with one job.
+leadHighlight: machine
+concept: function
+chips:
+  label: 'Machines can take:'
+  concepts:
+    - number
+    - string
+tip: Build a machine once, then use it again and again.
+library:
+  title: All about functions
+  sections:
+    - heading: What is a function?
+      text: A function is a machine with one job. Something goes in. Something comes out.
+    - heading: Building a machine
+      text: You write function, then a name. Inside, you tell the machine its job.
+    - heading: Using a machine
+      text: Write the name, then put something in round brackets. That is called a call.
+    - heading: What comes out
+      text: return sends the answer out of the machine.
+  examples:
+    - concept: function
+      label: Machines
+      value: double
+    - concept: number
+      label: In and out
+      value: 3 in, 6 out
+    - concept: string
+      label: Words too
+      value: hi in, HI! out
+  words:
+    - term: function
+      meaning: a machine with one job
+    - term: call
+      meaning: use the machine
+    - term: return
+      meaning: send the answer out
+scenes:
+  - id: meet-the-machine
+    type: watch
+    bubble: This machine is called double. 3 goes in, 6 comes out!
+    visual:
+      kind: machine
+      name: double
+      input: '3'
+      output: '6'
+      concept: number
+    code: double(3);
+    notes:
+      - term: double
+        text: is the name of the machine
+      - term: '3'
+        text: is what goes in
+  - id: feed-the-machine
+    type: interact
+    prompt: 'Feed the machine:'
+    visual:
+      kind: machine
+      name: double
+    choices:
+      - id: two
+        label: '2'
+        concept: number
+        value: '2'
+        result: '4'
+        bubble: 2 goes in. Out comes 4!
+        code: double(2);
+      - id: five
+        label: '5'
+        concept: number
+        value: '5'
+        result: '10'
+        bubble: 5 goes in. Out comes 10!
+        code: double(5);
+      - id: ten
+        label: '10'
+        concept: number
+        value: '10'
+        result: '20'
+        bubble: 10 goes in. Out comes 20. Wow!
+        code: double(10);
+    notes:
+      - term: double
+        text: is the machine
+      - term: ( )
+        text: hold what goes in
+  - id: build-the-machine
+    type: watch
+    bubble: You build a machine once. Then you can use it again and again.
+    visual:
+      kind: machine
+      name: double
+    code: 'function double(n) { return n + n; }'
+    notes:
+      - term: function
+        text: 'means: build a machine'
+      - term: n
+        text: is what goes in
+      - term: return
+        text: sends the answer out
+  - id: shout-machine
+    type: interact
+    prompt: 'Feed the shout machine:'
+    visual:
+      kind: machine
+      name: shout
+    choices:
+      - id: hi
+        label: hi
+        concept: string
+        value: hi
+        result: HI!
+        bubble: hi goes in. HI! comes out. So loud!
+        code: shout("hi");
+      - id: cat
+        label: cat
+        concept: string
+        value: cat
+        result: CAT!
+        bubble: cat goes in. CAT! comes out. The cat woke up!
+        code: shout("cat");
+      - id: 'yes'
+        label: 'yes'
+        concept: string
+        value: 'yes'
+        result: YES!
+        bubble: yes goes in. YES! comes out. Hooray!
+        code: shout("yes");
+    notes:
+      - term: shout
+        text: is a machine for words
+  - id: return-check
+    type: quiz
+    question: What does return do?
+    visual:
+      kind: machine
+      name: double
+      input: '4'
+      output: '8'
+      concept: number
+    options:
+      - id: sends-out
+        label: sends the answer out
+        correct: true
+        feedback: Yes! return sends the answer out of the machine.
+      - id: names
+        label: gives the machine a name
+        concept: function
+        correct: false
+        feedback: Not quite. The name comes after function. Try another one!
+      - id: jar
+        label: puts a value in a jar
+        concept: variable
+        correct: false
+        feedback: Good guess! That is what = does. Try another one!
