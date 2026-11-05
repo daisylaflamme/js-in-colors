@@ -49,7 +49,7 @@ describe('App shell', () => {
     expect(el.querySelector('jic-lesson-menu jic-app-logo a')?.getAttribute('href')).toBe('/');
   });
 
-  it('builds the menu from the course: 10 lessons, 1 coming soon, none finished yet', async () => {
+  it('builds the menu from the course: 10 lessons, all ready, none finished yet', async () => {
     // Desktop layout, so the menu is drawn inline (jsdom has no matchMedia of its own).
     vi.stubGlobal('matchMedia', (query: string) => ({
       matches: true,
@@ -61,7 +61,7 @@ describe('App shell', () => {
     vi.unstubAllGlobals();
     const links = el.querySelectorAll('nav[aria-label="Lessons"] a');
     expect(links).toHaveLength(10);
-    expect(Array.from(links).filter((a) => a.textContent?.includes('Coming soon'))).toHaveLength(1);
+    expect(Array.from(links).filter((a) => a.textContent?.includes('Coming soon'))).toHaveLength(0);
     expect(el.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('0');
   });
 

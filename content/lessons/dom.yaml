@@ -1,0 +1,182 @@
+id: dom
+title: Page magic
+topic: The DOM
+lead: JavaScript can find a part of the page and change it.
+leadHighlight: change it
+concept: html
+tip: Find a part first, then give it new words with textContent.
+library:
+  title: All about page magic
+  sections:
+    - heading: A page has parts
+      text: A web page is made of parts. A heading, some words, a button.
+    - heading: Tags
+      text: Each part has a tag. h1 is a big heading. p holds words.
+    - heading: Finding a part
+      text: document.querySelector("h1") finds the heading. Keep it in a jar to use it.
+    - heading: Changing a part
+      text: textContent is the words inside a part. Give it new words, and the page changes!
+  examples:
+    - concept: html
+      label: A heading
+      value: <h1>My page</h1>
+    - concept: html
+      label: Find it
+      value: querySelector("h1")
+    - concept: string
+      label: New words
+      value: title.textContent = "Hi!"
+  words:
+    - term: DOM
+      meaning: the page, in parts JavaScript can use
+    - term: querySelector
+      meaning: finds a part of the page
+    - term: textContent
+      meaning: the words inside a part
+scenes:
+  - id: meet-the-page
+    type: watch
+    bubble: A web page is made of parts. Look at this one!
+    visual:
+      kind: page
+      parts:
+        - { tag: h1, text: My page }
+        - { tag: p, text: I like cats. }
+        - { tag: button, text: Click me }
+    code: <h1>My page</h1>
+    notes:
+      - term: <h1>
+        text: a big heading
+      - term: <p>
+        text: some words
+  - id: find-a-part
+    type: watch
+    bubble: JavaScript can find one part. Here it finds the heading.
+    visual:
+      kind: page
+      target: h1
+      parts:
+        - { tag: h1, text: My page }
+        - { tag: p, text: I like cats. }
+        - { tag: button, text: Click me }
+    code: let title = document.querySelector("h1");
+    notes:
+      - term: querySelector
+        text: finds a part by its tag
+  - id: change-the-heading
+    type: interact
+    prompt: 'Pick new words for the heading:'
+    visual:
+      kind: page
+      target: h1
+      parts:
+        - { tag: h1, text: My page }
+        - { tag: p, text: I like cats. }
+        - { tag: button, text: Click me }
+    choices:
+      - id: hello
+        label: Hello!
+        concept: string
+        value: Hello!
+        target: h1
+        parts:
+          - { tag: h1, text: Hello! }
+          - { tag: p, text: I like cats. }
+          - { tag: button, text: Click me }
+        bubble: The heading says Hello! now. JavaScript changed the page!
+        code: title.textContent = "Hello!";
+      - id: wow
+        label: Wow!
+        concept: string
+        value: Wow!
+        target: h1
+        parts:
+          - { tag: h1, text: Wow! }
+          - { tag: p, text: I like cats. }
+          - { tag: button, text: Click me }
+        bubble: Wow! New words, same heading.
+        code: title.textContent = "Wow!";
+      - id: yum
+        label: Yum!
+        concept: string
+        value: Yum!
+        target: h1
+        parts:
+          - { tag: h1, text: Yum! }
+          - { tag: p, text: I like cats. }
+          - { tag: button, text: Click me }
+        bubble: Yum! The page shows the new words right away.
+        code: title.textContent = "Yum!";
+    notes:
+      - term: textContent
+        text: the words inside a part
+  - id: pick-a-part
+    type: interact
+    prompt: 'Which part should say Hi?'
+    visual:
+      kind: page
+      parts:
+        - { tag: h1, text: My page }
+        - { tag: p, text: I like cats. }
+        - { tag: button, text: Click me }
+    choices:
+      - id: heading
+        label: heading
+        concept: html
+        value: h1
+        target: h1
+        parts:
+          - { tag: h1, text: Hi! }
+          - { tag: p, text: I like cats. }
+          - { tag: button, text: Click me }
+        bubble: The tag h1 found the heading. Now it says Hi!
+        code: document.querySelector("h1").textContent = "Hi!";
+      - id: words
+        label: words
+        concept: html
+        value: p
+        target: p
+        parts:
+          - { tag: h1, text: My page }
+          - { tag: p, text: Hi! }
+          - { tag: button, text: Click me }
+        bubble: The tag p found the words. Now they say Hi!
+        code: document.querySelector("p").textContent = "Hi!";
+      - id: button
+        label: button
+        concept: html
+        value: button
+        target: button
+        parts:
+          - { tag: h1, text: My page }
+          - { tag: p, text: I like cats. }
+          - { tag: button, text: Hi! }
+        bubble: The tag button found the button. Now it says Hi!
+        code: document.querySelector("button").textContent = "Hi!";
+    notes:
+      - term: '"p"'
+        text: the tag tells JavaScript which part to find
+  - id: page-check
+    type: quiz
+    question: 'title is the heading. Then title.textContent = "Bye!" runs. What does the heading say?'
+    visual:
+      kind: page
+      target: h1
+      parts:
+        - { tag: h1, text: My page }
+        - { tag: p, text: I like cats. }
+    options:
+      - id: bye
+        label: Bye!
+        concept: string
+        correct: true
+        feedback: Yes! textContent gave the heading new words.
+      - id: my-page
+        label: My page
+        concept: string
+        correct: false
+        feedback: That was before the code ran. Try another one!
+      - id: title
+        label: title
+        correct: false
+        feedback: Good guess! title is the jar's name, not its words. Try another one!

@@ -111,13 +111,15 @@ describe('themes', () => {
         [390, 844],
         [1440, 900],
       ] as const) {
-        // Variables opens on the jar, Functions on the machine, Conditions on the fork, Arrays on the list.
+        // Variables opens on the jar, Functions on the machine, Conditions on the fork, Arrays on the list,
+        // Objects on the card, Page magic on the page.
         for (const path of [
           '/lesson/variables',
           '/lesson/functions',
           '/lesson/conditions',
           '/lesson/arrays',
           '/lesson/objects',
+          '/lesson/dom',
         ]) {
           cy.viewport(w, h);
           cy.visit(path);

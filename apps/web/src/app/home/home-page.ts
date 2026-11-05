@@ -25,8 +25,17 @@ import { DotCharacterComponent } from '@jic/visuals';
 
 const TEXT_SIZE_WORDS: Record<TextSize, string> = { normal: 'Normal', large: 'Bigger', larger: 'Biggest' };
 
-/** The concepts in "What the colors mean" (mockup 08): the seven with a settled color. */
-const LEGEND: readonly Concept[] = ['number', 'string', 'boolean', 'object', 'array', 'function', 'variable'];
+/** The concepts in "What the colors mean" (mockup 08), plus page magic since ADR 0009 gave it a color. */
+const LEGEND: readonly Concept[] = [
+  'number',
+  'string',
+  'boolean',
+  'object',
+  'array',
+  'function',
+  'variable',
+  'html',
+];
 
 interface ContinueAction {
   readonly verb: 'Start' | 'Continue' | 'Visit again';
@@ -79,10 +88,16 @@ export class HomePage {
     () => !this.course.continueLesson() && this.course.finishedCount() > 0,
   );
 
+  /** Some lessons on the path are not ready yet. */
+  private readonly moreComing = computed(() => this.course.pathLessons().some((l) => l.state === 'soon'));
+
   protected readonly lead = computed(() => {
     const n = this.course.finishedCount();
     if (this.course.isNewVisitor()) return 'Every idea in JavaScript has its own color. Let’s explore them!';
-    if (this.allDone()) return 'You opened every jar so far. More lessons are coming soon!';
+    if (this.allDone())
+      return this.moreComing()
+        ? 'You opened every jar so far. More lessons are coming soon!'
+        : 'You opened every jar. You finished the whole course!';
     if (n === 0) return 'Your first jar is waiting for you.';
     return `You opened ${n} ${n === 1 ? 'jar' : 'jars'} of knowledge. Ready for the next one?`;
   });

@@ -1,12 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { memoryProgressStorage } from '@jic/data-access';
+import { LESSON_SOURCE, memoryProgressStorage, type LessonSource } from '@jic/data-access';
 import { provideRouter } from '@angular/router';
 import { LessonPage } from './lesson-page';
 
-/** These tests use the real lessons compiled from content/ (Variables, Hello). */
+/** These tests use the real lessons compiled from content/ (Variables, Hello), unless given a source. */
 describe('LessonPage', () => {
-  async function setup(lessonId: string) {
-    TestBed.configureTestingModule({ providers: [provideRouter([]), memoryProgressStorage().provider] });
+  async function setup(lessonId: string, source?: LessonSource) {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        memoryProgressStorage().provider,
+        ...(source ? [{ provide: LESSON_SOURCE, useValue: source }] : []),
+      ],
+    });
     const fixture = TestBed.createComponent(LessonPage);
     fixture.componentRef.setInput('lessonId', lessonId);
     document.body.appendChild(fixture.nativeElement);
@@ -98,7 +104,13 @@ describe('LessonPage', () => {
   });
 
   it('shows an honest coming-soon scene for lessons without content yet', async () => {
-    const { el } = await setup('dom');
+    // Every real lesson is ready, so this one is made up.
+    const { el } = await setup('later', {
+      course: {
+        lessons: [{ id: 'later', title: 'Page magic', topic: 'The DOM', concept: 'html', status: 'soon' }],
+      },
+      loaders: {},
+    });
     expect(el.querySelector('h1')?.textContent).toBe('Page magic');
     expect(el.querySelector('.lead')?.textContent).toContain('coming soon');
     expect(el.querySelector('jic-scene-host')).toBeNull();
