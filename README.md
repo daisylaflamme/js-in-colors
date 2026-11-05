@@ -6,7 +6,7 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
-> Status: all ten lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, Things with details, and Page magic) run on a data-driven lesson engine. Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. Finishing all ten earns a certificate, saved as a PNG or printed, made entirely in the browser. The chat comes next. Progress so far: [docs/build-log.md](docs/build-log.md).
+> Status: all ten lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, Things with details, and Page magic) run on a data-driven lesson engine. Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. Finishing all ten earns a certificate, saved as a PNG or printed, made entirely in the browser. Ask Dot answers JavaScript questions in demo mode (pre-written answers, no server); the real AI proxy comes later. Progress so far: [docs/build-log.md](docs/build-log.md).
 
 ## Stack
 
@@ -62,7 +62,7 @@ The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-ano
 - No account and no login. Progress stays in the browser, under a random resume code such as `blue-fox-42` that says nothing about the child ([ADR 0008](docs/adr/0008-local-progress-and-settings.md)).
 - No personal data, no analytics, no tracking, no third-party scripts or CDN assets.
 - The certificate name is typed and rendered on the device, never sent anywhere and never stored, not even in the browser ([ADR 0010](docs/adr/0010-certificate.md)).
-- Chat (later) runs through a server-side proxy, is never stored, and answers only about JavaScript.
+- Ask Dot keeps the chat in memory only and catches names, emails and addresses before anything is sent. Demo mode makes no request at all; the real AI will only be reached through a server-side proxy ([ADR 0011](docs/adr/0011-ask-dot-demo-mode.md)).
 
 ## Accessibility and performance
 
