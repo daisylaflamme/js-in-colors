@@ -78,6 +78,8 @@ export interface Choice {
   readonly code: string;
   /** Machine scenes only: what comes out when `value` goes in. */
   readonly result?: string;
+  /** Screen scenes only: the lines shown when picked, e.g. a loop's output (default: `value`). */
+  readonly lines?: readonly string[];
 }
 
 /** Pick a choice: the picture, the bubble and the code line update together. */
