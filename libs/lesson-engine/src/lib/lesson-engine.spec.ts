@@ -155,6 +155,39 @@ describe('InteractScene', () => {
     expect(lines(el)).toEqual(['Hi!']);
   });
 
+  it('sends a fork down the picked choice’s path', async () => {
+    const forkScene: Scene = {
+      id: 'sunny',
+      type: 'interact',
+      prompt: 'Is it sunny?',
+      visual: { kind: 'fork', question: 'sunny?', yes: 'park', no: 'books' },
+      choices: [
+        {
+          id: 'yes',
+          label: 'true',
+          concept: 'boolean',
+          value: 'true',
+          path: 'yes',
+          bubble: 'To the park!',
+          code: 'let sunny = true;',
+        },
+        {
+          id: 'no',
+          label: 'false',
+          concept: 'boolean',
+          value: 'false',
+          path: 'no',
+          bubble: 'Books today!',
+          code: 'let sunny = false;',
+        },
+      ],
+    };
+    const { fixture, el } = await host(forkScene, { pickedChoiceId: 'no', answeredOptionId: null });
+    expect(el.querySelector('jic-fork-visual')?.getAttribute('data-take')).toBe('no');
+    const scene = fixture.componentInstance.current as InteractSceneComponent;
+    expect(scene.visual()).toEqual({ ...forkScene.visual, take: 'no' });
+  });
+
   it('feeds the picked choice into a machine: value goes in, result comes out', async () => {
     const machineScene: Scene = {
       id: 'feed',
