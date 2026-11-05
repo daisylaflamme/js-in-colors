@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
 import { MachineVisualComponent } from './machine/machine-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
@@ -83,6 +84,44 @@ describe('MachineVisualComponent', () => {
   });
 });
 
+describe('ForkVisualComponent', () => {
+  const caption = (el: HTMLElement) =>
+    el.querySelector('figcaption')?.textContent?.replace(/\s+/g, ' ').trim();
+  const fork = { question: 'sunny?', yes: 'park', no: 'books' };
+
+  it('shows the question and where each path goes, and says it in words', async () => {
+    const { el } = await render(ForkVisualComponent, { ...fork, take: 'yes' });
+    expect(el.querySelector('.sign-text')?.textContent).toBe('sunny?');
+    expect(Array.from(el.querySelectorAll('.label')).map((t) => t.textContent)).toEqual(['park', 'books']);
+    expect(Array.from(el.querySelectorAll('.end-word')).map((t) => t.textContent)).toEqual(['true', 'false']);
+    expect(caption(el)).toBe('A fork: sunny? Yes goes to park. No goes to books. This time: yes, to park.');
+    expect(el.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('marks the taken path by line style too, not only by color', async () => {
+    const { el } = await render(ForkVisualComponent, { ...fork, take: 'no' });
+    const roads = el.querySelectorAll('.road:not(.trunk)');
+    expect(roads[0].classList).toContain('skipped'); // yes path: dashed
+    expect(roads[1].classList).toContain('taken'); // no path: bold
+    expect(el.querySelector('.marker')?.classList).toContain('go-no');
+  });
+
+  it('has no marker and no taken path while still deciding', async () => {
+    const { el } = await render(ForkVisualComponent, fork);
+    expect(el.querySelector('.marker')).toBeNull();
+    expect(el.querySelector('.taken, .skipped')).toBeNull();
+    expect(caption(el)).toBe('A fork: sunny? Yes goes to park. No goes to books.');
+  });
+
+  it('re-creates the marker (restarting its walk) when replayKey changes', async () => {
+    const { fixture, el } = await render(ForkVisualComponent, { ...fork, take: 'yes' });
+    const before = el.querySelector('.marker');
+    fixture.componentRef.setInput('replayKey', 1);
+    await fixture.whenStable();
+    expect(el.querySelector('.marker')).not.toBe(before);
+  });
+});
+
 describe('ScreenVisualComponent', () => {
   it('shows output lines as real text', async () => {
     const { el } = await render(ScreenVisualComponent, { lines: ['Hi!', '7'] });
@@ -98,6 +137,7 @@ describe('VisualComponent', () => {
     [{ kind: 'screen', lines: ['Hi'] }, 'jic-screen-visual'],
     [{ kind: 'dot' }, 'jic-dot-character'],
     [{ kind: 'machine', name: 'double' }, 'jic-machine-visual'],
+    [{ kind: 'fork', question: 'sunny?', yes: 'park', no: 'books' }, 'jic-fork-visual'],
   ])('renders %o with %s', async (visual, selector) => {
     const { el } = await render(VisualComponent, { visual });
     expect(el.querySelector(selector)).not.toBeNull();

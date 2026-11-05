@@ -1,0 +1,158 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(20rem, 85cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+svg {
+  inline-size: 100%;
+  overflow: visible;
+}
+
+// Color rule: anything drawn straight on the stage uses --color-text (it follows the theme);
+// text on a white shape (sign, diamonds) uses --color-ink.
+.road {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.trunk {
+  stroke-width: 12;
+}
+
+// Taken: solid, bold and in the boolean color. Skipped: thin, dashed and muted.
+// The line style differs too, so color is never the only signal.
+.road.taken {
+  stroke: var(--color-boolean);
+  stroke-width: 12;
+}
+
+.road.skipped {
+  stroke: var(--color-text-muted);
+  stroke-width: 5;
+  stroke-dasharray: 10 10;
+}
+
+.end-shape {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.end-word {
+  fill: var(--color-ink);
+  font-family: var(--font-code);
+  font-size: 14px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.end.taken {
+  .end-shape {
+    fill: var(--color-boolean);
+  }
+
+  .end-word {
+    fill: var(--color-boolean-on);
+  }
+}
+
+.end.skipped {
+  .end-shape {
+    stroke: var(--color-text-muted);
+    stroke-dasharray: 6 5;
+  }
+
+  .label {
+    fill: var(--color-text-muted);
+  }
+}
+
+.label {
+  fill: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.post {
+  stroke: var(--color-text);
+  stroke-width: 6;
+}
+
+.sign {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 4;
+}
+
+.sign-text {
+  fill: var(--color-ink);
+  font-family: var(--font-code);
+  font-size: 17px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.marker {
+  fill: var(--color-accent);
+  stroke: var(--color-text);
+  stroke-width: 4;
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+// The marker walks from the fork to the end of the taken path. Reduced or calm motion: it is
+// simply there.
+@include motion-ok {
+  .marker {
+    animation: var(--motion-slow) var(--ease-out) both;
+    transform-box: view-box;
+  }
+
+  .go-yes {
+    animation-name: walk-yes;
+  }
+
+  .go-no {
+    animation-name: walk-no;
+  }
+}
+
+@keyframes walk-yes {
+  from {
+    opacity: 0;
+    transform: translate(68px, 56px);
+  }
+  20% {
+    opacity: 1;
+  }
+}
+
+@keyframes walk-no {
+  from {
+    opacity: 0;
+    transform: translate(-68px, 56px);
+  }
+  20% {
+    opacity: 1;
+  }
+}
