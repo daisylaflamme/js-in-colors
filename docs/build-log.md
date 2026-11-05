@@ -15,16 +15,16 @@ Branch `perf/fonts-and-home`.
 - A CI job "Lighthouse" runs it with 5 runs on a clean runner. It writes the table to the job summary, uploads the JSON reports, and never blocks a merge.
 - Metric-matched fallback fonts. `'Baloo 2 Fallback'` and `'Nunito Fallback'` resize Arial (or the metric-compatible Liberation Sans and Arimo) to the real fonts' widths and heights, measured in Chrome at each weight used. Text no longer moves when the web fonts arrive.
 
-**Measured on CI** (median of 5, benchmarks 1,840 to 2,542)
+**Measured on CI** (benchmarks 1,583 to 2,542)
 
-| Page        | Before (CI) | After | CLS before → after | TBT    |
-| ----------- | ----------- | ----- | ------------------ | ------ |
-| Home        | 87          | 99    | 0.233 → 0          | 118 ms |
-| Lesson      | 96 (3 runs) | 85    | 0.122 → 0.051      | 118 ms |
-| Certificate | 100         | 99    | 0.002 → 0          | 101 ms |
-| Ask Dot     | 92          | 98    | 0.002 → 0          | 138 ms |
+| Page        | Before (CI, 3 runs) | After: medians of four CI runs | CLS before → after | TBT           |
+| ----------- | ------------------- | ------------------------------ | ------------------ | ------------- |
+| Home        | 87                  | 99, 99, 99, 89                 | 0.233 → 0          | 106 to 133 ms |
+| Lesson      | 96                  | 85, 99, 85, 86                 | 0.122 → 0.051      | 118 to 124 ms |
+| Certificate | 100                 | 88, 99, 99, 99                 | 0.002 → 0          | 101 to 108 ms |
+| Ask Dot     | 92                  | 91, 99, 98, 99                 | 0.002 → 0          | 105 to 138 ms |
 
-- **The lesson's 85 is a simulation artifact, cross-checked.** The lesson loads one more lazy file than the other pages. On localhost everything arrives before the first paint, so in most runs Lighthouse's simulation counts the whole chain (main, the lesson page, the lesson, the fonts) as blocking the paint, and replays it on slow 4G: 0.6 s becomes 3.2 s. The "before" 96 came from 3 runs that happened to avoid the flip. With applied (real) throttling, the lesson paints no later than Home.
+- **The swing between about 99 and 85 to 91 is the simulation, cross-checked.** Each page loads a short chain of files (the app, the page, the fonts; a lesson adds the lesson itself). On localhost they all arrive before the first paint, so in some runs Lighthouse's simulation counts the whole chain as blocking the paint and replays it on slow 4G: 0.6 s becomes 2.4 to 3.2 s. The observed paint stays at about 0.15 s. It happens to every page; a lesson, with the longest chain, gets it most often. A first draft of this entry blamed only the lesson's extra file, until the last CI run flipped Home too. With applied (real) throttling, a lesson paints no later than Home.
 - **The real limit is client-side rendering.** Applied slow-4G throttling (on the busy laptop, so the absolute numbers are only indicative) put first paint at 8 to 10 s on every page, because the HTML is an empty shell until the JavaScript has run. Prerendering at build time is the lever, and a decision for the owner.
 
 **Not done, on purpose**
