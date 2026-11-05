@@ -90,8 +90,7 @@
   } @else {
     <p>The Library page for {{ entry_?.title }} is coming soon.</p>
   }
-  <button jicLibraryFooter type="button" class="ask-dot" disabled>
+  <a jicLibraryFooter class="ask-dot" routerLink="/ask-dot" [queryParams]="{ from: lessonId() }">
     Still curious? Ask Dot
-    <span class="soon">Coming soon</span>
-  </button>
+  </a>
 </jic-library-panel>

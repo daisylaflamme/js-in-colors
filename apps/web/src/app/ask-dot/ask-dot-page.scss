@@ -1,0 +1,222 @@
+@use 'tools' as *;
+
+// Mobile-first: one column, the rules under the chat. lg: the rules beside it (mockup 09).
+:host {
+  display: grid;
+  gap: var(--space-5);
+  max-inline-size: 80rem;
+  margin-inline: auto;
+  padding: var(--space-5) var(--space-4) var(--space-7);
+  @include safe-area-padding(left, right);
+
+  @include mq-up(sm) {
+    padding-inline: var(--space-6);
+  }
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.back {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--size-control);
+  padding-inline: var(--space-4) var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-button);
+  color: var(--color-text);
+  font-weight: var(--font-weight-heavy);
+  text-decoration: none;
+}
+
+.layout {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+
+  @include mq-up(lg) {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+}
+
+// ---- The chat card ----
+
+.chat {
+  display: grid;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-bg-raised);
+  box-shadow: var(--shadow-stage);
+}
+
+.chat-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-block-end: var(--border-width) solid var(--color-border);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+
+  @include mq-up(sm) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+    line-height: var(--line-height-tight);
+  }
+
+  p {
+    margin: 0;
+    font-weight: var(--font-weight-heavy);
+  }
+}
+
+.head-dot {
+  inline-size: 3.5rem;
+}
+
+.demo-pill {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-chip);
+  background: var(--color-ink);
+  color: var(--color-ground);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-heavy);
+
+  @include mq-up(sm) {
+    grid-column: auto;
+  }
+}
+
+.messages {
+  @include focus-ring;
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  block-size: clamp(16rem, 50dvh, 28rem);
+  overflow-y: auto;
+  padding: var(--space-5);
+  overscroll-behavior: contain;
+}
+
+.lesson-link {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: var(--space-2);
+  min-block-size: var(--size-control);
+  padding-inline: var(--space-4);
+  border: var(--border-width) solid var(--color-number-text);
+  border-radius: var(--radius-button);
+  background: var(--color-bg-raised);
+  color: var(--color-number-text);
+  font-weight: var(--font-weight-heavy);
+  text-decoration: none;
+}
+
+// ---- Suggestions and the question box ----
+
+.suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: 0 var(--space-5) var(--space-4);
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.suggest-label {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+.chip {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--size-control);
+  padding-inline: var(--space-4);
+  border: var(--border-width) solid var(--fill);
+  border-radius: var(--radius-button);
+  background: var(--tint);
+  color: var(--ink);
+  font: inherit;
+  font-weight: var(--font-weight-heavy);
+  cursor: pointer;
+}
+
+// The box and Send share a row; on very narrow screens the box gets the whole row.
+.ask {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border-block-start: 1px solid var(--color-divider);
+
+  input {
+    @include focus-ring;
+    flex: 100 1 12rem; // takes nearly all spare room; Send grows only when alone on its row
+    min-inline-size: 0;
+    min-block-size: 3.25rem;
+    padding-inline: var(--space-4);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-button);
+    background: var(--color-bg-raised);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-bold);
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+.send {
+  @include focus-ring;
+  display: inline-flex;
+  flex: 1 0 auto;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 3.25rem;
+  padding-inline: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-button);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-press);
+  color: var(--color-accent-ink);
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-heavy);
+  cursor: pointer;
+
+  &:disabled {
+    box-shadow: none;
+    cursor: wait;
+  }
+}

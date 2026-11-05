@@ -11,7 +11,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CourseStore, LessonStore } from '@jic/data-access';
 import {
   LibraryContentComponent,
@@ -47,6 +47,7 @@ import { SpeechService } from '../shell/speech.service';
   // One LessonStore per lesson page; the engine's scene types live in this lazy chunk.
   providers: [LessonStore, provideDefaultSceneTypes()],
   imports: [
+    RouterLink,
     ConceptChipListComponent,
     DotCharacterComponent,
     HelpTabsComponent,

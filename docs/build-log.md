@@ -3,6 +3,42 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Ask Dot, in demo mode
+
+Branch `feat/ask-dot`.
+
+**Decided** (ADR 0011)
+
+- The owner chose demo mode first: pre-written answers, no server, no key. The real AI proxy comes later behind the same `ChatService`.
+- Answers stream as chunks (`{ text }`, then an optional `{ link }`), so the screen already handles word-by-word replies.
+- A personal-info guard runs in `ChatStore`, before any provider. The chat lives in a store provided by the page, so leaving ends it.
+
+**Built**
+
+- `DemoChatService`: one original answer per course idea, each linking to its lesson, matched by keywords. Anything else gets a gentle redirect, the same one every time for the same question. Words arrive about 60 ms apart, or all at once with Calm motion.
+- The chat page (mockup 09): the yellow header with Dot and the Demo mode pill, Dot and kid bubbles, typing dots, lesson links, the "Try asking" chips, the question box and Send, and the safe chat rules card.
+- `ChatBubble`, `TypingDots` and `SafeRulesCard` in `libs/ui` with stories, plus six new icons.
+- The Library's "Still curious? Ask Dot" is now a real link, and Back returns to the same lesson.
+
+**Found and fixed along the way**
+
+- If typing and Send landed in one change detection, the `[value]` binding saw `''` → `''` and left the question in the box. The page now clears the element too. The unit test caught it.
+- At 320 px the question box shrank to a few letters beside Send. The row now wraps, so the box gets a whole line.
+- The certificate PR (#12) had committed a test-download PNG: Cypress's `downloads/` folder was never ignored. It is now ignored, and the file is removed.
+- The initial bundle grew by 9 kB: the demo answers and the guard had landed in `main`. The page is lazy, but `main` imports the `@jic/data-access` barrel (for `CourseStore`), and the chat modules were re-exported there. The chat now has its own entry point, `@jic/data-access/chat`, and lives only in the lazy chunk. The initial total is 327.8 kB, up 2.9 kB, which is the six new icons the shell carries. CLAUDE.md has the rule.
+- Screenshots seemed to show the chat not scrolled to the newest answer. Measuring showed it was at the bottom; the screenshot had caught the smooth scroll halfway.
+
+**Checks**
+
+- Unit tests for the matcher (every topic), the redirect, the guard, streaming with fake timers, the calm path, the store, the components and the page.
+- Cypress `ask-dot.cy.ts`:
+  - Axe at 3 sizes in 3 themes, while typing and when done.
+  - Keyboard only.
+  - The redirect and the guard.
+  - **No question in any request**, and nothing in localStorage.
+  - A lesson link, a fresh chat after leaving, and Library → Ask Dot → Back.
+- Screenshots at 320, 390, 820 and 1440 px, mid-stream, dark and high contrast.
+
 ## 2026-11-05 · The certificate
 
 Branch `feat/certificate`.

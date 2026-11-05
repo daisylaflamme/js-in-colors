@@ -1,0 +1,48 @@
+@use 'tools' as *;
+
+:host {
+  display: flex;
+}
+.bubble {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-width) solid var(--color-border-soft);
+  border-radius: var(--radius-card);
+  background: var(--color-bg);
+}
+.dot {
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+.dot:nth-child(2) {
+  opacity: 0.7;
+}
+.dot:nth-child(3) {
+  opacity: 0.45;
+}
+@include motion-ok {
+  .dot {
+    animation: bounce calc(var(--motion-slow) * 2) var(--ease-out) infinite;
+    animation-play-state: var(--motion-loop);
+  }
+  .dot:nth-child(2) {
+    animation-delay: var(--motion-fast);
+  }
+  .dot:nth-child(3) {
+    animation-delay: calc(var(--motion-fast) * 2);
+  }
+}
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}

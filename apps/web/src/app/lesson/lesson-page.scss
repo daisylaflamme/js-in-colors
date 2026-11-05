@@ -77,16 +77,7 @@
   background: var(--color-bg-raised);
   color: var(--color-text);
   font-weight: var(--font-weight-heavy);
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-
-  .soon {
-    color: var(--color-text-muted);
-    font-size: var(--text-caption);
-    font-weight: var(--font-weight-bold);
-  }
+  text-decoration: none;
 }
 
 .loading {

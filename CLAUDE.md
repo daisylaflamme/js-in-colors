@@ -177,6 +177,14 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Download: `CertificateExport` draws `drawCertificate()` on a canvas and saves a PNG through an object URL. The PNG and the HTML sheet are two drawings of one design: change both. Concept shapes come from `SHAPE_PATHS` (`libs/shared`), shared with `ConceptShapeComponent`.
 - Print: a print stylesheet on the page. Themes apply to `screen` only, so paper is always light.
 
+### Ask Dot chat (ADR 0011)
+
+- `/ask-dot?from=<lessonId>` (`apps/web/src/app/ask-dot/`); the Library's "Still curious? Ask Dot" links here, and "Back to the lesson" returns to `from`.
+- Import chat code from `@jic/data-access/chat`, not the main barrel. Components talk to `ChatService` (`libs/data-access/src/lib/chat/`): `ask(question)` streams `{ text }` chunks, then an optional `{ link }`. Demo mode is `DemoChatService` (`provideDemoChat()`); the future proxy must stream the same chunks.
+- `ChatStore` is provided by the page (leaving ends the chat). It runs the personal-info guard (`looksPersonal`) before any provider, and never touches storage or logs.
+- A new demo answer: add it to `DEMO_ANSWERS` (keywords, text with 12 words or fewer per sentence, lesson link) and a matching case in `chat.spec.ts`.
+- The message list is a `role="log"` with `aria-live="off"`; finished answers are announced once by the status region.
+
 ### Conventions added during the scaffold
 
 - Design tokens: `styles/settings/_tokens.scss` is a 1:1 copy of `docs/mockups/design-tokens.css`; components use the semantic tokens in `styles/settings/_semantic.scss`. Themes override tokens in `_themes.scss` only.
@@ -190,5 +198,6 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Modals use native `<dialog>` with `ModalDialogDirective` (`libs/ui`): owner holds `open`, Esc/backdrop emit `dismissed`, focus returns to `returnFocusTo`. Mark the first control with `data-autofocus`.
 - Presentational components can sit on native elements via attribute selectors (`button[jic-choice-button]`); always write `type="button"` at the usage site.
 - Nx tags: `type:app | feature | ui | data-access | util | e2e`, enforced by `@nx/enforce-module-boundaries`.
+- Code only a lazy route uses gets its own entry point (a path alias like `@jic/data-access/chat`), not the lib's main barrel: modules reached through a barrel that `main` imports end up in the initial bundle even with `"sideEffects": false`. Check the initial total after adding one.
 - Every lib has a private `package.json` with `"sideEffects": false`, so code only lazy routes use stays out of the initial bundle (without it, the whole `@jic/ui` barrel shipped in `main`). A new lib needs one too, and its `vite.config.mts` names `tsconfig.spec.json` for analogjs.
 - Stories are only typechecked by `npx nx build-storybook ui`: run it when you touch a story.

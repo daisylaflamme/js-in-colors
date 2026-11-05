@@ -21,6 +21,7 @@
       "@jic/ui": ["./libs/ui/src/index.ts"],
       "@jic/lesson-engine": ["./libs/lesson-engine/src/index.ts"],
       "@jic/data-access": ["./libs/data-access/src/index.ts"],
+      "@jic/data-access/chat": ["./libs/data-access/src/chat.ts"],
       "@jic/visuals": ["./libs/visuals/src/index.ts"],
       "@jic/shared": ["./libs/shared/src/index.ts"]
     }

@@ -105,4 +105,4 @@ Home, chat and certificate are only mocked at desktop. On smaller screens: stack
 ## Not decided yet
 
 - Dark and high-contrast themes are not mocked. Derive them by overriding tokens only.
-- Home, chat and certificate are not mocked on phone or tablet (rules above). The certificate stacks its controls above the sheet; the sheet keeps Dot, the date and the seal in one row at every size.
+- Home, chat and certificate are not mocked on phone or tablet (rules above). The certificate stacks its controls above the sheet; the sheet keeps Dot, the date and the seal in one row at every size. Ask Dot puts the safe chat rules under the chat below lg, and the question box takes a whole row on very narrow screens.
