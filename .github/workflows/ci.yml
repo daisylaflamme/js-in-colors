@@ -43,6 +43,12 @@ jobs:
       - name: Format
         run: npm run format:check
 
+      - name: Dot artwork (brief check, and the generated file matches docs/dot-art)
+        run: |
+          node --test tools/dot-art/convert.test.mjs
+          npm run dot-art
+          git diff --exit-code libs/visuals/src/lib/dot/dot-art.ts
+
       - name: Lint, unit tests, build (affected on PRs, everything on main)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
