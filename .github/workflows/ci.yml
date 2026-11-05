@@ -86,3 +86,33 @@ jobs:
           name: cypress-screenshots
           path: dist/cypress/apps/web-e2e/screenshots
           retention-days: 7
+
+  lighthouse:
+    # Measured on a clean runner, the same way every time (tools/lighthouse/measure.mjs): a
+    # developer machine's load changes Total Blocking Time a lot. Informational: the table goes
+    # to the job summary and never blocks a merge.
+    name: Lighthouse (mobile, median of 3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: 0 # not needed in this job
+
+      - name: Build and serve the production build
+        run: |
+          npx nx build web
+          npx nx run web:serve-static --port=4300 > serve.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:4300/ > /dev/null && break; sleep 2; done
+          curl -sf http://localhost:4300/ > /dev/null
+
+      - name: Lighthouse
+        run: npm run lighthouse
