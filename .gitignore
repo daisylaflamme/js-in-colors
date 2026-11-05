@@ -12,6 +12,7 @@ storybook-static/
 # cypress
 apps/web-e2e/cypress/videos/
 apps/web-e2e/cypress/screenshots/
+apps/web-e2e/cypress/downloads/
 dist/cypress/
 
 # env
