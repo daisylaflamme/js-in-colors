@@ -195,6 +195,47 @@ describe('InteractScene', () => {
     expect(values).toEqual(['Tom', '4']);
   });
 
+  it('finds the picked part of a page, or shows the page the choice makes', async () => {
+    const parts = [
+      { tag: 'h1', text: 'My page' },
+      { tag: 'p', text: 'Hello' },
+    ] as const;
+    const pageScene: Scene = {
+      id: 'page',
+      type: 'interact',
+      prompt: 'Pick new words:',
+      visual: { kind: 'page', parts },
+      choices: [
+        {
+          id: 'find',
+          label: 'words',
+          concept: 'html',
+          value: 'p',
+          target: 'p',
+          bubble: 'Found it!',
+          code: 'document.querySelector("p")',
+        },
+        {
+          id: 'wow',
+          label: 'Wow!',
+          concept: 'string',
+          value: 'Wow!',
+          target: 'h1',
+          parts: [{ tag: 'h1', text: 'Wow!' }, parts[1]],
+          bubble: 'Wow!',
+          code: 'title.textContent = "Wow!";',
+        },
+      ],
+    };
+    const { fixture, el } = await host(pageScene, { pickedChoiceId: 'find', answeredOptionId: null });
+    expect(el.querySelector('jic-page-visual')?.getAttribute('data-target')).toBe('p');
+    fixture.componentRef.setInput('state', { pickedChoiceId: 'wow', answeredOptionId: null });
+    await fixture.whenStable();
+    const texts = Array.from(el.querySelectorAll('jic-page-visual .part-text')).map((t) => t.textContent);
+    expect(texts).toEqual(['Wow!', 'Hello']);
+    expect(el.querySelector('jic-page-visual')?.getAttribute('data-target')).toBe('h1');
+  });
+
   it('points a list at the picked spot, or shows the list the choice makes', async () => {
     const listScene: Scene = {
       id: 'fruits',

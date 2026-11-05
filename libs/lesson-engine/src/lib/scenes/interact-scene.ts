@@ -91,6 +91,8 @@ export class InteractSceneComponent implements SceneComponent<InteractScene> {
         return { ...visual, items: choice.items ?? visual.items, index: choice.index };
       case 'card':
         return { ...visual, props: choice.props ?? visual.props, key: choice.key };
+      case 'page':
+        return { ...visual, parts: choice.parts ?? visual.parts, target: choice.target };
       default:
         return visual;
     }

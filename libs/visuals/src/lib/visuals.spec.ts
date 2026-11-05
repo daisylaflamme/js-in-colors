@@ -4,6 +4,7 @@ import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
 import { ListVisualComponent } from './list/list-visual';
 import { MachineVisualComponent } from './machine/machine-visual';
+import { PageVisualComponent } from './page/page-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
 import { VisualComponent } from './visual/visual';
 
@@ -217,6 +218,61 @@ describe('CardVisualComponent', () => {
   });
 });
 
+describe('PageVisualComponent', () => {
+  const caption = (el: HTMLElement) =>
+    el.querySelector('figcaption')?.textContent?.replace(/\s+/g, ' ').trim();
+  const texts = (el: HTMLElement, selector: string) =>
+    Array.from(el.querySelectorAll(selector)).map((t) => t.textContent);
+  const parts = [
+    { tag: 'h1', text: 'My page' },
+    { tag: 'p', text: 'I like cats.' },
+    { tag: 'button', text: 'Click me' },
+  ];
+
+  it('shows each part with its tag, exactly as written, and says it in words', async () => {
+    const { el } = await render(PageVisualComponent, { parts });
+    expect(texts(el, '.tag')).toEqual(['h1', 'p', 'button']);
+    expect(texts(el, '.part-text')).toEqual(['My page', 'I like cats.', 'Click me']);
+    expect(el.querySelector('.part-text.is-h1')?.textContent).toBe('My page');
+    expect(el.querySelectorAll('rect.button')).toHaveLength(1);
+    expect(caption(el)).toBe(
+      'A page with a heading "My page", words "I like cats." and a button "Click me".',
+    );
+    expect(el.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('marks the found part with an outline and a pointer, and says which', async () => {
+    const { el } = await render(PageVisualComponent, { parts, target: 'p' });
+    const rows = el.querySelectorAll('.row');
+    expect(rows[1].classList).toContain('found');
+    expect(rows[1].querySelector('.pointer')).not.toBeNull();
+    expect(el.querySelectorAll('.pointer')).toHaveLength(1);
+    expect(el.getAttribute('data-target')).toBe('p');
+    expect(caption(el)).toContain('Found the words.');
+  });
+
+  it('ignores a target that is not on the page', async () => {
+    const { el } = await render(PageVisualComponent, { parts: [parts[0]], target: 'button' });
+    expect(el.querySelector('.pointer')).toBeNull();
+    expect(caption(el)).toBe('A page with a heading "My page".');
+  });
+
+  it('grows the window with its parts', async () => {
+    const { el } = await render(PageVisualComponent, { parts: [parts[0]] });
+    const one = Number(el.querySelector('.frame')?.getAttribute('height'));
+    const { el: three } = await render(PageVisualComponent, { parts });
+    expect(Number(three.querySelector('.frame')?.getAttribute('height'))).toBeGreaterThan(one);
+  });
+
+  it('re-creates the rows (restarting the fade) when replayKey changes', async () => {
+    const { fixture, el } = await render(PageVisualComponent, { parts });
+    const before = el.querySelector('.row');
+    fixture.componentRef.setInput('replayKey', 1);
+    await fixture.whenStable();
+    expect(el.querySelector('.row')).not.toBe(before);
+  });
+});
+
 describe('ScreenVisualComponent', () => {
   it('shows output lines as real text', async () => {
     const { el } = await render(ScreenVisualComponent, { lines: ['Hi!', '7'] });
@@ -238,6 +294,7 @@ describe('VisualComponent', () => {
       { kind: 'card', name: 'cat', props: [{ key: 'age', value: '3', concept: 'number' }] },
       'jic-card-visual',
     ],
+    [{ kind: 'page', parts: [{ tag: 'h1', text: 'Hi' }] }, 'jic-page-visual'],
   ])('renders %o with %s', async (visual, selector) => {
     const { el } = await render(VisualComponent, { visual });
     expect(el.querySelector(selector)).not.toBeNull();

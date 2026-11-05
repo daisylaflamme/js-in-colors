@@ -1,0 +1,119 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(21rem, 90cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+svg {
+  inline-size: 100%;
+  overflow: visible;
+}
+
+// The window: page magic red for the frame and the top bar (ADR 0009). The page itself uses the
+// background, so --color-text and --color-html-text stay readable in every theme.
+.body {
+  fill: var(--color-bg);
+}
+
+.bar {
+  fill: var(--color-html);
+}
+
+.bar-dot {
+  fill: var(--color-html-on);
+}
+
+.frame {
+  fill: none;
+  stroke: var(--color-html);
+  stroke-width: 6;
+}
+
+.row-box {
+  fill: none;
+  stroke: none;
+}
+
+// The part JavaScript found: a thick outline plus a pointer, not color alone.
+.found .row-box {
+  stroke: var(--color-text);
+  stroke-width: 4;
+}
+
+.tag {
+  fill: var(--color-html-text);
+  font-family: var(--font-code);
+  font-size: 15px;
+  font-weight: 700;
+  dominant-baseline: central;
+}
+
+.part-text {
+  fill: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 700;
+  dominant-baseline: central;
+}
+
+.is-h1 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+// White on the red fill is 5.6:1, so the button's words may be body size (ADR 0009).
+.button {
+  fill: var(--color-html);
+  stroke: var(--shape-stroke);
+  stroke-width: var(--shape-stroke-width);
+}
+
+.is-button {
+  fill: var(--color-html-on);
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.pointer {
+  fill: var(--color-text);
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+// Rows fade in one by one, then the pointer slides in. Reduced or calm motion: simply there.
+@include motion-ok {
+  .row {
+    animation: fade-in var(--motion-base) var(--ease-out) both;
+    animation-delay: calc(var(--i) * var(--motion-fast));
+  }
+
+  .pointer {
+    animation: slide-in var(--motion-base) var(--ease-out) var(--motion-slow) both;
+    transform-box: view-box;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}

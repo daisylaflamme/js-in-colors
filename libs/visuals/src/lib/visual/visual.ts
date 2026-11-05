@@ -6,6 +6,7 @@ import { ForkVisualComponent } from '../fork/fork-visual';
 import { JarVisualComponent } from '../jar/jar-visual';
 import { ListVisualComponent } from '../list/list-visual';
 import { MachineVisualComponent } from '../machine/machine-visual';
+import { PageVisualComponent } from '../page/page-visual';
 import { ScreenVisualComponent } from '../screen/screen-visual';
 
 /** Renders a lesson Visual by kind. Adding a kind = one component + one case here + the type. */
@@ -19,6 +20,7 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
     JarVisualComponent,
     ListVisualComponent,
     MachineVisualComponent,
+    PageVisualComponent,
     ScreenVisualComponent,
   ],
   host: { style: 'display: contents' },
@@ -68,6 +70,9 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
       }
       @case ('card') {
         <jic-card-visual [name]="v.name" [props]="v.props" [key]="v.key" [replayKey]="replayKey()" />
+      }
+      @case ('page') {
+        <jic-page-visual [parts]="v.parts" [target]="v.target" [replayKey]="replayKey()" />
       }
     }
   `,
