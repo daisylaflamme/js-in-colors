@@ -3,6 +3,35 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Lesson 9: Things with details (objects)
+
+Branch `feat/lesson-objects`.
+
+**Built**
+
+- A new `card` visual: a rounded-square card (the object shape) with an orange border and a name tag on top. It has one row per detail: the key in code font, then the value in its concept's shape.
+  - The detail being read gets a thick outline **and** a pointer.
+  - Orange is only used for lines, never behind small text (ADR 0005).
+  - Rows fade in one by one. With Calm or reduced motion they're simply there.
+- Choices in card scenes carry a `key` (read a detail) and/or `props` (the card after a change). The validator checks that the key is on the card the choice shows, that keys are unique, and that names, keys and values fit.
+- `content/lessons/objects.yaml`, 5 scenes:
+  1. Meet the cat.
+  2. The dot reads a detail.
+  3. Ask the cat.
+  4. Change a detail.
+  5. A quiz on `dog.age`.
+
+**Found and fixed along the way**
+
+- In the dark theme the keys were pale on white rows: the theme turns `--color-object-text` pale for dark backgrounds, but `--color-surface` stays white. The rows now use `--color-bg`, so text and background change together. That rule is now in CLAUDE.md.
+- The values came out as `" Tom "`. Prettier had wrapped a long `<text>` element across lines, and the line breaks became spaces (the same bug class as the header in lesson 7). The font size is now worked out per row, so the line is short enough to stay unwrapped, and a unit test checks the exact text.
+- The validator caught a two-sentence Tip.
+
+**Checks**
+
+- Content valid: 9 lessons, 0 warnings. Lint, unit tests, build and the Storybook build: green.
+- Screenshots at 390, 820 and 1440 px and in the dark and high-contrast themes; no horizontal overflow at 320 px.
+
 ## 2026-11-05 · Lesson 8: Lists of things (arrays)
 
 Branch `feat/lesson-arrays`.
