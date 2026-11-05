@@ -1,6 +1,6 @@
 import { CONCEPTS, isConcept } from './concepts';
 import type { Course, Lesson } from './lesson';
-import { MAX_SCENES, MIN_SCENES } from './lesson';
+import { MAX_SCENES, MIN_SCENES, PAGE_TAGS } from './lesson';
 
 /**
  * Validates lesson and course data (parsed from YAML) against the types in lesson.ts.
@@ -258,10 +258,15 @@ function checkVisual(c: Checker, value: unknown, path: IssuePath): void {
       checkCardKey(c, v, path, checkCardProps(c, v, path, false));
       return;
     }
+    case 'page': {
+      c.knownKeys(v, path, ['kind', 'parts', 'target']);
+      checkPageTarget(c, v, path, checkPageParts(c, v, path));
+      return;
+    }
     default:
       c.error(
         [...path, 'kind'],
-        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork, list, card.`,
+        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork, list, card, page.`,
       );
   }
 }
@@ -319,6 +324,57 @@ function checkCardKey(c: Checker, obj: Obj, path: IssuePath, keys: string[] | un
   if (typeof key !== 'string') c.error([...path, 'key'], `should be a detail's key, got ${describe(key)}.`);
   else if (keys && !keys.includes(key))
     c.error([...path, 'key'], `"${key}" is not a detail on this card. Use one of: ${keys.join(', ')}.`);
+}
+
+/** Page parts: one of each tag at most, and short enough to fit the window. */
+const PAGE_PARTS_MAX = 3;
+const PAGE_TEXT_MAX = 12;
+const PAGE_TAG_LIST = PAGE_TAGS.join(', ');
+
+/** 1 to 3 parts ({ tag, text }). Returns their tags when the list is readable. */
+function checkPageParts(c: Checker, obj: Obj, path: IssuePath): string[] | undefined {
+  const parts = c.array(obj, 'parts', path, { min: 1, max: PAGE_PARTS_MAX });
+  if (!parts) return undefined;
+  const tags: string[] = [];
+  parts.forEach((p, i) => {
+    const at = [...path, 'parts', i];
+    const part = c.object(p, at);
+    if (!part) return;
+    c.knownKeys(part, at, ['tag', 'text']);
+    const tag = c.string(part, 'tag', at);
+    if (tag !== undefined) {
+      if (!(PAGE_TAGS as readonly string[]).includes(tag))
+        c.error([...at, 'tag'], `"${tag}" is not a page part. Use one of: ${PAGE_TAG_LIST}.`);
+      else if (tags.includes(tag))
+        c.error([...at, 'tag'], `"${tag}" is used twice: a page has at most one of each part.`);
+      tags.push(tag);
+    }
+    const text = c.string(part, 'text', at);
+    if (text !== undefined && text.length > PAGE_TEXT_MAX)
+      c.error(
+        [...at, 'text'],
+        `is ${text.length} characters; a page part can have at most ${PAGE_TEXT_MAX} so it fits.`,
+      );
+  });
+  return tags;
+}
+
+/** The tags of an already-checked parts list (no new errors). */
+function pageTags(parts: unknown): string[] | undefined {
+  if (!Array.isArray(parts)) return undefined;
+  return parts
+    .map((p) => (typeof p === 'object' && p !== null ? (p as Obj)['tag'] : undefined))
+    .filter((t): t is string => typeof t === 'string');
+}
+
+/** An optional target that must be one of the page's parts. */
+function checkPageTarget(c: Checker, obj: Obj, path: IssuePath, tags: string[] | undefined): void {
+  const target = obj['target'];
+  if (target === undefined) return;
+  if (typeof target !== 'string')
+    c.error([...path, 'target'], `should be a part's tag (${PAGE_TAG_LIST}), got ${describe(target)}.`);
+  else if (tags && !tags.includes(target))
+    c.error([...path, 'target'], `"${target}" is not a part on this page. Use one of: ${tags.join(', ')}.`);
 }
 
 /** List items and names must fit the boxes and the tag of the SVG. */
@@ -421,7 +477,22 @@ function checkScene(c: Checker, value: unknown, path: IssuePath): void {
           'items',
           'key',
           'props',
+          'target',
+          'parts',
         ]);
+        if (kind === 'page') {
+          if (choice['target'] === undefined && choice['parts'] === undefined)
+            c.error(at, 'needs target (find a part) or parts (change the page), so the picture changes.');
+          const shown =
+            choice['parts'] === undefined
+              ? pageTags((visual as Obj)['parts'])
+              : checkPageParts(c, choice, at);
+          checkPageTarget(c, choice, at, shown);
+        } else {
+          for (const key of ['target', 'parts'])
+            if (choice[key] !== undefined)
+              c.error([...at, key], 'is only for page scenes (which part, or the new page).');
+        }
         if (kind === 'card') {
           if (choice['key'] === undefined && choice['props'] === undefined)
             c.error(at, 'needs key (read a detail) or props (change the card), so the picture changes.');

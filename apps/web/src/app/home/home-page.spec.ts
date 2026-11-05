@@ -84,19 +84,20 @@ describe('HomePage', () => {
           'loops',
           'arrays',
           'objects',
+          'dom',
         ],
-        'objects',
+        'dom',
       ),
     );
     expect(text('.continue')).toBe('Visit again: Hello, JavaScript!');
-    expect(text('.lead')).toBe('You opened every jar so far. More lessons are coming soon!');
+    expect(text('.lead')).toBe('You opened every jar. You finished the whole course!');
   });
 
   it('shows the whole course on the path, then the certificate', async () => {
     const { el, text } = await setup();
     expect(el.querySelectorAll('jic-color-path li')).toHaveLength(11);
     expect(text('jic-color-path li:last-child')).toBe('Your certificate!, Finish all 10');
-    expect(el.querySelectorAll('[data-state="soon"]')).toHaveLength(1);
+    expect(el.querySelectorAll('[data-state="soon"]')).toHaveLength(0);
   });
 
   it('copies the resume code and says so', async () => {

@@ -41,6 +41,11 @@ import { CONCEPT_INFO, type Concept } from '@jic/shared';
         @case ('capsule') {
           <rect x="5" y="1" width="14" height="22" rx="6" />
         }
+        @case ('window') {
+          <!-- A browser window: a frame with a thick top bar around a page (filled, so lines behind never show). -->
+          <rect x="1.5" y="3" width="21" height="18" rx="3" />
+          <rect x="5" y="9" width="14" height="9" class="window-page" />
+        }
       }
     </svg>
   `,
@@ -53,6 +58,9 @@ import { CONCEPT_INFO, type Concept } from '@jic/shared';
       fill: var(--fill);
       stroke: var(--shape-stroke);
       stroke-width: var(--shape-stroke-width);
+    }
+    svg > .window-page {
+      fill: var(--color-bg);
     }
     /* The yellow star is too light on white (1.5:1): always outlined, like the mockup's certificate star. */
     svg > .outlined {

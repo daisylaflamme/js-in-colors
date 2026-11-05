@@ -127,7 +127,7 @@ describe('validateLesson', () => {
     scenes[1]['visual'] = { kind: 'box' };
     expect(errors(validateLesson(data))).toEqual([
       'scenes[0].type: "video" is not a scene type. Use one of: watch, interact, quiz.',
-      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork, list, card.',
+      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork, list, card, page.',
     ]);
   });
 
@@ -189,6 +189,82 @@ describe('validateLesson', () => {
         expect.stringMatching(/^scenes\[0\]\.visual\.props\[1\]\.concept: nothing is not a concept\./),
         'scenes[0].visual.props[2].key: "age" is used twice: each detail needs its own key.',
         'scenes[0].visual.props[2].value: is 7 characters; a value can have at most 6 so it fits its shape.',
+      ]);
+    });
+  });
+
+  describe('page scenes', () => {
+    const PARTS = [
+      { tag: 'h1', text: 'My page' },
+      { tag: 'p', text: 'I like cats.' },
+    ];
+
+    /** The interact scene, turned into a page scene: one choice finds a part, one changes the page. */
+    function withPage(): { data: Record<string, unknown>; choices: Record<string, unknown>[] } {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      pick['visual'] = { kind: 'page', parts: PARTS, target: 'h1' };
+      const choices = pick['choices'] as Record<string, unknown>[];
+      choices[0]['target'] = 'p';
+      choices[1]['parts'] = [{ tag: 'h1', text: 'Wow!' }, PARTS[1]];
+      choices[1]['target'] = 'h1';
+      return { data, choices };
+    }
+
+    it('accepts choices that find a part or change the page', () => {
+      expect(errors(validateLesson(withPage().data))).toEqual([]);
+    });
+
+    it('needs each choice to change the picture, and to find a part the page has', () => {
+      const { data, choices } = withPage();
+      choices[0]['target'] = 'button';
+      delete choices[1]['parts'];
+      delete choices[1]['target'];
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].target: "button" is not a part on this page. Use one of: h1, p.',
+        'scenes[2].choices[1]: needs target (find a part) or parts (change the page), so the picture changes.',
+      ]);
+    });
+
+    it('checks the target against the page the choice shows', () => {
+      const { data, choices } = withPage();
+      choices[1]['parts'] = [{ tag: 'button', text: 'Click me' }];
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[1].target: "h1" is not a part on this page. Use one of: button.',
+      ]);
+    });
+
+    it('allows target and parts only in page scenes', () => {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      (pick['choices'] as Record<string, unknown>[])[0]['target'] = 'h1';
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].target: is only for page scenes (which part, or the new page).',
+      ]);
+    });
+
+    it('keeps pages small enough to fit, with known tags used once', () => {
+      const data = validLesson();
+      (data['scenes'] as Record<string, unknown>[])[0]['visual'] = {
+        kind: 'page',
+        parts: [
+          { tag: 'div', text: 'Hi' },
+          { tag: 'h1', text: 'A very long title' },
+          { tag: 'h1', text: 'Again' },
+        ],
+      };
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[0].visual.parts[0].tag: "div" is not a page part. Use one of: h1, p, button.',
+        'scenes[0].visual.parts[1].text: is 17 characters; a page part can have at most 12 so it fits.',
+        'scenes[0].visual.parts[2].tag: "h1" is used twice: a page has at most one of each part.',
+      ]);
+    });
+
+    it('needs 1 to 3 parts', () => {
+      const data = validLesson();
+      (data['scenes'] as Record<string, unknown>[])[0]['visual'] = { kind: 'page', parts: [] };
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[0].visual.parts: needs at least 1 items, has 0.',
       ]);
     });
   });

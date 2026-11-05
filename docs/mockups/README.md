@@ -92,7 +92,7 @@ Home, chat and certificate are only mocked at desktop. On smaller screens: stack
 | Array | lists | triangle | `--color-array` |
 | Function | helpers | hexagon | `--color-function` |
 | Variable | jars | tall capsule | `--color-variable` |
-| DOM / html | page magic | hexagon | `--color-html` (needs its own color, see tokens file) |
+| DOM / html | page magic | window | `--color-html` (crimson, ADR 0009) |
 
 ## Accessibility notes already designed in
 
@@ -104,6 +104,5 @@ Home, chat and certificate are only mocked at desktop. On smaller screens: stack
 
 ## Not decided yet
 
-- The DOM concept needs its own color (see the TODO in `design-tokens.css`).
 - Dark and high-contrast themes are not mocked. Derive them by overriding tokens only.
 - Home, chat and certificate are not mocked on phone or tablet (rules above).

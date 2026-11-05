@@ -23,7 +23,28 @@ export type Visual =
   | MachineVisualData
   | ForkVisualData
   | ListVisualData
-  | CardVisualData;
+  | CardVisualData
+  | PageVisualData;
+
+/** The parts a page picture can have: a heading, some words, a button. */
+export const PAGE_TAGS = ['h1', 'p', 'button'] as const;
+export type PageTag = (typeof PAGE_TAGS)[number];
+
+/** One part of a web page, e.g. <h1>My page</h1>. */
+export interface PagePart {
+  readonly tag: PageTag;
+  /** At most 12 characters. */
+  readonly text: string;
+}
+
+/** A web page in a window (the DOM): parts that JavaScript can find and change. */
+export interface PageVisualData {
+  readonly kind: 'page';
+  /** 1 to 3 parts, each tag at most once. */
+  readonly parts: readonly PagePart[];
+  /** The part JavaScript found, e.g. "h1" for document.querySelector("h1"). */
+  readonly target?: PageTag;
+}
 
 /** One named detail of an object, e.g. name: "Tom". */
 export interface CardProp {
@@ -146,6 +167,10 @@ export interface Choice {
   readonly key?: string;
   /** Card scenes only: the details after this choice (e.g. after cat.age = 4). */
   readonly props?: readonly CardProp[];
+  /** Page scenes only: the part this choice finds. */
+  readonly target?: PageTag;
+  /** Page scenes only: the page after this choice (e.g. after textContent = "Wow!"). */
+  readonly parts?: readonly PagePart[];
 }
 
 /** Pick a choice: the picture, the bubble and the code line update together. */

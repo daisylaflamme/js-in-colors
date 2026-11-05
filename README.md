@@ -6,7 +6,7 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
-> Status: nine real lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, and Things with details) run on a data-driven lesson engine; one more is "coming soon". Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. The chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
+> Status: all ten lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, Things with details, and Page magic) run on a data-driven lesson engine. Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. The chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
 
 ## Stack
 
@@ -32,7 +32,7 @@ apps/web-e2e        Cypress smoke + accessibility tests
 libs/ui             Design-system components (each has a Storybook story)
 libs/lesson-engine  Renders lessons from data (scene-type registry)
 libs/data-access    Course and lesson SignalStores, saved progress, settings store (GraphQL later)
-libs/visuals        Lesson pictures: jar, screen, Dot
+libs/visuals        Lesson pictures: jar, screen, Dot, machine, fork, list, card, page
 libs/shared         Concepts, lesson types, content validator
 content/            Lessons as YAML (see content/README.md)
 tools/content       Content build: validate YAML, compile to typed modules

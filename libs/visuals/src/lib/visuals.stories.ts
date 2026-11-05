@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { CONCEPTS } from '@jic/shared';
-import type { CardProp } from '@jic/shared';
+import type { CardProp, PagePart, PageTag } from '@jic/shared';
 import { CardVisualComponent } from './card/card-visual';
 import { DotCharacterComponent } from './dot/dot-character';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
 import { ListVisualComponent } from './list/list-visual';
 import { MachineVisualComponent } from './machine/machine-visual';
+import { PageVisualComponent } from './page/page-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
 
 /** Lesson pictures (libs/visuals). Animations respect reduced motion and the calm-motion setting. */
@@ -186,6 +187,41 @@ export const CardReading: StoryObj<CardArgs> = { ...Card, args: { ...Card.args, 
 export const CardWithOneDetail: StoryObj<CardArgs> = {
   ...Card,
   args: { ...Card.args, name: 'dog', props: [{ key: 'name', value: 'Rex', concept: 'string' }] },
+};
+
+type PageArgs = { parts: PagePart[]; target: PageTag | ''; replayKey: number };
+
+const MY_PAGE: PagePart[] = [
+  { tag: 'h1', text: 'My page' },
+  { tag: 'p', text: 'I like cats.' },
+  { tag: 'button', text: 'Click me' },
+];
+
+export const Page: StoryObj<PageArgs> = {
+  args: { parts: MY_PAGE, target: '', replayKey: 0 },
+  argTypes: {
+    parts: {
+      control: 'object',
+      description: '1 to 3 parts: { tag (h1, p, button, once each), text (max 12) }',
+    },
+    target: {
+      control: 'select',
+      options: ['', 'h1', 'p', 'button'],
+      description: 'Part found (empty = none)',
+    },
+    replayKey: { control: { type: 'number', min: 0 }, description: 'Change to replay the rows' },
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports: [PageVisualComponent] },
+    template: `<jic-page-visual [parts]="parts" [target]="target || undefined" [replayKey]="replayKey" />`,
+  }),
+};
+
+export const PageFindingTheHeading: StoryObj<PageArgs> = { ...Page, args: { ...Page.args, target: 'h1' } };
+export const PageAfterAChange: StoryObj<PageArgs> = {
+  ...Page,
+  args: { ...Page.args, target: 'h1', parts: [{ tag: 'h1', text: 'Wow!' }, ...MY_PAGE.slice(1)] },
 };
 
 export const Dot: StoryObj = {
