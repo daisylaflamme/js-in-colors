@@ -1,3 +1,4 @@
+export * from './lib/card/card-visual';
 export * from './lib/dot/dot-character';
 export * from './lib/fork/fork-visual';
 export * from './lib/jar/jar-visual';

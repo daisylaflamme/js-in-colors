@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { CardVisualComponent } from './card/card-visual';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
 import { ListVisualComponent } from './list/list-visual';
@@ -166,6 +167,56 @@ describe('ListVisualComponent', () => {
   });
 });
 
+describe('CardVisualComponent', () => {
+  const caption = (el: HTMLElement) =>
+    el.querySelector('figcaption')?.textContent?.replace(/\s+/g, ' ').trim();
+  const texts = (el: HTMLElement, selector: string) =>
+    Array.from(el.querySelectorAll(selector)).map((t) => t.textContent);
+  const cat = {
+    name: 'cat',
+    props: [
+      { key: 'name', value: 'Tom', concept: 'string' },
+      { key: 'age', value: '3', concept: 'number' },
+      { key: 'sleepy', value: 'true', concept: 'boolean' },
+    ],
+  };
+
+  it('shows the name and each detail as key and value, and says it in words', async () => {
+    const { el } = await render(CardVisualComponent, cat);
+    expect(el.querySelector('.tag-text')?.textContent).toBe('cat');
+    expect(texts(el, '.key')).toEqual(['name:', 'age:', 'sleepy:']);
+    expect(texts(el, '.value-text')).toEqual(['Tom', '3', 'true']);
+    expect(el.querySelector('circle.value-shape')).not.toBeNull(); // the number
+    expect(el.querySelector('path.value-shape')).not.toBeNull(); // the boolean diamond
+    expect(caption(el)).toBe('A thing called cat: name is Tom, age is 3, sleepy is true.');
+    expect(el.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('marks the detail being read with an outline and a pointer, and says which', async () => {
+    const { el } = await render(CardVisualComponent, { ...cat, key: 'age' });
+    const rows = el.querySelectorAll('.row');
+    expect(rows[1].classList).toContain('read');
+    expect(rows[1].querySelector('.pointer')).not.toBeNull();
+    expect(el.querySelectorAll('.pointer')).toHaveLength(1);
+    expect(caption(el)).toContain('Reading cat.age: 3.');
+  });
+
+  it('grows the card with its details', async () => {
+    const { el } = await render(CardVisualComponent, { name: 'dog', props: [cat.props[0]] });
+    const one = Number(el.querySelector('.card')?.getAttribute('height'));
+    const { el: three } = await render(CardVisualComponent, cat);
+    expect(Number(three.querySelector('.card')?.getAttribute('height'))).toBeGreaterThan(one);
+  });
+
+  it('re-creates the rows (restarting the fade) when replayKey changes', async () => {
+    const { fixture, el } = await render(CardVisualComponent, cat);
+    const before = el.querySelector('.row');
+    fixture.componentRef.setInput('replayKey', 1);
+    await fixture.whenStable();
+    expect(el.querySelector('.row')).not.toBe(before);
+  });
+});
+
 describe('ScreenVisualComponent', () => {
   it('shows output lines as real text', async () => {
     const { el } = await render(ScreenVisualComponent, { lines: ['Hi!', '7'] });
@@ -183,6 +234,10 @@ describe('VisualComponent', () => {
     [{ kind: 'machine', name: 'double' }, 'jic-machine-visual'],
     [{ kind: 'fork', question: 'sunny?', yes: 'park', no: 'books' }, 'jic-fork-visual'],
     [{ kind: 'list', name: 'fruits', items: [] }, 'jic-list-visual'],
+    [
+      { kind: 'card', name: 'cat', props: [{ key: 'age', value: '3', concept: 'number' }] },
+      'jic-card-visual',
+    ],
   ])('renders %o with %s', async (visual, selector) => {
     const { el } = await render(VisualComponent, { visual });
     expect(el.querySelector(selector)).not.toBeNull();
