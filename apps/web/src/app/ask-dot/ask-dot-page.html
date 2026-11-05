@@ -9,7 +9,7 @@
 <div class="layout">
   <section class="chat" aria-labelledby="ask-dot-title">
     <div class="chat-head">
-      <jic-dot-character class="head-dot" />
+      <jic-dot-character class="head-dot" [pose]="store.busy() ? 'thinking' : 'happy'" />
       <div class="head-text">
         <h1 id="ask-dot-title">Ask Dot</h1>
         <p>Dot answers questions about JavaScript.</p>

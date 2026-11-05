@@ -1,4 +1,5 @@
 import { CONCEPT_INFO, type Concept, SHAPE_PATHS, WIDE_SHAPES, WINDOW_PAGE_PATH } from '@jic/shared';
+import { DOT_ART, type DotPose, type DotRole } from '@jic/visuals';
 
 /** The PNG is A4 landscape in shape, big enough to print sharp. */
 export const CERTIFICATE_WIDTH = 1600;
@@ -57,6 +58,8 @@ export type CertificateContext = Pick<
   | 'moveTo'
   | 'lineTo'
   | 'quadraticCurveTo'
+  | 'ellipse'
+  | 'rotate'
   | 'fill'
   | 'stroke'
   | 'fillRect'
@@ -148,7 +151,7 @@ export function drawCertificate(
   line(ctx, CX - 170, 980, CX + 170, 980, palette.ink, 4);
   text(ctx, CERTIFICATE_TEXT.dateLabel, 1020, `700 26px ${BODY_FONT}`, palette.muted);
 
-  drawDot(ctx, palette, 140, 830, 1.6);
+  drawDot(ctx, palette, path, 'cheering', 140, 830, 1.6);
   drawSeal(ctx, palette, path, CERTIFICATE_WIDTH - 250, 930);
   ctx.restore();
 }
@@ -237,44 +240,61 @@ function drawSeal(
   ctx.restore();
 }
 
-/**
- * Dot, drawn like the placeholder DotCharacterComponent (libs/visuals, viewBox 120 x 130).
- * Keep the two in step until the real Dot artwork replaces both.
- */
-function drawDot(ctx: CertificateContext, palette: CertificatePalette, x: number, y: number, s: number) {
+/** Dot, from the same artwork data the app renders (libs/visuals dot-art.ts, viewBox 120 x 130). */
+function drawDot(
+  ctx: CertificateContext,
+  palette: CertificatePalette,
+  path: PathFactory,
+  pose: DotPose,
+  x: number,
+  y: number,
+  s: number,
+) {
+  const art = DOT_ART[pose];
+  const color = (role: DotRole): string => {
+    switch (role) {
+      case 'accent':
+        return palette.accent;
+      case 'outline':
+      case 'face':
+        return palette.ink;
+      case 'white':
+        return palette.paper;
+      default:
+        return palette.concepts[role];
+    }
+  };
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(s, s);
-  ctx.strokeStyle = palette.ink;
+  const tilt = art.transform && /rotate((-?[d.]+) ([d.]+) ([d.]+))/.exec(art.transform);
+  if (tilt) {
+    const [, deg, cx, cy] = tilt.map(Number);
+    ctx.translate(cx, cy);
+    ctx.rotate((deg * Math.PI) / 180);
+    ctx.translate(-cx, -cy);
+  }
   ctx.lineCap = 'round';
-  const circle = (cx: number, cy: number, r: number, fill: string, stroke = 0) => {
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = fill;
-    ctx.fill();
-    if (stroke) {
-      ctx.lineWidth = stroke;
-      ctx.stroke();
+  ctx.lineJoin = 'round';
+  for (const shape of art.shapes) {
+    let outline: Path2D | undefined;
+    if (shape.tag === 'path') outline = path(shape.d ?? '');
+    else {
+      ctx.beginPath();
+      if (shape.tag === 'circle') ctx.arc(shape.cx ?? 0, shape.cy ?? 0, shape.r ?? 0, 0, Math.PI * 2);
+      else ctx.ellipse(shape.cx ?? 0, shape.cy ?? 0, shape.rx ?? 0, shape.ry ?? 0, 0, 0, Math.PI * 2);
     }
-  };
-  const curve = (x1: number, y1: number, qx: number, qy: number, x2: number, y2: number) => {
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.quadraticCurveTo(qx, qy, x2, y2);
-    ctx.stroke();
-  };
-  curve(60, 30, 58, 14, 70, 10);
-  circle(72, 9, 6, palette.concepts.function, 5);
-  circle(60, 78, 46, palette.accent, 5);
-  circle(44, 72, 9, palette.paper, 3);
-  circle(76, 72, 9, palette.paper, 3);
-  circle(46, 73, 4, palette.ink);
-  circle(78, 73, 4, palette.ink);
-  curve(46, 94, 60, 104, 74, 94);
-  circle(28, 60, 4.5, palette.concepts.number);
-  circle(94, 58, 4, palette.concepts.function);
-  circle(98, 88, 4.5, palette.concepts.boolean);
-  circle(22, 92, 4, palette.concepts.string);
+    if (shape.fill) {
+      ctx.fillStyle = color(shape.fill);
+      if (outline) ctx.fill(outline);
+      else ctx.fill();
+    }
+    if (shape.stroke) {
+      ctx.strokeStyle = color(shape.stroke);
+      ctx.lineWidth = shape.strokeWidth ?? 1;
+      if (outline) ctx.stroke(outline);
+      else ctx.stroke();
+    }
+  }
   ctx.restore();
 }
