@@ -16,7 +16,23 @@ export interface CodeNoteData {
 }
 
 /** Pictures a scene can show. Each kind is a component in libs/visuals. */
-export type Visual = JarVisualData | ScreenVisualData | DotVisualData | MachineVisualData;
+export type Visual = JarVisualData | ScreenVisualData | DotVisualData | MachineVisualData | ForkVisualData;
+
+/** Which way a fork goes: the `if` path ("yes", true) or the `else` path ("no", false). */
+export type ForkPath = 'yes' | 'no';
+
+/** A condition as a fork in the road: a yes-or-no question picks the path. */
+export interface ForkVisualData {
+  readonly kind: 'fork';
+  /** The condition on the signpost, e.g. "sunny?" (at most 12 characters). */
+  readonly question: string;
+  /** Where the yes (true) path leads (at most 12 characters). */
+  readonly yes: string;
+  /** Where the no (false) path leads (at most 12 characters). */
+  readonly no: string;
+  /** The path taken; none means still deciding. */
+  readonly take?: ForkPath;
+}
 
 export interface JarVisualData {
   readonly kind: 'jar';
@@ -80,6 +96,8 @@ export interface Choice {
   readonly result?: string;
   /** Screen scenes only: the lines shown when picked, e.g. a loop's output (default: `value`). */
   readonly lines?: readonly string[];
+  /** Fork scenes only: which path this choice takes. */
+  readonly path?: ForkPath;
 }
 
 /** Pick a choice: the picture, the bubble and the code line update together. */

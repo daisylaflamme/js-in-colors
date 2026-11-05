@@ -7,11 +7,7 @@
 </div>
 
 <h1 class="title">{{ title() }}</h1>
-<p class="lead">
-  @let parts = leadParts();
-  {{ parts.before }}
-  @if (parts.word) {
-    <span class="highlight">{{ parts.word }}</span>
-  }
-  {{ parts.after }}
-</p>
+@let parts = leadParts();
+<!-- One line on purpose: line breaks here render as spaces ("a path ."). Prettier would re-wrap it. -->
+<!-- prettier-ignore -->
+<p class="lead">{{ parts.before }}@if (parts.word) {<span class="highlight">{{ parts.word }}</span>}{{ parts.after }}</p>

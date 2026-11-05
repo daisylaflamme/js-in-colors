@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { CONCEPTS } from '@jic/shared';
 import { DotCharacterComponent } from './dot/dot-character';
+import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
 import { MachineVisualComponent } from './machine/machine-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
@@ -94,6 +95,34 @@ export const IdleMachine: StoryObj<MachineArgs> = {
 export const MachineWithWords: StoryObj<MachineArgs> = {
   ...Machine,
   args: { ...Machine.args, name: 'shout', input: 'hi', output: 'HI!', concept: 'string' },
+};
+
+type ForkArgs = { question: string; yes: string; no: string; take: 'yes' | 'no' | ''; replayKey: number };
+
+export const Fork: StoryObj<ForkArgs> = {
+  args: { question: 'sunny?', yes: 'park', no: 'books', take: 'yes', replayKey: 0 },
+  argTypes: {
+    question: { control: 'text', description: 'The condition on the signpost (max 12 characters)' },
+    yes: { control: 'text', description: 'Where the yes (true) path leads' },
+    no: { control: 'text', description: 'Where the no (false) path leads' },
+    take: {
+      control: 'inline-radio',
+      options: ['yes', 'no', ''],
+      description: 'Path taken (empty = deciding)',
+    },
+    replayKey: { control: { type: 'number', min: 0 }, description: 'Change to replay the walk' },
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports: [ForkVisualComponent] },
+    template: `<jic-fork-visual [question]="question" [yes]="yes" [no]="no" [take]="take || undefined" [replayKey]="replayKey" />`,
+  }),
+};
+
+export const ForkTakesNo: StoryObj<ForkArgs> = { ...Fork, args: { ...Fork.args, take: 'no' } };
+export const ForkDeciding: StoryObj<ForkArgs> = {
+  ...Fork,
+  args: { ...Fork.args, question: 'age >= 7?', yes: 'big slide', no: 'small slide', take: '' },
 };
 
 export const Dot: StoryObj = {

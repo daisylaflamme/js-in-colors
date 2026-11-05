@@ -127,8 +127,59 @@ describe('validateLesson', () => {
     scenes[1]['visual'] = { kind: 'box' };
     expect(errors(validateLesson(data))).toEqual([
       'scenes[0].type: "video" is not a scene type. Use one of: watch, interact, quiz.',
-      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine.',
+      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork.',
     ]);
+  });
+
+  describe('fork scenes', () => {
+    const FORK = { kind: 'fork', question: 'sunny?', yes: 'park', no: 'books' };
+
+    /** The interact scene, turned into a fork scene with a path on each choice. */
+    function withFork(): { data: Record<string, unknown>; choices: Record<string, unknown>[] } {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      pick['visual'] = { ...FORK };
+      const choices = pick['choices'] as Record<string, unknown>[];
+      choices[0]['path'] = 'yes';
+      choices[1]['path'] = 'no';
+      return { data, choices };
+    }
+
+    it('accepts a fork with a path on every choice', () => {
+      expect(errors(validateLesson(withFork().data))).toEqual([]);
+    });
+
+    it('requires a yes or no path on each choice of a fork scene', () => {
+      const { data, choices } = withFork();
+      delete choices[0]['path'];
+      choices[1]['path'] = 'maybe';
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].path: is required ("yes" or "no").',
+        'scenes[2].choices[1].path: should be "yes" or "no", got "maybe".',
+      ]);
+    });
+
+    it('allows a path only in fork scenes', () => {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      (pick['choices'] as Record<string, unknown>[])[0]['path'] = 'yes';
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].path: is only for fork scenes (which way the fork goes).',
+      ]);
+    });
+
+    it('keeps labels short enough to fit, and take is yes or no', () => {
+      const data = validLesson();
+      (data['scenes'] as Record<string, unknown>[])[0]['visual'] = {
+        ...FORK,
+        yes: 'the big playground',
+        take: 'left',
+      };
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[0].visual.yes: is 18 characters; a fork label can have at most 12 so it fits the picture.',
+        'scenes[0].visual.take: should be "yes" or "no", got "left".',
+      ]);
+    });
   });
 
   describe('screen scenes with lines', () => {

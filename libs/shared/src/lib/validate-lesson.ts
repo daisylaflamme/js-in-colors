@@ -216,11 +216,41 @@ function checkVisual(c: Checker, value: unknown, path: IssuePath): void {
         );
       }
       return;
+    case 'fork':
+      c.knownKeys(v, path, ['kind', 'question', 'yes', 'no', 'take']);
+      for (const key of ['question', 'yes', 'no']) {
+        const text = c.string(v, key, path);
+        if (text !== undefined && text.length > FORK_LABEL_MAX) {
+          c.error(
+            [...path, key],
+            `is ${text.length} characters; a fork label can have at most ${FORK_LABEL_MAX} so it fits the picture.`,
+          );
+        }
+      }
+      checkForkPath(c, v, 'take', path, true);
+      return;
     default:
       c.error(
         [...path, 'kind'],
-        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine.`,
+        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork.`,
       );
+  }
+}
+
+/** Fork signpost and path labels must fit the SVG. */
+const FORK_LABEL_MAX = 12;
+
+/** "yes" or "no": which way a fork goes. */
+function checkForkPath(c: Checker, obj: Obj, key: string, path: IssuePath, optional: boolean): void {
+  const value = obj[key];
+  if (value === undefined && optional) return;
+  if (value !== 'yes' && value !== 'no') {
+    c.error(
+      [...path, key],
+      value === undefined
+        ? 'is required ("yes" or "no").'
+        : `should be "yes" or "no", got ${describe(value)}.`,
+    );
   }
 }
 
@@ -259,7 +289,20 @@ function checkScene(c: Checker, value: unknown, path: IssuePath): void {
         const at = [...path, 'choices', i];
         const choice = c.object(ch, at);
         if (!choice) return;
-        c.knownKeys(choice, at, ['id', 'label', 'concept', 'value', 'bubble', 'code', 'result', 'lines']);
+        c.knownKeys(choice, at, [
+          'id',
+          'label',
+          'concept',
+          'value',
+          'bubble',
+          'code',
+          'result',
+          'lines',
+          'path',
+        ]);
+        if (kind === 'fork') checkForkPath(c, choice, 'path', at, false);
+        else if (choice['path'] !== undefined)
+          c.error([...at, 'path'], 'is only for fork scenes (which way the fork goes).');
         if (kind === 'screen') {
           const lines = c.array(choice, 'lines', at, { optional: true, min: 1, max: 4 });
           lines?.forEach((line, j) => {

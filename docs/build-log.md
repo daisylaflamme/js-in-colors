@@ -3,6 +3,34 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Lesson 7: Yes or no paths (conditions)
+
+Branch `feat/lesson-conditions`.
+
+**Built**
+
+- A new `fork` visual: a road that splits at a signpost holding the condition (`sunny?`). The yes (`true`) path goes left and the no (`false`) path goes right, each ending in a boolean diamond and a label.
+  - The taken path is bold and in the boolean color; the other is thin, dashed and muted, so the difference never rests on color alone.
+  - A marker walks down the taken path. With Calm or reduced motion it's simply at the end.
+  - The caption says it all in words.
+- Choices in fork scenes carry a `path` (`yes` or `no`), because the value alone can't say which way to go (age 5 → no, 9 → yes). The validator keeps fork labels to 12 characters so they fit.
+- `content/lessons/conditions.yaml`, 5 scenes:
+  1. A fork in the road.
+  2. Is it sunny? (`true` / `false`)
+  3. The `else` path.
+  4. How old is Dot? (`age >= 7`)
+  5. A quiz on `if (false)`.
+
+**Found and fixed along the way**
+
+- Lesson leads showed a stray space before punctuation when the highlighted word ended the sentence ("picks a path ."). The line breaks around the highlight in `LessonHeader`'s template rendered as spaces, and the unit test collapsed whitespace, so it never noticed. The template is now one line under `prettier-ignore` (Prettier re-wrapped it), and a new test checks the exact text.
+- In the dark theme, the first draft of the fork was nearly invisible: it drew roads and labels with `--color-ink`, which stays dark. Anything drawn straight on the stage now uses `--color-text`; this is noted in CLAUDE.md.
+
+**Checks**
+
+- Content valid: 7 lessons, 0 warnings. Lint, unit tests, build and the Storybook build: green.
+- Screenshots at 390, 820 and 1440 px and in all three themes; no horizontal overflow at 320 px.
+
 ## 2026-11-05 · Lesson 6: Again and again (loops)
 
 Branch `feat/lesson-loops`.

@@ -93,6 +93,15 @@ describe('LessonHeaderComponent', () => {
     );
   });
 
+  it('adds no space around the highlight, even before punctuation', async () => {
+    const { el } = await render(LessonHeaderComponent, {
+      ...base,
+      lead: 'It asks, then picks a path.',
+      leadHighlight: 'path',
+    });
+    expect(el.querySelector('.lead')?.textContent).toBe('It asks, then picks a path.'); // exact: not "path ."
+  });
+
   it('copes with a highlight that is not in the lead', async () => {
     const { el } = await render(LessonHeaderComponent, { ...base, lead: 'Hello.', leadHighlight: 'jar' });
     expect(el.querySelector('.highlight')).toBeNull();

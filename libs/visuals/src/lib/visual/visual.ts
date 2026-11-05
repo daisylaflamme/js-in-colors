@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import type { Visual } from '@jic/shared';
 import { DotCharacterComponent } from '../dot/dot-character';
+import { ForkVisualComponent } from '../fork/fork-visual';
 import { JarVisualComponent } from '../jar/jar-visual';
 import { MachineVisualComponent } from '../machine/machine-visual';
 import { ScreenVisualComponent } from '../screen/screen-visual';
@@ -9,7 +10,13 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
 @Component({
   selector: 'jic-visual',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DotCharacterComponent, JarVisualComponent, MachineVisualComponent, ScreenVisualComponent],
+  imports: [
+    DotCharacterComponent,
+    ForkVisualComponent,
+    JarVisualComponent,
+    MachineVisualComponent,
+    ScreenVisualComponent,
+  ],
   host: { style: 'display: contents' },
   template: `
     @let v = visual();
@@ -34,6 +41,15 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
           [input]="v.input"
           [output]="v.output"
           [concept]="v.concept ?? 'number'"
+          [replayKey]="replayKey()"
+        />
+      }
+      @case ('fork') {
+        <jic-fork-visual
+          [question]="v.question"
+          [yes]="v.yes"
+          [no]="v.no"
+          [take]="v.take"
           [replayKey]="replayKey()"
         />
       }
