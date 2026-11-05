@@ -30,13 +30,10 @@
   --color-variable: #0e8f94;
   --color-variable-text: #0a6e73;
   --color-variable-tint: #d5f4f5;
-  /*
-   * Page magic (the DOM, "html"): the mockups draw a hexagon in the boolean
-   * purple. TODO (first design task): give it its own color and re-check contrast.
-   */
-  --color-html: #6d3bd2;
-  --color-html-text: #5b2fb8;
-  --color-html-tint: #eadfff;
+  /* Page magic (the DOM, "html"): window (ADR 0009) */
+  --color-html: #c62828;
+  --color-html-text: #a51f1f;
+  --color-html-tint: #ffe0e0;
 
   /* Neutrals */
   --color-ink: #1b1f4b; /* text, outlines (14.5:1 on ground) */

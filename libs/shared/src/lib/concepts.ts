@@ -19,7 +19,7 @@ export const CONCEPTS = [
 export type Concept = (typeof CONCEPTS)[number];
 
 export type ConceptShape =
-  'circle' | 'pill' | 'diamond' | 'rounded-square' | 'triangle' | 'hexagon' | 'capsule' | 'star';
+  'circle' | 'pill' | 'diamond' | 'rounded-square' | 'triangle' | 'hexagon' | 'capsule' | 'star' | 'window';
 
 export interface ConceptInfo {
   readonly concept: Concept;
@@ -38,7 +38,7 @@ export const CONCEPT_INFO: Readonly<Record<Concept, ConceptInfo>> = {
   array: { concept: 'array', kidWord: 'lists', jsWord: 'Array', shape: 'triangle' },
   function: { concept: 'function', kidWord: 'helpers', jsWord: 'Function', shape: 'hexagon' },
   variable: { concept: 'variable', kidWord: 'jars', jsWord: 'Variable', shape: 'capsule' },
-  html: { concept: 'html', kidWord: 'page magic', jsWord: 'DOM', shape: 'hexagon' },
+  html: { concept: 'html', kidWord: 'page magic', jsWord: 'DOM', shape: 'window' },
   intro: { concept: 'intro', kidWord: 'start here', jsWord: 'JavaScript', shape: 'star' },
 };
 
