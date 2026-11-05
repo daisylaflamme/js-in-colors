@@ -36,3 +36,4 @@ vitest.config.*.timestamp*
 
 # generated from content/ by tools/content/build-content.ts
 libs/data-access/src/generated/
+lighthouse-reports/

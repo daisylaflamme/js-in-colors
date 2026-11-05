@@ -116,3 +116,13 @@ jobs:
 
       - name: Lighthouse
         run: npm run lighthouse
+        env:
+          LIGHTHOUSE_REPORTS: lighthouse-reports
+
+      - name: Upload the Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports
+          retention-days: 7

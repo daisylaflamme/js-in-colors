@@ -8,7 +8,7 @@
 // way and were wrong). So every run's CPU benchmark is printed, and a run below MIN_BENCHMARK marks
 // the result unreliable. Close other heavy apps (and Cypress) and run again.
 import { spawnSync } from 'node:child_process';
-import { appendFileSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -24,7 +24,10 @@ const PAGES = [
 const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 
 const base = (process.argv[2] ?? 'http://localhost:4300').replace(/\/$/, '');
-const dir = mkdtempSync(join(tmpdir(), 'jic-lighthouse-'));
+// LIGHTHOUSE_REPORTS=<dir> keeps every JSON report there (CI uploads them); otherwise a temp dir.
+const keep = process.env.LIGHTHOUSE_REPORTS;
+if (keep) mkdirSync(keep, { recursive: true });
+const dir = keep ?? mkdtempSync(join(tmpdir(), 'jic-lighthouse-'));
 const median = (values) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
 
 function run(url, file) {
@@ -53,7 +56,7 @@ try {
     const reports = [];
     for (let i = 0; i < RUNS; i++) {
       process.stdout.write(`${name}: run ${i + 1} of ${RUNS}\n`);
-      reports.push(run(base + path, join(dir, `${i}.json`)));
+      reports.push(run(base + path, join(dir, `${name.toLowerCase().replace(/ /g, '-')}-${i + 1}.json`)));
     }
     const score = (id) => median(reports.map((r) => Math.round(r.categories[id].score * 100)));
     const metric = (id) => median(reports.map((r) => r.audits[id].numericValue));
@@ -72,7 +75,7 @@ try {
     });
   }
 } finally {
-  rmSync(dir, { recursive: true, force: true });
+  if (!keep) rmSync(dir, { recursive: true, force: true });
 }
 
 const title = `Lighthouse ${LIGHTHOUSE.split('@')[1]}, mobile preset, median of ${RUNS} runs, ${base}`;
