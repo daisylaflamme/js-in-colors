@@ -3,6 +3,32 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Lighthouse and the build story
+
+Branch `docs/lighthouse-and-writeup`.
+
+**Measured** (Lighthouse 13.6, mobile preset, production build served locally, median of 3 runs per page)
+
+| Page        | Performance | Accessibility | Best practices | SEO | LCP    | TBT    | CLS   |
+| ----------- | ----------- | ------------- | -------------- | --- | ------ | ------ | ----- |
+| Home        | 78          | 100           | 100            | 100 | 0.66 s | 1.03 s | 0.001 |
+| Lesson      | 73          | 100           | 100            | 100 | 0.67 s | 1.64 s | 0.051 |
+| Certificate | 78          | 100           | 100            | 100 | 0.68 s | 1.02 s | 0.001 |
+| Ask Dot     | 77          | 100           | 100            | 100 | 0.67 s | 1.08 s | 0     |
+
+- **Performance misses the 95 target.** Everything but Total Blocking Time is good. Most of it is one long start-up task in the framework and app chunk (Angular boot plus the first render, about 650 ms under the 4x throttle), plus style and layout work.
+- This machine's Lighthouse CPU benchmark was 445 to 644. The 4x slowdown assumes a fast desktop, so blocking time is overstated here. The numbers are recorded as measured anyway, not with a friendlier throttle.
+- Open work: measure on a faster machine or in CI, and split the start-up task.
+
+**Fixed**
+
+- SEO was 91: there was no `robots.txt`, so the server answered with the app's HTML. `apps/web/public/robots.txt` now allows everything (nothing private lives on the server), and SEO is 100.
+
+**Written**
+
+- The README's "How I built this with Claude Code": the rulebook, plan mode and the owner's decisions, mockups as truth, small PRs, and where tools and judgment each caught problems.
+- The README's accessibility table now covers every lesson, the certificate, Ask Dot and the privacy checks, with the current bundle size.
+
 ## 2026-11-05 · Ask Dot, in demo mode
 
 Branch `feat/ask-dot`.
