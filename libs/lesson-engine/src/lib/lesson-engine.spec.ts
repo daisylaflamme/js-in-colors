@@ -119,6 +119,46 @@ describe('InteractScene', () => {
     const scene = fixture.componentInstance.current as InteractSceneComponent;
     expect(scene.visual()).toEqual({ kind: 'jar', name: 'favorite', value: 'Emma', concept: 'string' });
   });
+
+  it('feeds the picked choice into a machine: value goes in, result comes out', async () => {
+    const machineScene: Scene = {
+      id: 'feed',
+      type: 'interact',
+      prompt: 'Feed the machine:',
+      visual: { kind: 'machine', name: 'double' },
+      choices: [
+        {
+          id: 'two',
+          label: '2',
+          concept: 'number',
+          value: '2',
+          result: '4',
+          bubble: '2 in, 4 out!',
+          code: 'double(2)',
+        },
+        {
+          id: 'five',
+          label: '5',
+          concept: 'number',
+          value: '5',
+          result: '10',
+          bubble: '5 in, 10 out!',
+          code: 'double(5)',
+        },
+      ],
+    };
+    const { fixture, el } = await host(machineScene, { pickedChoiceId: 'five', answeredOptionId: null });
+    expect(el.querySelector('jic-machine-visual .in .token-text')?.textContent).toBe('5');
+    expect(el.querySelector('jic-machine-visual .out .token-text')?.textContent).toBe('10');
+    const scene = fixture.componentInstance.current as InteractSceneComponent;
+    expect(scene.visual()).toEqual({
+      kind: 'machine',
+      name: 'double',
+      input: '5',
+      output: '10',
+      concept: 'number',
+    });
+  });
 });
 
 describe('QuizScene', () => {

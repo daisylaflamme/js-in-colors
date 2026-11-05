@@ -111,14 +111,17 @@ describe('themes', () => {
         [390, 844],
         [1440, 900],
       ] as const) {
-        cy.viewport(w, h);
-        cy.visit('/lesson/variables');
-        cy.document().then((doc) => doc.documentElement.setAttribute('data-theme', theme));
-        cy.get('h1').should('be.visible');
-        cy.checkPageA11y();
-        cy.get('jic-help-tabs button.library').click();
-        cy.get('dialog.library').should('match', '[open]');
-        cy.checkPageA11y();
+        // Variables opens on the jar, Functions on the machine.
+        for (const path of ['/lesson/variables', '/lesson/functions']) {
+          cy.viewport(w, h);
+          cy.visit(path);
+          cy.document().then((doc) => doc.documentElement.setAttribute('data-theme', theme));
+          cy.get('h1').should('be.visible');
+          cy.checkPageA11y();
+          cy.get('jic-help-tabs button.library').click();
+          cy.get('dialog.library').should('match', '[open]');
+          cy.checkPageA11y();
+        }
       }
     });
   }

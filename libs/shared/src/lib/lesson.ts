@@ -16,7 +16,7 @@ export interface CodeNoteData {
 }
 
 /** Pictures a scene can show. Each kind is a component in libs/visuals. */
-export type Visual = JarVisualData | ScreenVisualData | DotVisualData;
+export type Visual = JarVisualData | ScreenVisualData | DotVisualData | MachineVisualData;
 
 export interface JarVisualData {
   readonly kind: 'jar';
@@ -35,6 +35,19 @@ export interface ScreenVisualData {
 
 export interface DotVisualData {
   readonly kind: 'dot';
+}
+
+/** A function as a machine: something goes in, something comes out. */
+export interface MachineVisualData {
+  readonly kind: 'machine';
+  /** The name plate (the function's name). */
+  readonly name: string;
+  /** What goes in, if anything. */
+  readonly input?: string;
+  /** What comes out, if anything. */
+  readonly output?: string;
+  /** Colors and shapes both input and output. */
+  readonly concept?: Concept;
 }
 
 interface SceneBase {
@@ -63,6 +76,8 @@ export interface Choice {
   readonly bubble: string;
   /** The line of JavaScript for this choice. */
   readonly code: string;
+  /** Machine scenes only: what comes out when `value` goes in. */
+  readonly result?: string;
 }
 
 /** Pick a choice: the picture, the bubble and the code line update together. */
