@@ -3,6 +3,26 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Lesson 6: Again and again (loops)
+
+Branch `feat/lesson-loops`.
+
+**Built**
+
+- `content/lessons/loops.yaml`, 5 scenes:
+  1. The long way (three `console.log` lines).
+  2. The same thing as one `for` loop.
+  3. Pick how many jumps.
+  4. Count up with `i`.
+  5. A quiz on how many times `i < 4` runs.
+- Choices may now carry `lines` (1 to 4) in screen scenes, so a picked choice can fill the screen with a loop's output. The screen already fades lines in one by one, so it needed no new visual. The validator allows `lines` only in screen scenes, the same way `result` is limited to machine scenes.
+- Loops ships before Conditions, which needs a new visual; Conditions is next.
+
+**Checks**
+
+- Content valid: 6 lessons, 0 warnings. Lint, unit tests and build: green.
+- `lessons.cy.ts` walked the new lesson with no spec change. Together with `smoke.cy.ts`: 31 of 31.
+
 ## 2026-11-04 · Lesson 5: Magic machines (functions)
 
 Branch `feat/lesson-functions`.

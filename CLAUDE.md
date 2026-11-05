@@ -157,7 +157,7 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Lessons are data: add or edit YAML in `content/`, then `npx nx run content:validate`. No code for a new lesson unless it needs a new visual or scene type.
 - E2E coverage is automatic: `cypress.config.ts` reads the ready lessons from `content/` at startup, and `lessons.cy.ts` walks each one with the keyboard (axe per scene, the correct quiz answer). No spec change for a new lesson.
 - Scene types: `watch`, `interact`, `quiz`. A new type = one component implementing `SceneComponent` (`libs/lesson-engine`) + a `provideSceneTypes()` entry + the type in `libs/shared/src/lib/lesson.ts` + a validator rule and test.
-- Visuals: `jar`, `screen`, `dot`, `machine` in `libs/visuals`; add the kind to the `Visual` type, the validator, `VisualComponent` and the interact merge in `interact-scene.ts` (how a picked choice changes the picture). Machine scenes give each choice a `result` (what comes out); the validator allows `result` only there.
+- Visuals: `jar`, `screen`, `dot`, `machine` in `libs/visuals`; add the kind to the `Visual` type, the validator, `VisualComponent` and the interact merge in `interact-scene.ts` (how a picked choice changes the picture). Machine scenes give each choice a `result` (what comes out); screen scenes may give a choice `lines` (1 to 4, e.g. a loop's output; default is its `value`). The validator allows each only in its own scene kind.
 - Smart/dumb: `LessonPage` (apps/web) owns the stores; scene components only get `scene` + `state` and emit `action`.
 - Concepts: the eight JS concepts plus `intro` (accent + outlined star, course opener only).
 
