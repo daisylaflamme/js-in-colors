@@ -1,0 +1,4 @@
+# JavaScript in Colors: every page may be indexed. There is nothing private on the server:
+# progress, the certificate name and the chat all stay in the browser.
+User-agent: *
+Allow: /
