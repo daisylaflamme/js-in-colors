@@ -1,0 +1,158 @@
+id: arrays
+title: Lists of things
+topic: Arrays
+lead: An array is a list. Many things, in order, with one name.
+leadHighlight: list
+concept: array
+tip: Spots in a list start at 0, not 1.
+library:
+  title: All about lists
+  sections:
+    - heading: What is an array?
+      text: An array is a list. It keeps many things in order under one name.
+    - heading: Square brackets
+      text: A list lives inside [ and ]. Commas go between the things.
+    - heading: Every spot has a number
+      text: The first spot is 0. The next is 1, then 2. fruits[0] means the first fruit.
+    - heading: Adding to a list
+      text: push adds a new thing at the end. The list gets longer.
+    - heading: How long is it?
+      text: fruits.length tells you how many things are in the list.
+  examples:
+    - concept: array
+      label: A list
+      value: '["apple", "pear"]'
+    - concept: number
+      label: A spot
+      value: fruits[0]
+    - concept: function
+      label: Add one
+      value: push
+  words:
+    - term: array
+      meaning: a list
+    - term: index
+      meaning: the spot number
+    - term: push
+      meaning: add at the end
+scenes:
+  - id: meet-the-list
+    type: watch
+    bubble: A list keeps many things in order. One name, many things.
+    visual:
+      kind: list
+      name: fruits
+      items: [apple, pear, plum]
+      concept: string
+    code: let fruits = ["apple", "pear", "plum"];
+    notes:
+      - term: '[ ]'
+        text: hold the list
+      - term: ','
+        text: goes between the things
+  - id: count-from-zero
+    type: watch
+    bubble: Every spot has a number. Counting starts at 0!
+    visual:
+      kind: list
+      name: fruits
+      items: [apple, pear, plum]
+      concept: string
+      index: 0
+    code: fruits[0]
+    notes:
+      - term: '[0]'
+        text: 'means: the first spot'
+  - id: pick-a-spot
+    type: interact
+    prompt: 'Pick a spot:'
+    visual:
+      kind: list
+      name: fruits
+      items: [apple, pear, plum]
+      concept: string
+    choices:
+      - id: zero
+        label: '0'
+        concept: number
+        value: '0'
+        index: 0
+        bubble: fruits[0] is apple. The first spot is 0!
+        code: fruits[0]
+      - id: one
+        label: '1'
+        concept: number
+        value: '1'
+        index: 1
+        bubble: fruits[1] is pear. That is the second fruit.
+        code: fruits[1]
+      - id: two
+        label: '2'
+        concept: number
+        value: '2'
+        index: 2
+        bubble: fruits[2] is plum. The last one here.
+        code: fruits[2]
+    notes:
+      - term: '[1]'
+        text: picks the thing at spot 1
+  - id: add-a-fruit
+    type: interact
+    prompt: 'Add a fruit:'
+    visual:
+      kind: list
+      name: fruits
+      items: [apple, pear, plum]
+      concept: string
+    choices:
+      - id: kiwi
+        label: kiwi
+        concept: string
+        value: kiwi
+        items: [apple, pear, plum, kiwi]
+        index: 3
+        bubble: kiwi goes at the end, at spot 3.
+        code: fruits.push("kiwi");
+      - id: fig
+        label: fig
+        concept: string
+        value: fig
+        items: [apple, pear, plum, fig]
+        index: 3
+        bubble: fig joins the list. Now there are four fruits!
+        code: fruits.push("fig");
+      - id: lime
+        label: lime
+        concept: string
+        value: lime
+        items: [apple, pear, plum, lime]
+        index: 3
+        bubble: lime is new, so it goes last.
+        code: fruits.push("lime");
+    notes:
+      - term: push
+        text: adds a thing at the end
+  - id: spot-check
+    type: quiz
+    question: 'pets is ["cat", "dog", "fish"]. What is pets[1]?'
+    visual:
+      kind: list
+      name: pets
+      items: [cat, dog, fish]
+      concept: string
+    options:
+      - id: dog
+        label: dog
+        concept: string
+        correct: true
+        feedback: Yes! Spot 0 is cat, so spot 1 is dog.
+      - id: cat
+        label: cat
+        concept: string
+        correct: false
+        feedback: Close! cat is at spot 0. Try another one!
+      - id: fish
+        label: fish
+        concept: string
+        correct: false
+        feedback: Not quite. fish is at spot 2. Try another one!

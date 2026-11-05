@@ -3,6 +3,7 @@ import { CONCEPTS } from '@jic/shared';
 import { DotCharacterComponent } from './dot/dot-character';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
+import { ListVisualComponent } from './list/list-visual';
 import { MachineVisualComponent } from './machine/machine-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
 
@@ -124,6 +125,37 @@ export const ForkDeciding: StoryObj<ForkArgs> = {
   ...Fork,
   args: { ...Fork.args, question: 'age >= 7?', yes: 'big slide', no: 'small slide', take: '' },
 };
+
+type ListArgs = {
+  name: string;
+  items: string[];
+  concept: (typeof CONCEPTS)[number];
+  index: number;
+  replayKey: number;
+};
+
+export const List: StoryObj<ListArgs> = {
+  args: { name: 'fruits', items: ['apple', 'pear', 'plum'], concept: 'string', index: -1, replayKey: 0 },
+  argTypes: {
+    name: { control: 'text', description: 'Name tag (max 10 characters)' },
+    items: { control: 'object', description: '0 to 4 items, max 6 characters each' },
+    concept: { control: 'select', options: CONCEPTS },
+    index: { control: { type: 'number', min: -1, max: 3 }, description: 'Spot to point at (-1 = none)' },
+    replayKey: { control: { type: 'number', min: 0 }, description: 'Change to replay the pop-in' },
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports: [ListVisualComponent] },
+    template: `<jic-list-visual [name]="name" [items]="items" [concept]="concept" [index]="index < 0 ? undefined : index" [replayKey]="replayKey" />`,
+  }),
+};
+
+export const ListPointing: StoryObj<ListArgs> = { ...List, args: { ...List.args, index: 1 } };
+export const ListOfNumbers: StoryObj<ListArgs> = {
+  ...List,
+  args: { ...List.args, name: 'scores', items: ['3', '10', '7', '42'], concept: 'number', index: 3 },
+};
+export const EmptyList: StoryObj<ListArgs> = { ...List, args: { ...List.args, items: [] } };
 
 export const Dot: StoryObj = {
   render: () => ({

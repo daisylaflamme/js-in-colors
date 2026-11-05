@@ -3,6 +3,7 @@ import type { Visual } from '@jic/shared';
 import { DotCharacterComponent } from '../dot/dot-character';
 import { ForkVisualComponent } from '../fork/fork-visual';
 import { JarVisualComponent } from '../jar/jar-visual';
+import { ListVisualComponent } from '../list/list-visual';
 import { MachineVisualComponent } from '../machine/machine-visual';
 import { ScreenVisualComponent } from '../screen/screen-visual';
 
@@ -14,6 +15,7 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
     DotCharacterComponent,
     ForkVisualComponent,
     JarVisualComponent,
+    ListVisualComponent,
     MachineVisualComponent,
     ScreenVisualComponent,
   ],
@@ -50,6 +52,15 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
           [yes]="v.yes"
           [no]="v.no"
           [take]="v.take"
+          [replayKey]="replayKey()"
+        />
+      }
+      @case ('list') {
+        <jic-list-visual
+          [name]="v.name"
+          [items]="v.items"
+          [concept]="v.concept ?? 'string'"
+          [index]="v.index"
           [replayKey]="replayKey()"
         />
       }

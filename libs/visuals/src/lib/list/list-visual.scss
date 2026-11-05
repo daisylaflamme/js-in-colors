@@ -1,0 +1,123 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(21rem, 90cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+svg {
+  inline-size: 100%;
+  overflow: visible;
+}
+
+// Color rule (CLAUDE.md): anything drawn straight on the stage uses --color-text (it follows the
+// theme); --color-ink is only for text on a white or tinted shape.
+.tag {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 3;
+}
+
+.tag-text {
+  fill: var(--color-ink);
+  font-family: var(--font-code);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.bracket {
+  fill: none;
+  stroke: var(--color-array);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.box {
+  fill: var(--color-array-tint);
+  stroke: var(--color-array);
+  stroke-width: 4;
+}
+
+// The pointed-at box: a thick outline in the text color plus an arrow, not color alone.
+.pointed .box {
+  stroke: var(--color-text);
+  stroke-width: 7;
+}
+
+.item-shape {
+  fill: var(--fill);
+  stroke: var(--color-ink);
+  stroke-width: 2;
+}
+
+.item-text {
+  fill: var(--on);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.spot {
+  fill: var(--color-text);
+  font-family: var(--font-code);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.arrow {
+  fill: var(--color-text);
+}
+
+.empty {
+  fill: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+// Items pop in one by one, then the arrow drops onto the pointed box. Reduced or calm motion:
+// everything is simply there.
+@include motion-ok {
+  .item {
+    animation: pop-in var(--motion-base) var(--ease-out) both;
+    animation-delay: calc(var(--i) * var(--motion-fast));
+  }
+
+  .arrow {
+    animation: drop-in var(--motion-base) var(--ease-out) var(--motion-slow) both;
+    transform-box: view-box;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}

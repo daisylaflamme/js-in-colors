@@ -41,7 +41,7 @@ lessons:
     title: Lists of things
     topic: Arrays
     concept: array
-    status: soon
+    status: ready
   - id: objects
     title: Things with details
     topic: Objects

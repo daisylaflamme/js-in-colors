@@ -16,7 +16,21 @@ export interface CodeNoteData {
 }
 
 /** Pictures a scene can show. Each kind is a component in libs/visuals. */
-export type Visual = JarVisualData | ScreenVisualData | DotVisualData | MachineVisualData | ForkVisualData;
+export type Visual =
+  JarVisualData | ScreenVisualData | DotVisualData | MachineVisualData | ForkVisualData | ListVisualData;
+
+/** An array as a row of numbered boxes: many things in order, under one name. */
+export interface ListVisualData {
+  readonly kind: 'list';
+  /** The name tag, e.g. "fruits" (at most 10 characters). */
+  readonly name: string;
+  /** 0 to 4 items, each at most 6 characters. */
+  readonly items: readonly string[];
+  /** Colors and shapes the items. Required when there are items. */
+  readonly concept?: Concept;
+  /** The spot being pointed at, e.g. 1 for fruits[1]. */
+  readonly index?: number;
+}
 
 /** Which way a fork goes: the `if` path ("yes", true) or the `else` path ("no", false). */
 export type ForkPath = 'yes' | 'no';
@@ -98,6 +112,10 @@ export interface Choice {
   readonly lines?: readonly string[];
   /** Fork scenes only: which path this choice takes. */
   readonly path?: ForkPath;
+  /** List scenes only: the spot to point at. */
+  readonly index?: number;
+  /** List scenes only: the list after this choice (e.g. after a push). */
+  readonly items?: readonly string[];
 }
 
 /** Pick a choice: the picture, the bubble and the code line update together. */

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
+import { ListVisualComponent } from './list/list-visual';
 import { MachineVisualComponent } from './machine/machine-visual';
 import { ScreenVisualComponent } from './screen/screen-visual';
 import { VisualComponent } from './visual/visual';
@@ -122,6 +123,49 @@ describe('ForkVisualComponent', () => {
   });
 });
 
+describe('ListVisualComponent', () => {
+  const caption = (el: HTMLElement) =>
+    el.querySelector('figcaption')?.textContent?.replace(/\s+/g, ' ').trim();
+  const texts = (el: HTMLElement, selector: string) =>
+    Array.from(el.querySelectorAll(selector)).map((t) => t.textContent);
+  const fruits = { name: 'fruits', items: ['apple', 'pear', 'plum'], concept: 'string' };
+
+  it('shows the name, each item and its spot number, and says it in words', async () => {
+    const { el } = await render(ListVisualComponent, fruits);
+    expect(el.querySelector('.tag-text')?.textContent).toBe('fruits');
+    expect(texts(el, '.item-text')).toEqual(['apple', 'pear', 'plum']);
+    expect(texts(el, '.spot')).toEqual(['0', '1', '2']);
+    expect(el.querySelectorAll('rect.item-shape')).toHaveLength(3); // words are pills
+    expect(caption(el)).toBe('A list called fruits: apple, pear, plum.');
+    expect(el.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('points at a spot with a thick outline and an arrow, and says which', async () => {
+    const { el } = await render(ListVisualComponent, { ...fruits, index: 1 });
+    const slots = el.querySelectorAll('.slot');
+    expect(slots[1].classList).toContain('pointed');
+    expect(slots[1].querySelector('.arrow')).not.toBeNull();
+    expect(el.querySelectorAll('.arrow')).toHaveLength(1);
+    expect(caption(el)).toBe('A list called fruits: apple, pear, plum. Pointing at spot 1: pear.');
+  });
+
+  it('shows an empty list as brackets with nothing inside', async () => {
+    const { el } = await render(ListVisualComponent, { name: 'box', items: [] });
+    expect(el.querySelector('.slot')).toBeNull();
+    expect(el.querySelector('.empty')?.textContent).toBe('(empty)');
+    expect(el.querySelectorAll('.bracket')).toHaveLength(2);
+    expect(caption(el)).toBe('A list called box. It is empty.');
+  });
+
+  it('re-creates the boxes (restarting the pop-in) when replayKey changes', async () => {
+    const { fixture, el } = await render(ListVisualComponent, fruits);
+    const before = el.querySelector('.slot');
+    fixture.componentRef.setInput('replayKey', 1);
+    await fixture.whenStable();
+    expect(el.querySelector('.slot')).not.toBe(before);
+  });
+});
+
 describe('ScreenVisualComponent', () => {
   it('shows output lines as real text', async () => {
     const { el } = await render(ScreenVisualComponent, { lines: ['Hi!', '7'] });
@@ -138,6 +182,7 @@ describe('VisualComponent', () => {
     [{ kind: 'dot' }, 'jic-dot-character'],
     [{ kind: 'machine', name: 'double' }, 'jic-machine-visual'],
     [{ kind: 'fork', question: 'sunny?', yes: 'park', no: 'books' }, 'jic-fork-visual'],
+    [{ kind: 'list', name: 'fruits', items: [] }, 'jic-list-visual'],
   ])('renders %o with %s', async (visual, selector) => {
     const { el } = await render(VisualComponent, { visual });
     expect(el.querySelector(selector)).not.toBeNull();

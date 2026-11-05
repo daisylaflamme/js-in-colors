@@ -3,6 +3,34 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Lesson 8: Lists of things (arrays)
+
+Branch `feat/lesson-arrays`.
+
+**Built**
+
+- A new `list` visual: a row of up to 4 boxes between amber `[` `]` brackets, with a name tag above.
+  - Each item is drawn in its concept's shape, with its spot number (`0`, `1`, `2`…) underneath.
+  - The pointed-at box gets a thick outline **and** an arrow, so it isn't marked by color alone.
+  - Items pop in one by one and the arrow drops in. With Calm or reduced motion they're simply there.
+  - The caption says the list and the pointed spot in words.
+- Choices in list scenes carry an `index` (point at a spot) and/or `items` (the list after a change, e.g. a `push`). At least one is required, and the validator checks the index points inside the list that choice shows.
+- `content/lessons/arrays.yaml`, 5 scenes:
+  1. Meet `fruits`.
+  2. Counting starts at 0.
+  3. Pick a spot.
+  4. Add a fruit with `push`.
+  5. A quiz on `pets[1]`.
+
+**Found along the way**
+
+- The first screenshots showed 5-letter items at 12px and the name tag drifting left of the centered row. The boxes are now a little wider (items get 14px or more) and the tag is centered over the row.
+
+**Checks**
+
+- Content valid: 8 lessons, 0 warnings. Lint, unit tests, build and the Storybook build: green.
+- Screenshots at 390, 820 and 1440 px and in the dark and high-contrast themes; no horizontal overflow at 320 px with 4 items.
+
 ## 2026-11-05 · Lesson 7: Yes or no paths (conditions)
 
 Branch `feat/lesson-conditions`.

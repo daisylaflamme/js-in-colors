@@ -229,11 +229,62 @@ function checkVisual(c: Checker, value: unknown, path: IssuePath): void {
       }
       checkForkPath(c, v, 'take', path, true);
       return;
+    case 'list': {
+      c.knownKeys(v, path, ['kind', 'name', 'items', 'concept', 'index']);
+      const name = c.string(v, 'name', path);
+      if (name !== undefined && name.length > LIST_NAME_MAX) {
+        c.error(
+          [...path, 'name'],
+          `is ${name.length} characters; a list name can have at most ${LIST_NAME_MAX} so it fits the tag.`,
+        );
+      }
+      const items = checkListItems(c, v, path, false);
+      c.concept(v, 'concept', path, true);
+      if (items?.length && v['concept'] === undefined) {
+        c.error([...path, 'concept'], 'is required when the list has items (it colors them).');
+      }
+      checkListIndex(c, v, path, items?.length);
+      return;
+    }
     default:
       c.error(
         [...path, 'kind'],
-        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork.`,
+        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork, list.`,
       );
+  }
+}
+
+/** List items and names must fit the boxes and the tag of the SVG. */
+const LIST_ITEMS_MAX = 4;
+const LIST_ITEM_LENGTH_MAX = 6;
+const LIST_NAME_MAX = 10;
+
+/** 0 to 4 short text items. Returns them when they are a list (even with problems inside). */
+function checkListItems(c: Checker, obj: Obj, path: IssuePath, optional: boolean): unknown[] | undefined {
+  const items = c.array(obj, 'items', path, { optional, max: LIST_ITEMS_MAX });
+  items?.forEach((item, i) => {
+    if (typeof item !== 'string' || item.trim() === '')
+      c.error([...path, 'items', i], `should be non-empty text, got ${describe(item)}.`);
+    else if (item.length > LIST_ITEM_LENGTH_MAX)
+      c.error(
+        [...path, 'items', i],
+        `is ${item.length} characters; a list item can have at most ${LIST_ITEM_LENGTH_MAX} so it fits its box.`,
+      );
+  });
+  return items;
+}
+
+/** An optional spot number that must point inside a list of `length` items. */
+function checkListIndex(c: Checker, obj: Obj, path: IssuePath, length: number | undefined): void {
+  const value = obj['index'];
+  if (value === undefined) return;
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+    c.error([...path, 'index'], `should be a spot number (0, 1, 2...), got ${describe(value)}.`);
+  } else if (length !== undefined && value >= length) {
+    c.error(
+      [...path, 'index'],
+      `is ${value}, but the list has ${length} item(s): spots go from 0 to ${length - 1}.`,
+    );
   }
 }
 
@@ -299,7 +350,19 @@ function checkScene(c: Checker, value: unknown, path: IssuePath): void {
           'result',
           'lines',
           'path',
+          'index',
+          'items',
         ]);
+        if (kind === 'list') {
+          if (choice['index'] === undefined && choice['items'] === undefined)
+            c.error(at, 'needs index (point at a spot) or items (change the list), so the picture changes.');
+          const shown = checkListItems(c, choice, at, true) ?? (visual as Obj)['items'];
+          checkListIndex(c, choice, at, Array.isArray(shown) ? shown.length : undefined);
+        } else {
+          for (const key of ['index', 'items'])
+            if (choice[key] !== undefined)
+              c.error([...at, key], 'is only for list scenes (which spot, or the new list).');
+        }
         if (kind === 'fork') checkForkPath(c, choice, 'path', at, false);
         else if (choice['path'] !== undefined)
           c.error([...at, 'path'], 'is only for fork scenes (which way the fork goes).');
