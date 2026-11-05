@@ -12,7 +12,13 @@ export type IconName =
   | 'play'
   | 'arrow-right'
   | 'retry'
-  | 'star';
+  | 'star'
+  | 'arrow-left'
+  | 'chat'
+  | 'lock'
+  | 'no'
+  | 'person'
+  | 'send';
 
 const PATHS: Record<IconName, string> = {
   menu: 'M4 7h16M4 12h16M4 17h16',
@@ -30,6 +36,17 @@ const PATHS: Record<IconName, string> = {
   // circular arrow
   retry: 'M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9',
   star: 'M12 2.8l2.8 5.8 6.4.8-4.7 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.7-4.4 6.4-.8z',
+  'arrow-left': 'M20 12H5M11 6l-6 6 6 6',
+  // speech bubble with a tail at the bottom left
+  chat: 'M5 5h14a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 17h-9l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 5 5z',
+  // padlock
+  lock: 'M6 11h12v9.5H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3',
+  // circle with a slash
+  no: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM6 6l12 12',
+  // head and shoulders
+  person: 'M12 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM5 20.5c.8-4 3.6-6 7-6s6.2 2 7 6',
+  // paper plane
+  send: 'M21 3L3 10.5l7 2.5 2.5 7zM10 13l11-10',
 };
 
 @Component({
