@@ -117,6 +117,7 @@ describe('themes', () => {
           '/lesson/functions',
           '/lesson/conditions',
           '/lesson/arrays',
+          '/lesson/objects',
         ]) {
           cy.viewport(w, h);
           cy.visit(path);

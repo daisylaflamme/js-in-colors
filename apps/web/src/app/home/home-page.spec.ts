@@ -74,8 +74,18 @@ describe('HomePage', () => {
   it('offers a visit again when every ready lesson is finished', async () => {
     const { text } = await setup(
       saved(
-        ['hello', 'output', 'variables', 'data-types', 'functions', 'conditions', 'loops', 'arrays'],
-        'arrays',
+        [
+          'hello',
+          'output',
+          'variables',
+          'data-types',
+          'functions',
+          'conditions',
+          'loops',
+          'arrays',
+          'objects',
+        ],
+        'objects',
       ),
     );
     expect(text('.continue')).toBe('Visit again: Hello, JavaScript!');
@@ -86,7 +96,7 @@ describe('HomePage', () => {
     const { el, text } = await setup();
     expect(el.querySelectorAll('jic-color-path li')).toHaveLength(11);
     expect(text('jic-color-path li:last-child')).toBe('Your certificate!, Finish all 10');
-    expect(el.querySelectorAll('[data-state="soon"]')).toHaveLength(2);
+    expect(el.querySelectorAll('[data-state="soon"]')).toHaveLength(1);
   });
 
   it('copies the resume code and says so', async () => {
