@@ -1,0 +1,79 @@
+<header class="top">
+  <a class="back" [routerLink]="back().link">
+    <jic-icon name="arrow-left" />
+    {{ back().label }}
+  </a>
+  <jic-app-logo link="/" />
+</header>
+
+<div class="layout">
+  <section class="chat" aria-labelledby="ask-dot-title">
+    <div class="chat-head">
+      <jic-dot-character class="head-dot" />
+      <div class="head-text">
+        <h1 id="ask-dot-title">Ask Dot</h1>
+        <p>Dot answers questions about JavaScript.</p>
+      </div>
+      <span class="demo-pill">Demo mode</span>
+    </div>
+
+    <!-- A log, but not live: answers stream word by word. The status below says each finished one. -->
+    <div #list class="messages" role="log" aria-live="off" aria-label="Chat with Dot" tabindex="0">
+      @for (message of store.messages(); track message.id) {
+        <jic-chat-bubble [from]="message.from" [text]="message.text">
+          @if (message.link; as link) {
+            <a class="lesson-link" [routerLink]="['/lesson', link.lessonId]">
+              <jic-concept-shape [concept]="link.concept" [size]="20" />
+              {{ link.label }}
+            </a>
+          }
+        </jic-chat-bubble>
+      }
+      @if (store.status() === 'thinking') {
+        <jic-typing-dots />
+      }
+    </div>
+    <p class="u-visually-hidden" role="status">{{ store.announcement() }}</p>
+
+    <div class="suggest">
+      <span id="try-asking" class="suggest-label">Try asking:</span>
+      <ul aria-labelledby="try-asking">
+        @for (s of suggestions; track s.text) {
+          <li>
+            <button
+              type="button"
+              class="chip"
+              [style.--fill]="'var(--color-' + s.concept + ')'"
+              [style.--tint]="'var(--color-' + s.concept + '-tint)'"
+              [style.--ink]="'var(--color-' + s.concept + '-text)'"
+              (click)="ask(s.text)"
+            >
+              <jic-concept-shape [concept]="s.concept" [size]="18" />
+              {{ s.text }}
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <form class="ask" (submit)="send($event)">
+      <label for="question" class="u-visually-hidden">Your question</label>
+      <input
+        #field
+        id="question"
+        type="text"
+        autocomplete="off"
+        placeholder="Type your question here"
+        [attr.maxlength]="maxLength"
+        [value]="draft()"
+        (input)="onInput($event)"
+      />
+      <button type="submit" class="send" [disabled]="store.busy()">
+        <jic-icon name="send" />
+        Send
+      </button>
+    </form>
+  </section>
+
+  <jic-safe-rules-card class="rules" [note]="demoNote" />
+</div>

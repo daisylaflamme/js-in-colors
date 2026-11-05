@@ -27,6 +27,12 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./certificate/certificate-page').then((m) => m.CertificatePage),
   },
   {
+    path: 'ask-dot',
+    title: 'Ask Dot',
+    data: { shell: 'full' } satisfies ShellRouteData,
+    loadComponent: () => import('./ask-dot/ask-dot-page').then((m) => m.AskDotPage),
+  },
+  {
     path: 'not-found',
     title: 'Page not found',
     loadComponent: () => import('./not-found/not-found-page').then((m) => m.NotFoundPage),
