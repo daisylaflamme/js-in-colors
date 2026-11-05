@@ -3,6 +3,41 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · The certificate
+
+Branch `feat/certificate`.
+
+**Decided** (ADR 0010)
+
+- The owner chose: the certificate is **earned at 10 of 10** (lessons stay unlocked), and Download saves a **PNG** made in the browser. Print covers PDF through the print dialog.
+- The name is kept in memory only: not on a server, and not in localStorage either.
+- Themes now apply to the screen only, so printing always uses the light palette.
+
+**Built**
+
+- `/certificate`. Before it's earned, it shows "You finished 6 of 10 lessons" and a Continue button. Once earned, it follows mockup 10:
+  - The name box, with the note that it never leaves the device.
+  - Download and Print.
+  - The sheet: the 8 concept shapes, the title, the name in magenta on the accent line, the reason, Dot, the date and the star seal.
+- `drawCertificate()` redraws the same design on a canvas for the PNG. `SHAPE_PATHS` in `libs/shared` is now the one source for the concept shapes, used by `ConceptShapeComponent` and the canvas.
+- The color path's star links to the certificate. Home's main button becomes "Get your certificate" once all ten are done.
+
+**Found and fixed along the way**
+
+- In one long screenshot run, Download took 4.4 s and a 4-second test assertion failed. Timing it alone showed 0.3 s (fonts 63 ms, PNG encoding about 0.3 to 0.6 s cold), so the slowness was the busy test machine, not the app. The E2E check now allows 10 s, the same margin as the file wait.
+- A dark screen theme would also have printed a dark certificate. Rather than special-case the page, the theme overrides are now `@media screen` only.
+
+**Checks**
+
+- Unit tests for the drawing (a recording fake canvas), the page (both states, the typed name, Download, Print, and that the name is never stored), `certificateEarned`, the star link and Home.
+- Cypress `certificate.cy.ts`:
+  - Axe at 3 sizes in 3 themes.
+  - A real PNG lands in the downloads folder.
+  - The name appears in no request and not in localStorage.
+  - Keyboard → Print.
+  - Home → certificate.
+- Screenshots at 320, 390, 820 and 1440 px, dark, high contrast, a long name, the not-yet state, print media, and the downloaded PNG itself.
+
 ## 2026-11-05 · Lesson 10: Page magic (the DOM), its own color and shape
 
 Branch `feat/lesson-dom`.
