@@ -98,10 +98,10 @@ describe('LessonPage', () => {
   });
 
   it('shows an honest coming-soon scene for lessons without content yet', async () => {
-    const { el } = await setup('loops');
-    expect(el.querySelector('h1')?.textContent).toBe('Again and again');
+    const { el } = await setup('arrays');
+    expect(el.querySelector('h1')?.textContent).toBe('Lists of things');
     expect(el.querySelector('.lead')?.textContent).toContain('coming soon');
     expect(el.querySelector('jic-scene-host')).toBeNull();
-    expect(el.querySelector('jic-library-panel')?.textContent).toContain('Again and again is coming soon');
+    expect(el.querySelector('jic-library-panel')?.textContent).toContain('Lists of things is coming soon');
   });
 });
