@@ -3,6 +3,39 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Lesson 10: Page magic (the DOM), its own color and shape
+
+Branch `feat/lesson-dom`.
+
+**Decided**
+
+- Page magic had borrowed the yes-or-no purple and the helpers' hexagon since the mockups. The owner chose crimson (`#c62828`, the only unused hue) and a **window** shape: a rounded frame with a thick top bar. Contrast was measured before choosing (white on it 5.6:1, its text token 7.5:1 on white). This replaces the slate options proposed on 2026-11-02 (ADR 0009).
+- Home's "What the colors mean" now lists page magic too. It was left out only while the color was undecided.
+
+**Built**
+
+- A `page` visual: the window shape drawn large, with one row per part (`h1`, `p`, `button`).
+  - Each row shows its tag in code font, then the part as it looks on a page: a big heading, some words, a red button.
+  - The part JavaScript found gets a thick outline **and** a pointer.
+- Choices in page scenes carry a `target` (the part found) and/or `parts` (the page after a change), checked like the card's `key` and `props`.
+- `content/lessons/dom.yaml`, 5 scenes:
+  1. Meet the page.
+  2. querySelector finds the heading.
+  3. New words with textContent.
+  4. Pick which part says Hi.
+  5. A quiz on what the heading says.
+- With every lesson ready there is no "coming soon" lesson left. The coming-soon unit test now uses a made-up course, and Home says "You finished the whole course!" once all ten are done.
+
+**Found and fixed along the way**
+
+- Prettier wrapped the button's `<text>` again (the CLAUDE.md rule from lesson 9). All three parts now share one short `<text>` line with a precomputed x and class, and a unit test checks the exact words.
+- The window's page was a hole at first, so the dotted color-path line showed through it on Home. It is now filled with the background.
+
+**Checks**
+
+- Content valid: 10 lessons, 0 warnings. Lint, unit tests, build, Prettier and the Storybook build: green.
+- Screenshots at 390, 820 and 1440 px and in the dark and high-contrast themes; no horizontal overflow at 320 px.
+
 ## 2026-11-05 · Lesson 9: Things with details (objects)
 
 Branch `feat/lesson-objects`.
