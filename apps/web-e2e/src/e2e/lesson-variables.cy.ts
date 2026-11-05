@@ -120,7 +120,7 @@ describe('reduced motion', () => {
     cy.viewport(1440, 900);
     cy.then(() => emulate('no-preference'));
     cy.visit('/lesson/variables');
-    cy.get('h1').should('be.visible');
+    expectScene(1); // the h1 comes before the lesson file loads; the scene label comes after
     pressNext();
     expectScene(2); // wait for each scene before tabbing, or focus can land on a node being swapped out
     pressNext();
@@ -136,7 +136,7 @@ describe('reduced motion', () => {
     cy.viewport(1440, 900);
     cy.then(() => emulate('reduce'));
     cy.visit('/lesson/variables');
-    cy.get('h1').should('be.visible');
+    expectScene(1);
     pressNext();
     expectScene(2);
     pressNext();

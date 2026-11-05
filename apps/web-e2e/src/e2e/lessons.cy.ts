@@ -18,6 +18,7 @@ function walk(lesson: ReadyLesson): void {
   cy.get('h1').should('have.text', lesson.title);
 
   lesson.scenes.forEach((scene, i) => {
+    // Also the wait that keeps Tab walks safe (see support/lesson.ts).
     cy.get('jic-scene-nav .label').should('have.text', `Scene ${i + 1} of ${count}`);
     cy.checkPageA11y();
     if (scene.answer && scene.feedback) {

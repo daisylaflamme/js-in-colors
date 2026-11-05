@@ -3,6 +3,7 @@
  * Progress and settings live in localStorage (ADR 0008); Cypress clears it between tests.
  */
 import { emulateReducedMotion, followFocusedLink, pressEnter, tabTo } from '../support/keyboard';
+import { waitForScene } from '../support/lesson';
 
 const VIEWPORTS = [
   { name: 'phone', width: 390, height: 844 },
@@ -107,6 +108,7 @@ describe('progress on this device', () => {
     cy.location('pathname').should('eq', '/lesson/hello');
 
     for (let scene = 1; scene <= 4; scene++) {
+      waitForScene(scene); // never tab while the scene is still being drawn
       cy.get('#main').focus();
       tabTo('jic-scene-nav .next');
       pressEnter();
@@ -114,7 +116,7 @@ describe('progress on this device', () => {
     cy.focused().should('match', 'jic-lesson-done-card h2');
 
     cy.reload(); // progress survives a reload
-    cy.get('h1').should('have.text', 'Hello, JavaScript!'); // wait for the lesson before tabbing
+    waitForScene(1);
     cy.get('#main').focus();
     tabTo('jic-lesson-header a', 'JavaScript in Colors'); // the logo links home
     followFocusedLink();
@@ -204,6 +206,7 @@ describe('settings', () => {
 
     continueLink().click();
     cy.get('h1').should('have.text', 'Hello, JavaScript!');
+    waitForScene(1);
     cy.get('#main').focus();
     tabTo('jic-scene-nav .next');
     pressEnter();
