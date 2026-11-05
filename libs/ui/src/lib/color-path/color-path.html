@@ -38,15 +38,21 @@
     </li>
   }
   <li class="stop goal">
-    <div class="node">
-      <span class="shape"><jic-concept-shape concept="intro" [size]="64" /></span>
-      <span class="text">
-        <span class="title">{{ goalTitle() }}</span
-        ><span class="u-visually-hidden">, </span>
-        @if (goalNote(); as note) {
-          <span class="topic">{{ note }}</span>
-        }
-      </span>
-    </div>
+    @if (goalLink(); as link) {
+      <a class="node" [routerLink]="link"><ng-container [ngTemplateOutlet]="goal" /></a>
+    } @else {
+      <div class="node"><ng-container [ngTemplateOutlet]="goal" /></div>
+    }
   </li>
 </ol>
+
+<ng-template #goal>
+  <span class="shape"><jic-concept-shape concept="intro" [size]="64" /></span>
+  <span class="text">
+    <span class="title">{{ goalTitle() }}</span
+    ><span class="u-visually-hidden">, </span>
+    @if (goalNote(); as note) {
+      <span class="topic">{{ note }}</span>
+    }
+  </span>
+</ng-template>

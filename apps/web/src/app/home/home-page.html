@@ -30,7 +30,12 @@
     <h1 id="home-title">{{ course.isNewVisitor() ? 'Hi, explorer!' : 'Welcome back, explorer!' }}</h1>
     <p class="lead">{{ lead() }}</p>
   </div>
-  @if (continueAction(); as action) {
+  @if (course.certificateEarned()) {
+    <a class="continue" routerLink="/certificate">
+      Get your certificate
+      <jic-icon name="star" [size]="28" />
+    </a>
+  } @else if (continueAction(); as action) {
     <a class="continue" [routerLink]="['/lesson', action.lesson.id]">
       {{ action.verb }}: {{ action.lesson.title }}
       <jic-icon name="arrow-right" [size]="28" />
@@ -46,7 +51,8 @@
   <jic-color-path
     label="Lessons on your color path"
     [nodes]="pathNodes()"
-    [goalNote]="'Finish all ' + course.lessons().length"
+    goalLink="/certificate"
+    [goalNote]="course.certificateEarned() ? 'Ready!' : 'Finish all ' + course.lessons().length"
   >
     <jic-dot-character jicPathGuide class="path-dot" />
   </jic-color-path>

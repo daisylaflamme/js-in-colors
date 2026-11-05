@@ -1,0 +1,82 @@
+<header class="top">
+  <jic-app-logo link="/" />
+  <a class="path-link" routerLink="/">Your color path</a>
+</header>
+
+@if (course.certificateEarned()) {
+  <h1 class="u-visually-hidden">Your certificate</h1>
+
+  <section class="controls" aria-label="Make your certificate">
+    <div class="field">
+      <label for="certificate-name">Name on the certificate</label>
+      <input
+        id="certificate-name"
+        type="text"
+        autocomplete="off"
+        spellcheck="false"
+        [attr.maxlength]="maxLength"
+        [value]="name()"
+        (input)="onNameInput($event)"
+        aria-describedby="certificate-name-note"
+      />
+      <p id="certificate-name-note" class="note">
+        You can type any name. It is made on this device and never sent anywhere.
+      </p>
+    </div>
+    <div class="actions">
+      <button type="button" class="download" [attr.aria-busy]="busy()" (click)="download()">Download</button>
+      <button type="button" class="print" (click)="print()">Print</button>
+    </div>
+    <p class="u-visually-hidden" role="status">{{ status() }}</p>
+  </section>
+
+  <article class="sheet" aria-labelledby="certificate-title">
+    <div class="inner">
+      <div class="shapes" aria-hidden="true">
+        @for (c of concepts; track c) {
+          <jic-concept-shape [concept]="c" [size]="32" />
+        }
+      </div>
+      <p class="brand">JavaScript in Colors</p>
+      <h2 id="certificate-title" class="title">{{ text.title }}</h2>
+      <p class="given">{{ text.givenTo }}</p>
+      <p class="name" [attr.data-size]="nameSize()">
+        @if (name().trim(); as typed) {
+          {{ typed }}
+        } @else {
+          <span class="placeholder">Your name</span>
+        }
+      </p>
+      <p class="because">{{ text.because[0] }} {{ text.because[1] }}</p>
+      <div class="foot">
+        <jic-dot-character class="dot" />
+        <p class="date">
+          <span class="date-value">{{ date }}</span>
+          <span class="date-label">{{ text.dateLabel }}</span>
+        </p>
+        <svg class="seal" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+          <circle cx="60" cy="60" r="55" class="ring" />
+          <circle cx="60" cy="60" r="44" class="disc" />
+          <path [attr.d]="starPath" transform="translate(36 36) scale(2)" class="star" />
+        </svg>
+      </div>
+    </div>
+  </article>
+} @else {
+  <section class="not-yet" aria-labelledby="not-yet-title">
+    <jic-dot-character class="not-yet-dot" />
+    <div class="not-yet-text">
+      <h1 id="not-yet-title">Your certificate</h1>
+      <p class="lead">
+        You finished {{ course.finishedCount() }} of {{ total() }} lessons. Finish the rest to fill in your
+        certificate!
+      </p>
+    </div>
+    @if (nextLesson(); as lesson) {
+      <a class="continue" [routerLink]="['/lesson', lesson.id]">
+        Continue: {{ lesson.title }}
+        <jic-icon name="arrow-right" [size]="28" />
+      </a>
+    }
+  </section>
+}

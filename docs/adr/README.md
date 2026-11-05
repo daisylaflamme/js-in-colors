@@ -13,6 +13,7 @@ Short records of decisions that shape the project. One decision per file, number
 | [0007](0007-lessons-as-validated-yaml.md)            | Lessons as validated YAML, compiled at build time     | Accepted |
 | [0008](0008-local-progress-and-settings.md)          | Local progress, the resume code, and global settings  | Accepted |
 | [0009](0009-page-magic-color-and-shape.md)           | Page magic gets its own color and shape               | Accepted |
+| [0010](0010-certificate.md)                          | The certificate: earned, made on the device           | Accepted |
 
 ## Template
 

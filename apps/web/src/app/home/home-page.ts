@@ -97,7 +97,7 @@ export class HomePage {
     if (this.allDone())
       return this.moreComing()
         ? 'You opened every jar so far. More lessons are coming soon!'
-        : 'You opened every jar. You finished the whole course!';
+        : 'You finished the whole course! Your certificate is ready.';
     if (n === 0) return 'Your first jar is waiting for you.';
     return `You opened ${n} ${n === 1 ? 'jar' : 'jars'} of knowledge. Ready for the next one?`;
   });

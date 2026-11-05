@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { CONCEPT_INFO, type Concept } from '@jic/shared';
+import { CONCEPT_INFO, SHAPE_PATHS, WIDE_SHAPES, WINDOW_PAGE_PATH, type Concept } from '@jic/shared';
 
 /**
  * The shape that belongs to a concept, filled with its color.
@@ -16,36 +16,10 @@ import { CONCEPT_INFO, type Concept } from '@jic/shared';
   },
   template: `
     <svg [attr.viewBox]="viewBox()" [attr.width]="width()" [attr.height]="size()" focusable="false">
-      @switch (shape()) {
-        @case ('circle') {
-          <circle cx="12" cy="12" r="10.5" />
-        }
-        @case ('pill') {
-          <rect x="1" y="5" width="30" height="14" rx="7" />
-        }
-        @case ('diamond') {
-          <path d="M12 1.5 22.5 12 12 22.5 1.5 12z" />
-        }
-        @case ('rounded-square') {
-          <rect x="2" y="2" width="20" height="20" rx="4.5" />
-        }
-        @case ('triangle') {
-          <path d="M12 2.5 22.5 21h-21z" />
-        }
-        @case ('hexagon') {
-          <path d="M6.5 3h11l5.5 9-5.5 9h-11L1 12z" />
-        }
-        @case ('star') {
-          <path class="outlined" d="M12 1.8l3.1 6.4 7 .9-5.1 4.9 1.3 7L12 17.6 5.7 21l1.3-7-5.1-4.9 7-.9z" />
-        }
-        @case ('capsule') {
-          <rect x="5" y="1" width="14" height="22" rx="6" />
-        }
-        @case ('window') {
-          <!-- A browser window: a frame with a thick top bar around a page (filled, so lines behind never show). -->
-          <rect x="1.5" y="3" width="21" height="18" rx="3" />
-          <rect x="5" y="9" width="14" height="9" class="window-page" />
-        }
+      <path [attr.d]="path()" [class.outlined]="shape() === 'star'" />
+      @if (shape() === 'window') {
+        <!-- The window's page is filled, so lines behind the shape never show through. -->
+        <path [attr.d]="windowPage" class="window-page" />
       }
     </svg>
   `,
@@ -79,7 +53,9 @@ export class ConceptShapeComponent {
 
   protected readonly shape = computed(() => CONCEPT_INFO[this.concept()].shape);
   protected readonly fill = computed(() => this.color() ?? `var(--color-${this.concept()})`);
-  private readonly wide = computed(() => this.shape() === 'pill');
+  protected readonly path = computed(() => SHAPE_PATHS[this.shape()]);
+  protected readonly windowPage = WINDOW_PAGE_PATH;
+  private readonly wide = computed(() => WIDE_SHAPES.includes(this.shape()));
   protected readonly viewBox = computed(() => (this.wide() ? '0 0 32 24' : '0 0 24 24'));
   protected readonly width = computed(() =>
     this.wide() ? Math.round((this.size() * 32) / 24) : this.size(),

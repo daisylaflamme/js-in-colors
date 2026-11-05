@@ -71,8 +71,8 @@ describe('HomePage', () => {
     expect(text('.continue')).toBe('Continue: Variables');
   });
 
-  it('offers a visit again when every ready lesson is finished', async () => {
-    const { text } = await setup(
+  it('offers the certificate when every lesson is finished', async () => {
+    const { el, text } = await setup(
       saved(
         [
           'hello',
@@ -89,8 +89,10 @@ describe('HomePage', () => {
         'dom',
       ),
     );
-    expect(text('.continue')).toBe('Visit again: Hello, JavaScript!');
-    expect(text('.lead')).toBe('You opened every jar. You finished the whole course!');
+    expect(text('.continue')).toBe('Get your certificate');
+    expect(el.querySelector('a.continue')?.getAttribute('href')).toBe('/certificate');
+    expect(text('.lead')).toBe('You finished the whole course! Your certificate is ready.');
+    expect(text('jic-color-path li:last-child')).toBe('Your certificate!, Ready!');
   });
 
   it('shows the whole course on the path, then the certificate', async () => {

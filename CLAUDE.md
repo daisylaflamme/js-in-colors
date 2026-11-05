@@ -170,6 +170,13 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - The resume code is a local key only. There is no restore box until the sync milestone, which needs a new ADR.
 - E2E: Cypress does not follow links on a simulated Enter, so Tab to the link and use `followFocusedLink()` (`support/keyboard.ts`). `checkPageA11y` waits for chip rows to settle first.
 
+### Certificate (ADR 0010)
+
+- `/certificate` (`apps/web/src/app/certificate/`): earned when every lesson is finished (`CourseStore.certificateEarned`); before that it shows progress and Continue. The star on the color path links here (`goalLink`), and Home's main button becomes "Get your certificate".
+- The name is a signal on the page only: never stored (not even localStorage) and never sent. Tests check both.
+- Download: `CertificateExport` draws `drawCertificate()` on a canvas and saves a PNG through an object URL. The PNG and the HTML sheet are two drawings of one design: change both. Concept shapes come from `SHAPE_PATHS` (`libs/shared`), shared with `ConceptShapeComponent`.
+- Print: a print stylesheet on the page. Themes apply to `screen` only, so paper is always light.
+
 ### Conventions added during the scaffold
 
 - Design tokens: `styles/settings/_tokens.scss` is a 1:1 copy of `docs/mockups/design-tokens.css`; components use the semantic tokens in `styles/settings/_semantic.scss`. Themes override tokens in `_themes.scss` only.

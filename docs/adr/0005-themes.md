@@ -23,4 +23,5 @@ The mockups define only a light theme. Children use the app on many screens, som
 - Dark and high contrast were not designed by hand. They are reviewed from screenshots and may get a design pass later, still by token overrides.
 - In the dark theme concept fills fall below 3:1 against the surface, so shapes always carry an outline there (`--shape-stroke`).
 - The in-app theme picker (and "Calm motion", "Text size") come with the global settings milestone (classic NgRx, see ADR 0002). Until then the OS settings choose.
+- Themes apply to the screen only (`@media screen`): printing always uses the light palette ([ADR 0010](0010-certificate.md)).
 - `--color-html` (page magic) got its own crimson and a "window" shape in [ADR 0009](0009-page-magic-color-and-shape.md).

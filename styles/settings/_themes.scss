@@ -62,21 +62,24 @@ $concepts: number, string, boolean, object, array, function, variable, html, int
 
 // Any element can carry data-theme (not only <html>), so a page region or a Storybook
 // comparison panel can show a theme on its own. Light is the base: no attribute needed.
-[data-theme='dark'] {
-  @include dark-theme;
+// Themes are for the screen only: paper always gets the light palette (the certificate, ADR 0010).
+@media screen {
+  [data-theme='dark'] {
+    @include dark-theme;
+  }
+
+  [data-theme='high-contrast'] {
+    @include high-contrast-theme;
+  }
 }
 
-[data-theme='high-contrast'] {
-  @include high-contrast-theme;
-}
-
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     @include dark-theme;
   }
 }
 
-@media (prefers-contrast: more) {
+@media screen and (prefers-contrast: more) {
   :root:not([data-theme]) {
     @include high-contrast-theme;
   }
