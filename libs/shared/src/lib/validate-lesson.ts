@@ -253,13 +253,22 @@ function checkScene(c: Checker, value: unknown, path: IssuePath): void {
       checkVisual(c, s['visual'], [...path, 'visual']);
       const choices = c.array(s, 'choices', path, { min: 2, max: 4 });
       const visual = s['visual'];
-      const isMachine =
-        typeof visual === 'object' && visual !== null && (visual as Obj)['kind'] === 'machine';
+      const kind = typeof visual === 'object' && visual !== null ? (visual as Obj)['kind'] : undefined;
+      const isMachine = kind === 'machine';
       choices?.forEach((ch, i) => {
         const at = [...path, 'choices', i];
         const choice = c.object(ch, at);
         if (!choice) return;
-        c.knownKeys(choice, at, ['id', 'label', 'concept', 'value', 'bubble', 'code', 'result']);
+        c.knownKeys(choice, at, ['id', 'label', 'concept', 'value', 'bubble', 'code', 'result', 'lines']);
+        if (kind === 'screen') {
+          const lines = c.array(choice, 'lines', at, { optional: true, min: 1, max: 4 });
+          lines?.forEach((line, j) => {
+            if (typeof line !== 'string')
+              c.error([...at, 'lines', j], `should be text, got ${describe(line)}.`);
+          });
+        } else if (choice['lines'] !== undefined) {
+          c.error([...at, 'lines'], 'is only for screen scenes (the lines on the screen).');
+        }
         c.id(choice, 'id', at);
         c.string(choice, 'label', at);
         c.concept(choice, 'concept', at);

@@ -131,6 +131,41 @@ describe('validateLesson', () => {
     ]);
   });
 
+  describe('screen scenes with lines', () => {
+    /** The interact scene, turned into a screen scene. */
+    function withScreen(): { data: Record<string, unknown>; first: Record<string, unknown> } {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      pick['visual'] = { kind: 'screen', lines: [] };
+      return { data, first: (pick['choices'] as Record<string, unknown>[])[0] };
+    }
+
+    it('accepts 1 to 4 lines on a choice', () => {
+      const { data, first } = withScreen();
+      first['lines'] = ['Jump!', 'Jump!', 'Jump!'];
+      expect(errors(validateLesson(data))).toEqual([]);
+    });
+
+    it('allows at most 4 lines, all text', () => {
+      const { data, first } = withScreen();
+      first['lines'] = ['1', '2', '3', '4', '5'];
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].lines: can have at most 4 items, has 5.',
+      ]);
+      first['lines'] = ['1', 2];
+      expect(errors(validateLesson(data))).toEqual(['scenes[2].choices[0].lines[1]: should be text, got 2.']);
+    });
+
+    it('allows lines only in screen scenes', () => {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      (pick['choices'] as Record<string, unknown>[])[0]['lines'] = ['7'];
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].lines: is only for screen scenes (the lines on the screen).',
+      ]);
+    });
+  });
+
   describe('machine scenes', () => {
     /** The interact scene, turned into a machine scene with a result on each choice. */
     function withMachine(): { data: Record<string, unknown>; pick: Record<string, unknown> } {

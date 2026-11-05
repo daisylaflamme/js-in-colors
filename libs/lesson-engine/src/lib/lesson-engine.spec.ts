@@ -120,6 +120,41 @@ describe('InteractScene', () => {
     expect(scene.visual()).toEqual({ kind: 'jar', name: 'favorite', value: 'Emma', concept: 'string' });
   });
 
+  it('shows all of a choice’s lines on the screen (a loop), or its value by default', async () => {
+    const screenScene: Scene = {
+      id: 'jumps',
+      type: 'interact',
+      prompt: 'How many jumps?',
+      visual: { kind: 'screen', lines: [] },
+      choices: [
+        {
+          id: 'two',
+          label: '2',
+          concept: 'number',
+          value: '2',
+          lines: ['Jump!', 'Jump!'],
+          bubble: 'Two jumps!',
+          code: 'for (let i = 0; i < 2; i++) console.log("Jump!");',
+        },
+        {
+          id: 'hi',
+          label: 'Hi',
+          concept: 'string',
+          value: 'Hi!',
+          bubble: 'Hi!',
+          code: 'console.log("Hi!");',
+        },
+      ],
+    };
+    const lines = (el: HTMLElement) =>
+      Array.from(el.querySelectorAll('jic-screen-visual .lines li')).map((li) => li.textContent);
+    const { fixture, el } = await host(screenScene, { pickedChoiceId: 'two', answeredOptionId: null });
+    expect(lines(el)).toEqual(['Jump!', 'Jump!']);
+    fixture.componentRef.setInput('state', { pickedChoiceId: 'hi', answeredOptionId: null });
+    await fixture.whenStable();
+    expect(lines(el)).toEqual(['Hi!']);
+  });
+
   it('feeds the picked choice into a machine: value goes in, result comes out', async () => {
     const machineScene: Scene = {
       id: 'feed',

@@ -1,0 +1,141 @@
+id: loops
+title: Again and again
+topic: Loops
+lead: A loop does the same job again and again.
+leadHighlight: again
+concept: number
+tip: Write it once, and the loop repeats it for you.
+library:
+  title: All about loops
+  sections:
+    - heading: What is a loop?
+      text: A loop does the same job many times. You write the job only once.
+    - heading: Counting with i
+      text: The loop keeps a counter called i. Each time around, i gets one bigger.
+    - heading: When does it stop?
+      text: The loop checks a rule before every turn. i < 3 means keep going while i is less than 3.
+  examples:
+    - concept: string
+      label: Say it again
+      value: Hi! Hi! Hi!
+    - concept: number
+      label: Count
+      value: 1, 2, 3
+  words:
+    - term: loop
+      meaning: do it again
+    - term: i
+      meaning: the counter
+    - term: ++
+      meaning: add one
+scenes:
+  - id: the-long-way
+    type: watch
+    bubble: Three lines to say Hi three times. That is a lot of typing!
+    visual:
+      kind: screen
+      lines:
+        - Hi!
+        - Hi!
+        - Hi!
+    code: console.log("Hi!"); console.log("Hi!"); console.log("Hi!");
+  - id: the-loop-way
+    type: watch
+    bubble: A loop says it three times. We write it only once!
+    visual:
+      kind: screen
+      lines:
+        - Hi!
+        - Hi!
+        - Hi!
+    code: for (let i = 0; i < 3; i++) console.log("Hi!");
+    notes:
+      - term: for
+        text: 'means: do this again and again'
+      - term: i < 3
+        text: 'means: stop after 3 times'
+      - term: i++
+        text: adds one to the counter
+  - id: how-many-jumps
+    type: interact
+    prompt: 'How many jumps?'
+    visual:
+      kind: screen
+      lines: []
+    choices:
+      - id: two
+        label: '2'
+        concept: number
+        value: '2'
+        lines: [Jump!, Jump!]
+        bubble: Two jumps. Boing, boing!
+        code: for (let i = 0; i < 2; i++) console.log("Jump!");
+      - id: three
+        label: '3'
+        concept: number
+        value: '3'
+        lines: [Jump!, Jump!, Jump!]
+        bubble: Three jumps. The loop went around three times!
+        code: for (let i = 0; i < 3; i++) console.log("Jump!");
+      - id: four
+        label: '4'
+        concept: number
+        value: '4'
+        lines: [Jump!, Jump!, Jump!, Jump!]
+        bubble: Four jumps. Only the number changed!
+        code: for (let i = 0; i < 4; i++) console.log("Jump!");
+    notes:
+      - term: i < 3
+        text: sets how many times
+  - id: count-up
+    type: interact
+    prompt: 'Count up to:'
+    visual:
+      kind: screen
+      lines: []
+    choices:
+      - id: two
+        label: '2'
+        concept: number
+        value: '2'
+        lines: ['1', '2']
+        bubble: 1, 2. The counter shows each number!
+        code: for (let i = 1; i <= 2; i++) console.log(i);
+      - id: three
+        label: '3'
+        concept: number
+        value: '3'
+        lines: ['1', '2', '3']
+        bubble: 1, 2, 3. i grows by one each time.
+        code: for (let i = 1; i <= 3; i++) console.log(i);
+      - id: four
+        label: '4'
+        concept: number
+        value: '4'
+        lines: ['1', '2', '3', '4']
+        bubble: 1, 2, 3, 4. Counting is easy for a loop!
+        code: for (let i = 1; i <= 4; i++) console.log(i);
+    notes:
+      - term: console.log(i)
+        text: shows the counter
+      - term: i <= 3
+        text: 'means: up to 3, and 3 too'
+  - id: how-many-times
+    type: quiz
+    question: 'The loop says i < 4. How many times does it go?'
+    options:
+      - id: four
+        label: '4'
+        concept: number
+        correct: true
+        feedback: Yes! i is 0, 1, 2, then 3. That makes 4 times.
+      - id: three
+        label: '3'
+        concept: number
+        correct: false
+        feedback: Close! i starts at 0, so count 0, 1, 2, 3. Try another one!
+      - id: five
+        label: '5'
+        concept: number
+        correct: false
+        feedback: Not quite. It stops when i gets to 4. Try another one!
