@@ -3,6 +3,39 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · The real Dot
+
+Branch `feat/dot-art`.
+
+**Decided** (with the owner)
+
+- Dot's artwork was made with Lovable from a written brief: four poses (happy, thinking, cheering, curious), flat SVG, viewBox 120×130, named part groups, and only the course's palette colors. The owner delivered the files to `docs/dot-art/`. The art is CC BY-NC 4.0 like the rest.
+
+**Reviewed before use**
+
+- All four files were read in full (1.4 to 1.8 KB, no scripts, links or embedded data) and rendered at 200, 64 and 32 px on light and dark backgrounds.
+- They follow the brief. Cheering's raised arms come within about 3 units of the edge (not 4), and curious tilts the whole figure; both are fine.
+- One real problem: on the dark theme, the ink outline matched the background, so the antenna ball looked detached and the arms floated.
+
+**Built**
+
+- `npm run dot-art` (`tools/dot-art/`) checks every SVG against the brief and converts it to data in `libs/visuals/src/lib/dot/dot-art.ts`.
+  - Data, not `[innerHTML]` (Angular strips SVG from it) or `<img>` (which can't follow theme tokens).
+  - The colors become roles: body, a themed outer outline (`--dot-outline`, pale on dark, which fixes the floating antenna), a face that stays ink on the yellow, and concept colors.
+  - It has `node:test` tests. CI runs them and fails if the generated file doesn't match the SVGs.
+- `DotCharacterComponent` takes a `pose`. Dot blinks now and then and bounces once when cheering; Calm or reduced motion keeps it still. The ids became classes, since one page can show Dot twice.
+- Poses in use:
+  - The quiz cheers on the right answer.
+  - Ask Dot thinks while answering.
+  - The certificate cheers.
+  - Everything else is happy. Curious is kept for later.
+- The certificate PNG draws the same art data. The hand-copied canvas Dot is gone.
+- Stories: a pose control, and every pose in all three themes at 8 rem and 32 px.
+
+**Checks**
+
+- Screenshots of Home, a quiz after the right answer, Ask Dot while thinking, the certificate and its PNG, in light, dark and high contrast.
+
 ## 2026-11-05 · Honest Lighthouse numbers, and no more font jumps
 
 Branch `perf/fonts-and-home`.
