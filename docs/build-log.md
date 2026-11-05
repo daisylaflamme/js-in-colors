@@ -3,6 +3,35 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Honest Lighthouse numbers, and no more font jumps
+
+Branch `perf/fonts-and-home`.
+
+**Found: the published numbers were wrong.** Profiling Home for a fix showed the same build scoring 90 to 99 on an idle machine, against the 73 to 78 published in #14. Lighthouse's CPU benchmark had been 445 to 644 during those runs (busy machine; the 4x slowdown assumes a fast idle one), so blocking time was overstated several times over. Two orphaned headless Chrome runs from a timed-out command made it worse.
+
+**Built**
+
+- `tools/lighthouse/measure.mjs` (`npm run lighthouse`): Lighthouse 13.6, mobile preset, median of 3 (or `LIGHTHOUSE_RUNS`) per page, with every run's CPU benchmark printed. A benchmark under 1,000 marks the result unreliable and exits 1.
+- A CI job "Lighthouse" runs it with 5 runs on a clean runner. It writes the table to the job summary, uploads the JSON reports, and never blocks a merge.
+- Metric-matched fallback fonts. `'Baloo 2 Fallback'` and `'Nunito Fallback'` resize Arial (or the metric-compatible Liberation Sans and Arimo) to the real fonts' widths and heights, measured in Chrome at each weight used. Text no longer moves when the web fonts arrive.
+
+**Measured on CI** (benchmarks 1,583 to 2,542)
+
+| Page        | Before (CI, 3 runs) | After: medians of four CI runs | CLS before → after | TBT           |
+| ----------- | ------------------- | ------------------------------ | ------------------ | ------------- |
+| Home        | 87                  | 99, 99, 99, 89                 | 0.233 → 0          | 106 to 133 ms |
+| Lesson      | 96                  | 85, 99, 85, 86                 | 0.122 → 0.051      | 118 to 124 ms |
+| Certificate | 100                 | 88, 99, 99, 99                 | 0.002 → 0          | 101 to 108 ms |
+| Ask Dot     | 92                  | 91, 99, 98, 99                 | 0.002 → 0          | 105 to 138 ms |
+
+- **The swing between about 99 and 85 to 91 is the simulation, cross-checked.** Each page loads a short chain of files (the app, the page, the fonts; a lesson adds the lesson itself). On localhost they all arrive before the first paint, so in some runs Lighthouse's simulation counts the whole chain as blocking the paint and replays it on slow 4G: 0.6 s becomes 2.4 to 3.2 s. The observed paint stays at about 0.15 s. It happens to every page; a lesson, with the longest chain, gets it most often. A first draft of this entry blamed only the lesson's extra file, until the last CI run flipped Home too. With applied (real) throttling, a lesson paints no later than Home.
+- **The real limit is client-side rendering.** Applied slow-4G throttling (on the busy laptop, so the absolute numbers are only indicative) put first paint at 8 to 10 s on every page, because the HTML is an empty shell until the JavaScript has run. Prerendering at build time is the lever, and a decision for the owner.
+
+**Not done, on purpose**
+
+- The plan's "lighten Home's start-up" step. On clean hardware, Home's blocking time is 118 ms; the earlier 428 ms was the busy laptop. There was nothing real to fix.
+- The remaining 0.051 of lesson CLS. It's under the 0.1 "good" line, and it's one box near the top that moves once as the fonts settle.
+
 ## 2026-11-05 · Lighthouse and the build story
 
 Branch `docs/lighthouse-and-writeup`.

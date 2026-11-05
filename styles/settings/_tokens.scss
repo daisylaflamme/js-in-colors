@@ -50,8 +50,8 @@
   --color-success: #0b7a3b; /* finished-lesson check */
 
   /* Typography (self-host both; the mockups load them from Google Fonts only for preview) */
-  --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif; /* 600, 700, 800 */
-  --font-body: 'Nunito', system-ui, sans-serif; /* 500, 700, 800 */
+  --font-display: 'Baloo 2', 'Baloo 2 Fallback', 'Nunito', system-ui, sans-serif; /* 600, 700, 800 */
+  --font-body: 'Nunito', 'Nunito Fallback', system-ui, sans-serif; /* 500, 700, 800 */
   --font-code: ui-monospace, 'Cascadia Mono', 'Courier New', monospace;
   --text-title: 3.75rem; /* lesson title, 60px */
   --text-lead: 1.5rem; /* one-sentence lead, 24px */

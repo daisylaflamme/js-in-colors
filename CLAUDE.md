@@ -143,6 +143,10 @@ npx nx e2e web-e2e --configuration=production   # against the production build (
 npx nx storybook ui                     # http://localhost:4400 (ui + visuals + lesson-engine stories; Theme toolbar)
 npx nx build-storybook ui               # static build in dist/storybook/ui (never runs in parallel: shares .angular/cache)
 
+# Performance (Lighthouse 13.6, mobile, median of runs; CI job "Lighthouse" uses 5 and is the number to quote)
+npx nx run web:serve-static --port=4300 # then, in another terminal:
+npm run lighthouse                      # 3 runs per page; prints every CPU benchmark and fails if one is under 1000 (busy machine)
+
 # Workspace
 npx nx graph                            # project graph and module boundaries
 npx nx show project <project>           # every target a project has
@@ -193,7 +197,8 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Breakpoints: phone is the base, tablet layout starts at `sm` (600px; the 820px tablet mockup falls here), desktop at `lg` (1200px, menu inline and open by default).
 - Text on fills (ADR 0005): on the orange (object) and teal (variable) fills, text must be large and bold only (at least 1.5rem, weight 700+), using `--color-<concept>-on`. Anything smaller uses `--color-<concept>-text` on `--color-<concept>-tint`. Never white on orange or yellow.
 - Themes (ADR 0005): light/dark/high contrast are token overrides in `styles/settings/_themes.scss`. Any element may carry `data-theme`. New UI must pass axe in all three themes (the smoke spec checks them).
-- Fonts (ADR 0004): Baloo 2 for display, Nunito for body, bundled from `@fontsource`; add weights in `styles/fonts.scss` only.
+- Fonts (ADR 0004): Baloo 2 for display, Nunito for body, bundled from `@fontsource`; add weights in `styles/fonts.scss` only. Each family has a metric-matched fallback (`'Baloo 2 Fallback'`, `'Nunito Fallback'`: Arial, Liberation Sans or Arimo resized with `size-adjust` and ascent/descent overrides), so nothing shifts when the web font arrives. A new weight or font needs its fallback re-measured (see the comment in `styles/fonts.scss`).
+- Lighthouse on a developer machine is only trustworthy when every run's CPU benchmark is 1000 or more; quote the CI job's numbers. Run local measurements in the background: a killed run leaves headless Chrome behind and skews the next one.
 - Licenses (ADR 0006): code is MIT (`LICENSE`); lesson text, Dot and other artwork, and `docs/mockups/` are CC BY-NC 4.0 (`LICENSE-CONTENT.md`).
 - Modals use native `<dialog>` with `ModalDialogDirective` (`libs/ui`): owner holds `open`, Esc/backdrop emit `dismissed`, focus returns to `returnFocusTo`. Mark the first control with `data-autofocus`.
 - Presentational components can sit on native elements via attribute selectors (`button[jic-choice-button]`); always write `type="button"` at the usage site.
