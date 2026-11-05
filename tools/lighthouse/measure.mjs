@@ -13,7 +13,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const LIGHTHOUSE = 'lighthouse@13.6.0';
-const RUNS = 3;
+// Lighthouse's simulated FCP/LCP sometimes counts the font downloads as blocking (about one run
+// in three on CI: 0.6 s becomes 2.4-3.2 s), so the median needs enough runs. CI uses 5.
+const RUNS = Number(process.env.LIGHTHOUSE_RUNS ?? 3);
 const MIN_BENCHMARK = 1000;
 const PAGES = [
   ['Home', '/'],

@@ -91,7 +91,7 @@ jobs:
     # Measured on a clean runner, the same way every time (tools/lighthouse/measure.mjs): a
     # developer machine's load changes Total Blocking Time a lot. Informational: the table goes
     # to the job summary and never blocks a merge.
-    name: Lighthouse (mobile, median of 3)
+    name: Lighthouse (mobile, median of 5)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     continue-on-error: true
@@ -118,6 +118,7 @@ jobs:
         run: npm run lighthouse
         env:
           LIGHTHOUSE_REPORTS: lighthouse-reports
+          LIGHTHOUSE_RUNS: 5
 
       - name: Upload the Lighthouse reports
         if: always()
