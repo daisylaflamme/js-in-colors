@@ -6,3 +6,30 @@
 @use '@fontsource/nunito/latin-500.css' as nunito-500;
 @use '@fontsource/nunito/latin-700.css' as nunito-700;
 @use '@fontsource/nunito/latin-800.css' as nunito-800;
+
+// Metric-matched fallbacks: while a web font loads, text is drawn in Arial resized to take the
+// same space, so nothing jumps when the real font swaps in (it moved lesson titles: CLS 0.12).
+// Measured in Chrome with canvas measureText on a 130-character sample at each weight we use:
+// size-adjust = real width / Arial width; ascent and descent are the real font's, divided by
+// size-adjust (which scales the overrides too). Re-measure if a weight or font changes.
+// Liberation Sans (Linux) and Arimo (ChromeOS) have the same metrics as Arial, so the same numbers
+// apply. Where none is installed (most Android phones) the system font is used as before.
+@mixin fallback($family, $weights, $bold, $size, $ascent, $descent) {
+  $style: if($bold, ' Bold', '');
+  @font-face {
+    font-family: $family;
+    font-weight: $weights;
+    src: local('Arial#{$style}'), local('Liberation Sans#{$style}'), local('Arimo#{$style}');
+    size-adjust: $size;
+    ascent-override: $ascent;
+    descent-override: $descent;
+    line-gap-override: 0%;
+  }
+}
+
+@include fallback('Baloo 2 Fallback', 100 650, false, 97.89%, 110.33%, 53.12%); // vs Baloo 2 600
+@include fallback('Baloo 2 Fallback', 651 750, true, 93.08%, 116.03%, 55.86%); // vs 700
+@include fallback('Baloo 2 Fallback', 751 1000, true, 94.58%, 114.18%, 54.98%); // vs 800
+@include fallback('Nunito Fallback', 100 600, false, 101.77%, 99.24%, 34.39%); // vs Nunito 500
+@include fallback('Nunito Fallback', 601 750, true, 97.79%, 103.29%, 35.79%); // vs 700
+@include fallback('Nunito Fallback', 751 1000, true, 99.91%, 101.09%, 35.03%); // vs 800
