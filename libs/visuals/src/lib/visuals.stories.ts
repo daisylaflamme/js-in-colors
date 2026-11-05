@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { CONCEPTS } from '@jic/shared';
 import type { CardProp, PagePart, PageTag } from '@jic/shared';
 import { CardVisualComponent } from './card/card-visual';
+import { DOT_POSES, type DotPose } from './dot/dot-art';
 import { DotCharacterComponent } from './dot/dot-character';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
@@ -224,9 +225,32 @@ export const PageAfterAChange: StoryObj<PageArgs> = {
   args: { ...Page.args, target: 'h1', parts: [{ tag: 'h1', text: 'Wow!' }, ...MY_PAGE.slice(1)] },
 };
 
-export const Dot: StoryObj = {
-  render: () => ({
+type DotArgs = { pose: DotPose };
+
+export const Dot: StoryObj<DotArgs> = {
+  args: { pose: 'happy' },
+  argTypes: { pose: { control: 'inline-radio', options: DOT_POSES, description: 'Which pose' } },
+  render: (args) => ({
+    props: args,
     moduleMetadata: { imports: [DotCharacterComponent] },
-    template: `<jic-dot-character style="inline-size:10rem" />`,
+    template: `<jic-dot-character [pose]="pose" style="inline-size:10rem" />`,
+  }),
+};
+
+/** Every pose in every theme, at a large and a small size (Dot must read at 32px). */
+export const DotPosesAndThemes: StoryObj = {
+  render: () => ({
+    props: { poses: DOT_POSES, themes: ['light', 'dark', 'high-contrast'] },
+    moduleMetadata: { imports: [DotCharacterComponent] },
+    template: `
+      @for (theme of themes; track theme) {
+        <div [attr.data-theme]="theme" style="display:flex;gap:1.5rem;align-items:end;padding:1rem;background:var(--color-bg)">
+          @for (pose of poses; track pose) {
+            <jic-dot-character [pose]="pose" style="inline-size:8rem" />
+            <jic-dot-character [pose]="pose" style="inline-size:32px" />
+          }
+        </div>
+      }
+    `,
   }),
 };

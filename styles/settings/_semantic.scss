@@ -43,6 +43,9 @@
   --shape-stroke: transparent;
   --shape-stroke-width: 0;
 
+  // Dot's outer outline (antenna, body, arms). Ink here; themes keep it visible on dark.
+  --dot-outline: var(--color-ink);
+
   // Marks the current item (e.g. the lesson you are on) when tints alone are not enough.
   --current-outline: transparent;
 

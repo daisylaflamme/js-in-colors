@@ -117,5 +117,6 @@ The whole app was built in four days (2026-11-02 to 11-05) with Claude Code doin
 - **Code:** [MIT](LICENSE).
 - **Content and artwork** (lesson text, Dot and other illustrations, mockups): [CC BY-NC 4.0](LICENSE-CONTENT.md).
 - **Fonts:** SIL Open Font License 1.1 (Baloo 2, Nunito).
+- **Dot artwork:** made with Lovable for this project, CC BY-NC 4.0 (source SVGs in [docs/dot-art](docs/dot-art)).
 
 See [ADR 0006](docs/adr/0006-licensing.md) for what falls under which license.

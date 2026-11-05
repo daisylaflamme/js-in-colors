@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CardVisualComponent } from './card/card-visual';
+import { DOT_ART, DOT_POSES } from './dot/dot-art';
+import { DotCharacterComponent, dotColor } from './dot/dot-character';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
 import { ListVisualComponent } from './list/list-visual';
@@ -14,6 +16,41 @@ async function render<T>(type: new (...args: never[]) => T, inputs: Record<strin
   await fixture.whenStable();
   return { fixture, el: fixture.nativeElement as HTMLElement };
 }
+
+describe('DotCharacterComponent', () => {
+  it.each(DOT_POSES)('draws the %s pose, hidden from screen readers, without ids', async (pose) => {
+    const { el } = await render(DotCharacterComponent, { pose });
+    expect(el.getAttribute('aria-hidden')).toBe('true');
+    expect(el.getAttribute('data-pose')).toBe(pose);
+    expect(el.querySelectorAll('svg circle, svg ellipse, svg path')).toHaveLength(
+      DOT_ART[pose].shapes.length,
+    );
+    for (const part of ['body', 'eyes', 'mouth']) expect(el.querySelector(`.part-${part}`)).not.toBeNull();
+    expect(el.querySelector('[id]')).toBeNull(); // Dot can be on a page twice
+    expect(!!el.querySelector('.part-arms')).toBe(pose !== 'happy');
+  });
+
+  it('defaults to happy and blinks only with open eyes', async () => {
+    const { el, fixture } = await render(DotCharacterComponent, {});
+    expect(el.getAttribute('data-pose')).toBe('happy');
+    expect(el.querySelector('.figure')?.classList).toContain('blinks');
+    fixture.componentRef.setInput('pose', 'cheering');
+    await fixture.whenStable();
+    expect(el.querySelector('.figure')?.classList).not.toContain('blinks');
+    expect(el.querySelector('.figure')?.classList).toContain('cheer');
+  });
+
+  it('colours the outline with the themed token and the face with ink', async () => {
+    expect(dotColor('outline')).toBe('var(--dot-outline)');
+    expect(dotColor('face')).toBe('var(--color-ink)');
+    expect(dotColor('accent')).toBe('var(--color-accent)');
+    expect(dotColor('number')).toBe('var(--color-number)');
+    const { el } = await render(DotCharacterComponent, { pose: 'happy' });
+    const body = el.querySelector<SVGElement>('.part-body circle');
+    expect(body?.style.fill).toBe('var(--color-accent)');
+    expect(body?.style.stroke).toBe('var(--dot-outline)');
+  });
+});
 
 describe('JarVisualComponent', () => {
   it('shows the name and says in words what is inside', async () => {

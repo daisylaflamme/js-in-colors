@@ -14,7 +14,8 @@
     "e2e": "nx e2e web-e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lighthouse": "node tools/lighthouse/measure.mjs"
+    "lighthouse": "node tools/lighthouse/measure.mjs",
+    "dot-art": "node tools/dot-art/convert.mjs && prettier --write libs/visuals/src/lib/dot/dot-art.ts"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "~2.7.3",

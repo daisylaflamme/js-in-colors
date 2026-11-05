@@ -42,6 +42,8 @@ function fakeContext() {
     moveTo: noop,
     lineTo: noop,
     quadraticCurveTo: noop,
+    ellipse: noop,
+    rotate: noop,
     stroke: noop,
     fillRect: noop,
     setLineDash: noop,
@@ -85,6 +87,15 @@ describe('drawCertificate', () => {
     drawCertificate(ctx, { name: '   ', date: 'today' }, palette, path);
     expect(texts.map((t) => t.text)).not.toContain('   ');
     expect(texts).toHaveLength(7); // everything but the name
+  });
+
+  it('draws the cheering Dot from the shared artwork', () => {
+    const { ctx, fills } = fakeContext();
+    const before = fills.length;
+    drawCertificate(ctx, { name: 'Emma', date: 'today' }, palette, path);
+    // Dot's yellow body and eye-free cheering face: accent and ink fills, freckles in concept colors.
+    expect(fills.slice(before)).toContain('accent');
+    expect(fills).toContain('ink');
   });
 
   it('fills every concept shape in its own color', () => {

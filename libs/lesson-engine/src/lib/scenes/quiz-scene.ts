@@ -27,7 +27,7 @@ import { EMPTY_SCENE_STATE, type SceneAction, type SceneComponent, type SceneSta
   ],
   template: `
     <jic-stage [bubble]="scene().question">
-      <jic-dot-character jicStageCharacter />
+      <jic-dot-character jicStageCharacter [pose]="status() === 'correct' ? 'cheering' : 'happy'" />
       @if (artVisual(); as visual) {
         <jic-visual jicStageArt [visual]="visual" />
       }

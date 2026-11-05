@@ -1,47 +1,98 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { DOT_ART, type DotPart, type DotPose, type DotRole, type DotShape } from './dot-art';
+
+/** Each colour role of the artwork as a theme token (see tools/dot-art/convert-lib.mjs). */
+export function dotColor(role: DotRole | undefined): string | null {
+  switch (role) {
+    case undefined:
+      return 'none';
+    case 'accent':
+      return 'var(--color-accent)';
+    case 'outline':
+      return 'var(--dot-outline)';
+    case 'face':
+      return 'var(--color-ink)';
+    case 'white':
+      return 'var(--color-surface)';
+    default:
+      return `var(--color-${role})`;
+  }
+}
+
+/** Poses whose eyes are open (they blink); cheering's eyes are already closed in a smile. */
+const BLINKING: readonly DotPose[] = ['happy', 'thinking', 'curious'];
 
 /**
- * PLACEHOLDER for Dot, the guide character (simple shapes only).
- * The real, original Dot artwork is a separate task.
+ * Dot, the guide (artwork in docs/dot-art/, made with Lovable for this project, CC BY-NC 4.0).
+ * Drawn from data (dot-art.ts, generated), so its colours follow the theme: the outer outline is
+ * --dot-outline (pale on dark), the face stays ink on the yellow body. Decorative: aria-hidden.
+ * Blinks now and then, and bounces once when cheering; Calm or reduced motion keeps it still.
  */
 @Component({
   selector: 'jic-dot-character',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { 'aria-hidden': 'true' },
+  host: { 'aria-hidden': 'true', '[attr.data-pose]': 'pose()' },
   template: `
     <svg viewBox="0 0 120 130" focusable="false">
-      <path d="M60 30 Q58 14 70 10" class="line" />
-      <circle cx="72" cy="9" r="6" fill="var(--color-function)" class="line" />
-      <circle cx="60" cy="78" r="46" fill="var(--color-accent)" class="line" />
-      <circle cx="44" cy="72" r="9" fill="var(--color-surface)" class="line thin" />
-      <circle cx="76" cy="72" r="9" fill="var(--color-surface)" class="line thin" />
-      <circle cx="46" cy="73" r="4" fill="var(--color-ink)" />
-      <circle cx="78" cy="73" r="4" fill="var(--color-ink)" />
-      <path d="M46 94 Q60 104 74 94" class="line" />
-      <circle cx="28" cy="60" r="4.5" fill="var(--color-number)" />
-      <circle cx="94" cy="58" r="4" fill="var(--color-function)" />
-      <circle cx="98" cy="88" r="4.5" fill="var(--color-boolean)" />
-      <circle cx="22" cy="92" r="4" fill="var(--color-string)" />
+      <g class="figure" [class.blinks]="blinks()" [class.cheer]="pose() === 'cheering'">
+        <g [attr.transform]="art().transform ?? null">
+          @for (group of groups(); track $index) {
+            <g [attr.class]="'part part-' + group.part">
+              @for (s of group.shapes; track $index) {
+                @switch (s.tag) {
+                  @case ('circle') {
+                    <circle
+                      [attr.cx]="s.cx"
+                      [attr.cy]="s.cy"
+                      [attr.r]="s.r"
+                      [style.fill]="color(s.fill)"
+                      [style.stroke]="color(s.stroke)"
+                      [attr.stroke-width]="s.strokeWidth ?? null"
+                    />
+                  }
+                  @case ('ellipse') {
+                    <ellipse
+                      [attr.cx]="s.cx"
+                      [attr.cy]="s.cy"
+                      [attr.rx]="s.rx"
+                      [attr.ry]="s.ry"
+                      [style.fill]="color(s.fill)"
+                      [style.stroke]="color(s.stroke)"
+                      [attr.stroke-width]="s.strokeWidth ?? null"
+                    />
+                  }
+                  @default {
+                    <path
+                      [attr.d]="s.d"
+                      [style.fill]="color(s.fill)"
+                      [style.stroke]="color(s.stroke)"
+                      [attr.stroke-width]="s.strokeWidth ?? null"
+                    />
+                  }
+                }
+              }
+            </g>
+          }
+        </g>
+      </g>
     </svg>
   `,
-  styles: `
-    :host {
-      display: block;
-      inline-size: clamp(4.5rem, 18cqi, 9rem);
-      flex: none;
-    }
-    .line {
-      fill-opacity: 1;
-      stroke: var(--color-ink);
-      stroke-width: 5;
-      stroke-linecap: round;
-    }
-    path.line {
-      fill: none;
-    }
-    .thin {
-      stroke-width: 3;
-    }
-  `,
+  styleUrl: './dot-character.scss',
 })
-export class DotCharacterComponent {}
+export class DotCharacterComponent {
+  readonly pose = input<DotPose>('happy');
+
+  protected readonly art = computed(() => DOT_ART[this.pose()]);
+  protected readonly blinks = computed(() => BLINKING.includes(this.pose()));
+  /** Consecutive shapes of one part, so a part (the eyes) can move as one. */
+  protected readonly groups = computed(() => {
+    const groups: { part: DotPart; shapes: DotShape[] }[] = [];
+    for (const shape of this.art().shapes) {
+      const last = groups.at(-1);
+      if (last?.part === shape.part) last.shapes.push(shape);
+      else groups.push({ part: shape.part, shapes: [shape] });
+    }
+    return groups;
+  });
+  protected readonly color = dotColor;
+}

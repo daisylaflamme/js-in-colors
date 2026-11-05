@@ -144,6 +144,7 @@ npx nx storybook ui                     # http://localhost:4400 (ui + visuals + 
 npx nx build-storybook ui               # static build in dist/storybook/ui (never runs in parallel: shares .angular/cache)
 
 # Performance (Lighthouse 13.6, mobile, median of runs; CI job "Lighthouse" uses 5 and is the number to quote)
+npm run dot-art                         # after changing docs/dot-art/*.svg: check the art, regenerate dot-art.ts
 npx nx run web:serve-static --port=4300 # then, in another terminal:
 npm run lighthouse                      # 3 runs per page; prints every CPU benchmark and fails if one is under 1000 (busy machine)
 
@@ -163,6 +164,7 @@ Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_C
 - Scene types: `watch`, `interact`, `quiz`. A new type = one component implementing `SceneComponent` (`libs/lesson-engine`) + a `provideSceneTypes()` entry + the type in `libs/shared/src/lib/lesson.ts` + a validator rule and test.
 - Visuals: `jar`, `screen`, `dot`, `machine`, `fork`, `list`, `card`, `page` in `libs/visuals`; add the kind to the `Visual` type, the validator, `VisualComponent` and the interact merge in `interact-scene.ts` (how a picked choice changes the picture). Machine scenes give each choice a `result` (what comes out); screen scenes may give a choice `lines` (1 to 4, e.g. a loop's output; default is its `value`); fork scenes give each choice a `path` (`yes` or `no`); list scenes give each choice an `index` (point at a spot) and/or `items` (the list after a change); card scenes give each choice a `key` (read a detail) and/or `props` (the card after a change); page scenes give each choice a `target` (the part found: `h1`, `p` or `button`) and/or `parts` (the page after a change). The validator allows each only in its own scene kind, and keeps SVG labels short enough to fit (fork labels 12 characters, list items 6, list and card names 10, card keys 8, card values 6, page parts 12). In SVG visuals, draw anything that sits straight on the stage with `--color-text` (it follows the theme); `--color-ink` is only for text on a white shape. `--color-<concept>-text` pairs with `--color-bg` or the concept's tint, never with white: the dark theme turns it pale. Never wrap an SVG `<text>` across lines (Prettier will if the line is long): the line breaks become spaces in its text.
 - Smart/dumb: `LessonPage` (apps/web) owns the stores; scene components only get `scene` + `state` and emit `action`.
+- Dot (`DotCharacterComponent`, `pose`: happy, thinking, cheering, curious) is drawn from `libs/visuals/src/lib/dot/dot-art.ts`, generated from `docs/dot-art/*.svg` by `npm run dot-art` (it checks the art against the brief; CI checks the generated file is current). Never edit `dot-art.ts` by hand. The outer outline is `--dot-outline` (pale on dark).
 - Concepts: the eight JS concepts plus `intro` (accent + outlined star, course opener only). Each has its own color and shape; page magic (`html`) is crimson + window (ADR 0009).
 
 ### Home, progress and settings (ADR 0008)

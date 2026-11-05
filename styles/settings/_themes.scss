@@ -26,6 +26,7 @@ $concepts: number, string, boolean, object, array, function, variable, html, int
   --shadow-press: 0 4px 0 var(--color-muted);
   --shape-stroke: var(--color-ground);
   --shape-stroke-width: 1.5px;
+  --dot-outline: var(--color-ground); // ink would vanish into the dark background
 
   // On dark, text is a pale version of the fill (fill + ground),
   // and the tint backgrounds become a soft wash of the fill.
