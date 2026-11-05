@@ -6,7 +6,7 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
-> Status: eight real lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, and Lists of things) run on a data-driven lesson engine; two more are "coming soon". Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. The chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
+> Status: nine real lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, and Things with details) run on a data-driven lesson engine; one more is "coming soon". Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. The chat and the certificate come next. Progress so far: [docs/build-log.md](docs/build-log.md).
 
 ## Stack
 

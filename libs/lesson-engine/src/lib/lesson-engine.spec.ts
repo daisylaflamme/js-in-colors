@@ -155,6 +155,46 @@ describe('InteractScene', () => {
     expect(lines(el)).toEqual(['Hi!']);
   });
 
+  it('reads the picked detail on a card, or shows the card the choice makes', async () => {
+    const props = [
+      { key: 'name', value: 'Tom', concept: 'string' },
+      { key: 'age', value: '3', concept: 'number' },
+    ] as const;
+    const cardScene: Scene = {
+      id: 'cat',
+      type: 'interact',
+      prompt: 'Ask the cat:',
+      visual: { kind: 'card', name: 'cat', props },
+      choices: [
+        {
+          id: 'age',
+          label: 'age',
+          concept: 'number',
+          value: 'age',
+          key: 'age',
+          bubble: '3!',
+          code: 'cat.age',
+        },
+        {
+          id: 'older',
+          label: '4',
+          concept: 'number',
+          value: '4',
+          key: 'age',
+          props: [props[0], { key: 'age', value: '4', concept: 'number' }],
+          bubble: 'Now 4!',
+          code: 'cat.age = 4;',
+        },
+      ],
+    };
+    const { fixture, el } = await host(cardScene, { pickedChoiceId: 'age', answeredOptionId: null });
+    expect(el.querySelector('jic-card-visual')?.getAttribute('data-key')).toBe('age');
+    fixture.componentRef.setInput('state', { pickedChoiceId: 'older', answeredOptionId: null });
+    await fixture.whenStable();
+    const values = Array.from(el.querySelectorAll('jic-card-visual .value-text')).map((t) => t.textContent);
+    expect(values).toEqual(['Tom', '4']);
+  });
+
   it('points a list at the picked spot, or shows the list the choice makes', async () => {
     const listScene: Scene = {
       id: 'fruits',

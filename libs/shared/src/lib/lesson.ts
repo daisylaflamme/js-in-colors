@@ -17,7 +17,33 @@ export interface CodeNoteData {
 
 /** Pictures a scene can show. Each kind is a component in libs/visuals. */
 export type Visual =
-  JarVisualData | ScreenVisualData | DotVisualData | MachineVisualData | ForkVisualData | ListVisualData;
+  | JarVisualData
+  | ScreenVisualData
+  | DotVisualData
+  | MachineVisualData
+  | ForkVisualData
+  | ListVisualData
+  | CardVisualData;
+
+/** One named detail of an object, e.g. name: "Tom". */
+export interface CardProp {
+  /** At most 8 characters. */
+  readonly key: string;
+  /** At most 6 characters. */
+  readonly value: string;
+  readonly concept: Concept;
+}
+
+/** An object as a card: one thing with named details. */
+export interface CardVisualData {
+  readonly kind: 'card';
+  /** The variable name on the tag, e.g. "cat" (at most 10 characters). */
+  readonly name: string;
+  /** 1 to 3 details. */
+  readonly props: readonly CardProp[];
+  /** The detail being read, e.g. "name" for cat.name. */
+  readonly key?: string;
+}
 
 /** An array as a row of numbered boxes: many things in order, under one name. */
 export interface ListVisualData {
@@ -116,6 +142,10 @@ export interface Choice {
   readonly index?: number;
   /** List scenes only: the list after this choice (e.g. after a push). */
   readonly items?: readonly string[];
+  /** Card scenes only: the detail to read. */
+  readonly key?: string;
+  /** Card scenes only: the details after this choice (e.g. after cat.age = 4). */
+  readonly props?: readonly CardProp[];
 }
 
 /** Pick a choice: the picture, the bubble and the code line update together. */

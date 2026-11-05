@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 import { CONCEPTS } from '@jic/shared';
+import type { CardProp } from '@jic/shared';
+import { CardVisualComponent } from './card/card-visual';
 import { DotCharacterComponent } from './dot/dot-character';
 import { ForkVisualComponent } from './fork/fork-visual';
 import { JarVisualComponent } from './jar/jar-visual';
@@ -156,6 +158,35 @@ export const ListOfNumbers: StoryObj<ListArgs> = {
   args: { ...List.args, name: 'scores', items: ['3', '10', '7', '42'], concept: 'number', index: 3 },
 };
 export const EmptyList: StoryObj<ListArgs> = { ...List, args: { ...List.args, items: [] } };
+
+type CardArgs = { name: string; props: CardProp[]; key: string; replayKey: number };
+
+const CAT: CardProp[] = [
+  { key: 'name', value: 'Tom', concept: 'string' },
+  { key: 'age', value: '3', concept: 'number' },
+  { key: 'sleepy', value: 'true', concept: 'boolean' },
+];
+
+export const Card: StoryObj<CardArgs> = {
+  args: { name: 'cat', props: CAT, key: '', replayKey: 0 },
+  argTypes: {
+    name: { control: 'text', description: 'Name tag (max 10 characters)' },
+    props: { control: 'object', description: '1 to 3 details: { key (max 8), value (max 6), concept }' },
+    key: { control: 'text', description: 'Detail being read (empty = none)' },
+    replayKey: { control: { type: 'number', min: 0 }, description: 'Change to replay the rows' },
+  },
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports: [CardVisualComponent] },
+    template: `<jic-card-visual [name]="name" [props]="props" [key]="key || undefined" [replayKey]="replayKey" />`,
+  }),
+};
+
+export const CardReading: StoryObj<CardArgs> = { ...Card, args: { ...Card.args, key: 'age' } };
+export const CardWithOneDetail: StoryObj<CardArgs> = {
+  ...Card,
+  args: { ...Card.args, name: 'dog', props: [{ key: 'name', value: 'Rex', concept: 'string' }] },
+};
 
 export const Dot: StoryObj = {
   render: () => ({

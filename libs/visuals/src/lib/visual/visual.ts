@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import type { Visual } from '@jic/shared';
+import { CardVisualComponent } from '../card/card-visual';
 import { DotCharacterComponent } from '../dot/dot-character';
 import { ForkVisualComponent } from '../fork/fork-visual';
 import { JarVisualComponent } from '../jar/jar-visual';
@@ -12,6 +13,7 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
   selector: 'jic-visual',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CardVisualComponent,
     DotCharacterComponent,
     ForkVisualComponent,
     JarVisualComponent,
@@ -63,6 +65,9 @@ import { ScreenVisualComponent } from '../screen/screen-visual';
           [index]="v.index"
           [replayKey]="replayKey()"
         />
+      }
+      @case ('card') {
+        <jic-card-visual [name]="v.name" [props]="v.props" [key]="v.key" [replayKey]="replayKey()" />
       }
     }
   `,

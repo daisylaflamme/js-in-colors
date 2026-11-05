@@ -1,0 +1,112 @@
+@use 'tools' as *;
+
+:host {
+  display: block;
+  inline-size: min(21rem, 90cqi);
+}
+
+figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+svg {
+  inline-size: 100%;
+  overflow: visible;
+}
+
+// Orange (object) only for lines: text never sits on it (ADR 0005). Anything drawn straight on
+// the stage uses --color-text; text on white uses --color-ink or --color-object-text.
+.card {
+  fill: var(--color-object-tint);
+  stroke: var(--color-object);
+  stroke-width: 6;
+}
+
+.tag {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 3;
+}
+
+.tag-text {
+  fill: var(--color-ink);
+  font-family: var(--font-code);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+// Rows use the page background, so --color-object-text stays readable in every theme
+// (the themes pair -text with the background: dark on light, pale on dark).
+.row-box {
+  fill: var(--color-bg);
+  stroke: var(--color-object);
+  stroke-width: 2;
+}
+
+// The detail being read: a thick outline plus a pointer, not color alone.
+.read .row-box {
+  stroke: var(--color-text);
+  stroke-width: 5;
+}
+
+.key {
+  fill: var(--color-object-text);
+  font-family: var(--font-code);
+  font-size: 17px;
+  font-weight: 700;
+  dominant-baseline: central;
+}
+
+.value-shape {
+  fill: var(--fill);
+  stroke: var(--color-ink);
+  stroke-width: 2;
+}
+
+.value-text {
+  fill: var(--on);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.pointer {
+  fill: var(--color-text);
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-heavy);
+}
+
+// Rows fade in one by one, then the pointer slides in. Reduced or calm motion: simply there.
+@include motion-ok {
+  .row {
+    animation: fade-in var(--motion-base) var(--ease-out) both;
+    animation-delay: calc(var(--i) * var(--motion-fast));
+  }
+
+  .pointer {
+    animation: slide-in var(--motion-base) var(--ease-out) var(--motion-slow) both;
+    transform-box: view-box;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}

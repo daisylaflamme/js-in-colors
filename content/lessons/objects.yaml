@@ -1,0 +1,170 @@
+id: objects
+title: Things with details
+topic: Objects
+lead: An object is one thing with many details.
+leadHighlight: details
+concept: object
+tip: A dot reads one detail, like cat.name for the cat's name.
+library:
+  title: All about objects
+  sections:
+    - heading: What is an object?
+      text: An object is one thing with many details. A cat has a name and an age.
+    - heading: Curly brackets
+      text: An object lives inside { and }. Each detail has a key, then a value.
+    - heading: Reading a detail
+      text: Write the name, a dot, then the key. cat.age reads the cat's age.
+    - heading: Changing a detail
+      text: Use = to give a detail a new value. cat.age = 4 makes the cat older.
+  examples:
+    - concept: object
+      label: A thing
+      value: '{ name: "Tom" }'
+    - concept: string
+      label: A detail
+      value: cat.name
+    - concept: number
+      label: Change it
+      value: cat.age = 4
+  words:
+    - term: object
+      meaning: a thing with details
+    - term: key
+      meaning: the name of a detail
+    - term: .
+      meaning: 'read this detail'
+scenes:
+  - id: meet-the-cat
+    type: watch
+    bubble: An object is one thing with many details. Meet my cat!
+    visual:
+      kind: card
+      name: cat
+      props:
+        - { key: name, value: Tom, concept: string }
+        - { key: age, value: '3', concept: number }
+        - { key: sleepy, value: 'true', concept: boolean }
+    code: 'let cat = { name: "Tom", age: 3, sleepy: true };'
+    notes:
+      - term: '{ }'
+        text: hold the details
+      - term: ':'
+        text: goes between the key and the value
+  - id: read-a-detail
+    type: watch
+    bubble: The dot reads one detail. cat.name is Tom.
+    visual:
+      kind: card
+      name: cat
+      key: name
+      props:
+        - { key: name, value: Tom, concept: string }
+        - { key: age, value: '3', concept: number }
+        - { key: sleepy, value: 'true', concept: boolean }
+    code: cat.name
+    notes:
+      - term: .
+        text: 'means: read this detail'
+  - id: ask-the-cat
+    type: interact
+    prompt: 'Ask the cat:'
+    visual:
+      kind: card
+      name: cat
+      props:
+        - { key: name, value: Tom, concept: string }
+        - { key: age, value: '3', concept: number }
+        - { key: sleepy, value: 'true', concept: boolean }
+    choices:
+      - id: name
+        label: name
+        concept: string
+        value: Tom
+        key: name
+        bubble: cat.name is Tom. Hello, Tom!
+        code: cat.name
+      - id: age
+        label: age
+        concept: number
+        value: '3'
+        key: age
+        bubble: cat.age is 3. A young cat!
+        code: cat.age
+      - id: sleepy
+        label: sleepy
+        concept: boolean
+        value: 'true'
+        key: sleepy
+        bubble: cat.sleepy is true. Shh, Tom is napping.
+        code: cat.sleepy
+  - id: change-a-detail
+    type: interact
+    prompt: 'Change a detail:'
+    visual:
+      kind: card
+      name: cat
+      props:
+        - { key: name, value: Tom, concept: string }
+        - { key: age, value: '3', concept: number }
+        - { key: sleepy, value: 'true', concept: boolean }
+    choices:
+      - id: older
+        label: age 4
+        concept: number
+        value: '4'
+        key: age
+        props:
+          - { key: name, value: Tom, concept: string }
+          - { key: age, value: '4', concept: number }
+          - { key: sleepy, value: 'true', concept: boolean }
+        bubble: Happy birthday, Tom! Now cat.age is 4.
+        code: cat.age = 4;
+      - id: new-name
+        label: name Kit
+        concept: string
+        value: Kit
+        key: name
+        props:
+          - { key: name, value: Kit, concept: string }
+          - { key: age, value: '3', concept: number }
+          - { key: sleepy, value: 'true', concept: boolean }
+        bubble: Now cat.name is Kit. Same cat, new name!
+        code: cat.name = "Kit";
+      - id: awake
+        label: wake up
+        concept: boolean
+        value: 'false'
+        key: sleepy
+        props:
+          - { key: name, value: Tom, concept: string }
+          - { key: age, value: '3', concept: number }
+          - { key: sleepy, value: 'false', concept: boolean }
+        bubble: Tom woke up. cat.sleepy is false now.
+        code: cat.sleepy = false;
+    notes:
+      - term: '='
+        text: gives the detail a new value
+  - id: detail-check
+    type: quiz
+    question: 'dog is { name: "Rex", age: 5 }. What is dog.age?'
+    visual:
+      kind: card
+      name: dog
+      props:
+        - { key: name, value: Rex, concept: string }
+        - { key: age, value: '5', concept: number }
+    options:
+      - id: five
+        label: '5'
+        concept: number
+        correct: true
+        feedback: Yes! The age detail holds 5.
+      - id: rex
+        label: Rex
+        concept: string
+        correct: false
+        feedback: Close! Rex is dog.name. Try another one!
+      - id: age
+        label: age
+        correct: false
+        feedback: Good guess! age is the key. We want its value. Try another one!

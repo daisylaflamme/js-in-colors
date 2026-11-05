@@ -46,7 +46,7 @@ lessons:
     title: Things with details
     topic: Objects
     concept: object
-    status: soon
+    status: ready
   - id: dom
     title: Page magic
     topic: The DOM
