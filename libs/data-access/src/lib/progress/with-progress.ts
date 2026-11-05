@@ -49,6 +49,11 @@ export function withProgress() {
         /** Nothing opened and nothing finished yet: Home says "Start" instead of "Continue". */
         isNewVisitor: computed(() => finishedIds().length === 0 && lastLessonId() === null),
         finishedCount: computed(() => finishedIds().length),
+        /** Every lesson in the course is finished, so the certificate is earned (ADR 0010). */
+        certificateEarned: computed(() => {
+          const done = new Set(finishedIds());
+          return lessons().length > 0 && lessons().every((l) => done.has(l.id));
+        }),
         pathLessons: computed<readonly PathLesson[]>(() => {
           const done = new Set(finishedIds());
           const current = continueLesson()?.id;

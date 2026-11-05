@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Concept } from '@jic/shared';
@@ -23,12 +24,12 @@ export interface ColorPathNode {
  * The line between two lessons is solid once the first is finished, dotted before.
  *
  * Content marked `jicPathGuide` (Dot) is drawn beside the current lesson.
- * Every lesson is a link (no locks); the star is not, until the certificate exists.
+ * Every lesson is a link (no locks); the star links to the certificate when `goalLink` is set.
  */
 @Component({
   selector: 'jic-color-path',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ConceptShapeComponent, IconComponent],
+  imports: [NgTemplateOutlet, RouterLink, ConceptShapeComponent, IconComponent],
   templateUrl: './color-path.html',
   styleUrl: './color-path.scss',
   host: { class: 'jic-color-path', '[style.--stops]': 'nodes().length + 1' },
@@ -38,6 +39,8 @@ export class ColorPathComponent {
   readonly label = input('Your color path');
   readonly goalTitle = input('Your certificate!');
   readonly goalNote = input<string>();
+  /** Where the star leads (the certificate page). */
+  readonly goalLink = input<string | readonly unknown[]>();
 
   /** Solid when the walk to the next stop has been made (this lesson finished). */
   protected readonly walked = computed(() => this.nodes().map((n) => n.state === 'finished'));

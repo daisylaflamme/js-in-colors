@@ -142,6 +142,12 @@ describe('CourseStore progress', () => {
       });
   });
 
+  it('earns the certificate only when every lesson is finished, coming-soon ones too', () => {
+    expect(setup(saved(['hello', 'output', 'jars'])).store.certificateEarned()).toBe(false);
+    TestBed.resetTestingModule();
+    expect(setup(saved(['hello', 'output', 'jars', 'loops'])).store.certificateEarned()).toBe(true);
+  });
+
   it('gives each lesson a state on the color path', () => {
     const { store } = setup(saved(['hello'], 'hello'));
     expect(store.pathLessons().map((l) => `${l.id}:${l.state}`)).toEqual([

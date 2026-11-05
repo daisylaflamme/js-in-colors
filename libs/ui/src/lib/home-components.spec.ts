@@ -73,6 +73,21 @@ describe('ColorPathComponent', () => {
     expect(el.querySelector('ol')?.getAttribute('aria-label')).toBe('Your color path');
   });
 
+  it('links the star to the certificate when given a goal link', async () => {
+    @Component({
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      imports: [ColorPathComponent],
+      template: `<jic-color-path [nodes]="nodes" goalLink="/certificate" goalNote="Ready!" />`,
+    })
+    class LinkHost {
+      readonly nodes = nodes;
+    }
+    const { el } = await render(LinkHost);
+    const star = el.querySelector('ol > li.goal a');
+    expect(star?.getAttribute('href')).toBe('/certificate');
+    expect(star?.textContent?.replace(/s+/g, ' ').trim()).toBe('Your certificate!, Ready!');
+  });
+
   it('names each link with its state in words, not color', async () => {
     const { el } = await render(Host);
     const names = [...el.querySelectorAll('ol > li a')].map((a) =>
