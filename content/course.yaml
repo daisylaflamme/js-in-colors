@@ -31,7 +31,7 @@ lessons:
     title: Yes or no paths
     topic: Conditions
     concept: boolean
-    status: soon
+    status: ready
   - id: loops
     title: Again and again
     topic: Loops

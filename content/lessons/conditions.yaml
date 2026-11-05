@@ -1,0 +1,150 @@
+id: conditions
+title: Yes or no paths
+topic: Conditions
+lead: A program asks a yes or no question, then picks a path.
+leadHighlight: path
+concept: boolean
+tip: if goes one way when true, else goes the other way.
+library:
+  title: All about choosing
+  sections:
+    - heading: What is a condition?
+      text: A condition is a yes or no question. The answer is true or false.
+    - heading: if
+      text: if checks the question. When the answer is true, the program takes that path.
+    - heading: else
+      text: else is the other path. The program takes it when the answer is false.
+    - heading: Asking about numbers
+      text: You can compare numbers too. age >= 7 asks, "Is age 7 or more?"
+  examples:
+    - concept: boolean
+      label: Yes
+      value: 'true'
+    - concept: boolean
+      label: 'No'
+      value: 'false'
+    - concept: number
+      label: Compare
+      value: age >= 7
+  words:
+    - term: if
+      meaning: when this is true
+    - term: else
+      meaning: otherwise
+    - term: '>='
+      meaning: this much or more
+scenes:
+  - id: a-fork-in-the-road
+    type: watch
+    bubble: A program can pick a path. It asks a yes or no question.
+    visual:
+      kind: fork
+      question: sunny?
+      yes: park
+      no: books
+      take: 'yes'
+    code: 'if (sunny) { goToPark(); }'
+    notes:
+      - term: if
+        text: asks the question
+      - term: sunny
+        text: is true or false
+  - id: is-it-sunny
+    type: interact
+    prompt: 'Is it sunny?'
+    visual:
+      kind: fork
+      question: sunny?
+      yes: park
+      no: books
+    choices:
+      - id: sunny
+        label: 'true'
+        concept: boolean
+        value: 'true'
+        path: 'yes'
+        bubble: It is sunny. Off to the park!
+        code: let sunny = true;
+      - id: rainy
+        label: 'false'
+        concept: boolean
+        value: 'false'
+        path: 'no'
+        bubble: Not sunny today. Time to read books!
+        code: let sunny = false;
+    notes:
+      - term: 'true'
+        text: takes the yes path
+      - term: 'false'
+        text: takes the no path
+  - id: the-else-path
+    type: watch
+    bubble: else is the other path. It runs when the answer is false.
+    visual:
+      kind: fork
+      question: sunny?
+      yes: park
+      no: books
+      take: 'no'
+    code: 'if (sunny) { goToPark(); } else { readBooks(); }'
+    notes:
+      - term: if
+        text: the path for true
+      - term: else
+        text: the path for false
+  - id: big-or-small-slide
+    type: interact
+    prompt: 'How old is Dot?'
+    visual:
+      kind: fork
+      question: age >= 7?
+      yes: big slide
+      no: small slide
+    choices:
+      - id: five
+        label: '5'
+        concept: number
+        value: '5'
+        path: 'no'
+        bubble: 5 is less than 7. The small slide is fun too!
+        code: let age = 5;
+      - id: seven
+        label: '7'
+        concept: number
+        value: '7'
+        path: 'yes'
+        bubble: 7 is 7 or more. Up the big slide!
+        code: let age = 7;
+      - id: nine
+        label: '9'
+        concept: number
+        value: '9'
+        path: 'yes'
+        bubble: 9 is more than 7. Big slide, here we go!
+        code: let age = 9;
+    notes:
+      - term: '>='
+        text: 'means: this much or more'
+  - id: which-path
+    type: quiz
+    question: 'if (false) ... else ... Which path does it take?'
+    visual:
+      kind: fork
+      question: 'false?'
+      yes: if path
+      no: else path
+    options:
+      - id: else
+        label: the else path
+        concept: boolean
+        correct: true
+        feedback: Yes! false means no, so it takes the else path.
+      - id: if
+        label: the if path
+        concept: boolean
+        correct: false
+        feedback: Not quite. The if path is for true. Try another one!
+      - id: both
+        label: both paths
+        correct: false
+        feedback: Good guess! A fork picks only one path. Try another one!

@@ -111,8 +111,8 @@ describe('themes', () => {
         [390, 844],
         [1440, 900],
       ] as const) {
-        // Variables opens on the jar, Functions on the machine.
-        for (const path of ['/lesson/variables', '/lesson/functions']) {
+        // Variables opens on the jar, Functions on the machine, Conditions on the fork.
+        for (const path of ['/lesson/variables', '/lesson/functions', '/lesson/conditions']) {
           cy.viewport(w, h);
           cy.visit(path);
           cy.document().then((doc) => doc.documentElement.setAttribute('data-theme', theme));
