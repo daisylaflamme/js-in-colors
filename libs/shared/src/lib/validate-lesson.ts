@@ -246,12 +246,79 @@ function checkVisual(c: Checker, value: unknown, path: IssuePath): void {
       checkListIndex(c, v, path, items?.length);
       return;
     }
+    case 'card': {
+      c.knownKeys(v, path, ['kind', 'name', 'props', 'key']);
+      const name = c.string(v, 'name', path);
+      if (name !== undefined && name.length > CARD_NAME_MAX) {
+        c.error(
+          [...path, 'name'],
+          `is ${name.length} characters; a card name can have at most ${CARD_NAME_MAX} so it fits the tag.`,
+        );
+      }
+      checkCardKey(c, v, path, checkCardProps(c, v, path, false));
+      return;
+    }
     default:
       c.error(
         [...path, 'kind'],
-        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork, list.`,
+        `${describe(v['kind'])} is not a visual. Use one of: jar, screen, dot, machine, fork, list, card.`,
       );
   }
+}
+
+/** Card names, keys and values must fit the SVG. */
+const CARD_PROPS_MAX = 3;
+const CARD_NAME_MAX = 10;
+const CARD_KEY_MAX = 8;
+const CARD_VALUE_MAX = 6;
+
+/** 1 to 3 details ({ key, value, concept }). Returns their keys when the list is readable. */
+function checkCardProps(c: Checker, obj: Obj, path: IssuePath, optional: boolean): string[] | undefined {
+  const props = c.array(obj, 'props', path, { optional, min: 1, max: CARD_PROPS_MAX });
+  if (!props) return undefined;
+  const keys: string[] = [];
+  props.forEach((p, i) => {
+    const at = [...path, 'props', i];
+    const prop = c.object(p, at);
+    if (!prop) return;
+    c.knownKeys(prop, at, ['key', 'value', 'concept']);
+    const key = c.string(prop, 'key', at);
+    if (key !== undefined) {
+      if (key.length > CARD_KEY_MAX)
+        c.error(
+          [...at, 'key'],
+          `is ${key.length} characters; a key can have at most ${CARD_KEY_MAX} so it fits.`,
+        );
+      if (keys.includes(key))
+        c.error([...at, 'key'], `"${key}" is used twice: each detail needs its own key.`);
+      keys.push(key);
+    }
+    const value = c.string(prop, 'value', at);
+    if (value !== undefined && value.length > CARD_VALUE_MAX)
+      c.error(
+        [...at, 'value'],
+        `is ${value.length} characters; a value can have at most ${CARD_VALUE_MAX} so it fits its shape.`,
+      );
+    c.concept(prop, 'concept', at);
+  });
+  return keys;
+}
+
+/** The keys of an already-checked props list (no new errors). */
+function cardKeys(props: unknown): string[] | undefined {
+  if (!Array.isArray(props)) return undefined;
+  return props
+    .map((p) => (typeof p === 'object' && p !== null ? (p as Obj)['key'] : undefined))
+    .filter((k): k is string => typeof k === 'string');
+}
+
+/** An optional key that must name one of the card's details. */
+function checkCardKey(c: Checker, obj: Obj, path: IssuePath, keys: string[] | undefined): void {
+  const key = obj['key'];
+  if (key === undefined) return;
+  if (typeof key !== 'string') c.error([...path, 'key'], `should be a detail's key, got ${describe(key)}.`);
+  else if (keys && !keys.includes(key))
+    c.error([...path, 'key'], `"${key}" is not a detail on this card. Use one of: ${keys.join(', ')}.`);
 }
 
 /** List items and names must fit the boxes and the tag of the SVG. */
@@ -352,7 +419,22 @@ function checkScene(c: Checker, value: unknown, path: IssuePath): void {
           'path',
           'index',
           'items',
+          'key',
+          'props',
         ]);
+        if (kind === 'card') {
+          if (choice['key'] === undefined && choice['props'] === undefined)
+            c.error(at, 'needs key (read a detail) or props (change the card), so the picture changes.');
+          const shown =
+            choice['props'] === undefined
+              ? cardKeys((visual as Obj)['props'])
+              : checkCardProps(c, choice, at, false);
+          checkCardKey(c, choice, at, shown);
+        } else {
+          for (const key of ['key', 'props'])
+            if (choice[key] !== undefined)
+              c.error([...at, key], 'is only for card scenes (which detail, or the new card).');
+        }
         if (kind === 'list') {
           if (choice['index'] === undefined && choice['items'] === undefined)
             c.error(at, 'needs index (point at a spot) or items (change the list), so the picture changes.');

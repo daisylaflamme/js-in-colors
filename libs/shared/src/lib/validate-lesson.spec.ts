@@ -127,8 +127,70 @@ describe('validateLesson', () => {
     scenes[1]['visual'] = { kind: 'box' };
     expect(errors(validateLesson(data))).toEqual([
       'scenes[0].type: "video" is not a scene type. Use one of: watch, interact, quiz.',
-      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork, list.',
+      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork, list, card.',
     ]);
+  });
+
+  describe('card scenes', () => {
+    const PROPS = [
+      { key: 'name', value: 'Tom', concept: 'string' },
+      { key: 'age', value: '3', concept: 'number' },
+    ];
+
+    /** The interact scene, turned into a card scene: one choice reads, one changes the card. */
+    function withCard(): { data: Record<string, unknown>; choices: Record<string, unknown>[] } {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      pick['visual'] = { kind: 'card', name: 'cat', props: PROPS };
+      const choices = pick['choices'] as Record<string, unknown>[];
+      choices[0]['key'] = 'age';
+      choices[1]['props'] = [PROPS[0], { key: 'age', value: '4', concept: 'number' }];
+      choices[1]['key'] = 'age';
+      return { data, choices };
+    }
+
+    it('accepts choices that read a detail or change the card', () => {
+      expect(errors(validateLesson(withCard().data))).toEqual([]);
+    });
+
+    it('needs each choice to change the picture, and to read a detail the card has', () => {
+      const { data, choices } = withCard();
+      choices[0]['key'] = 'color';
+      delete choices[1]['props'];
+      delete choices[1]['key'];
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].key: "color" is not a detail on this card. Use one of: name, age.',
+        'scenes[2].choices[1]: needs key (read a detail) or props (change the card), so the picture changes.',
+      ]);
+    });
+
+    it('allows key and props only in card scenes', () => {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      (pick['choices'] as Record<string, unknown>[])[0]['key'] = 'age';
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].key: is only for card scenes (which detail, or the new card).',
+      ]);
+    });
+
+    it('keeps cards small enough to fit, with unique keys and a concept on each detail', () => {
+      const data = validLesson();
+      (data['scenes'] as Record<string, unknown>[])[0]['visual'] = {
+        kind: 'card',
+        name: 'cat',
+        props: [
+          { key: 'favourite', value: 'Tom', concept: 'string' },
+          { key: 'age', value: 'eleven' }, // no concept
+          { key: 'age', value: '3!!!!!!', concept: 'number' },
+        ],
+      };
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[0].visual.props[0].key: is 9 characters; a key can have at most 8 so it fits.',
+        expect.stringMatching(/^scenes\[0\]\.visual\.props\[1\]\.concept: nothing is not a concept\./),
+        'scenes[0].visual.props[2].key: "age" is used twice: each detail needs its own key.',
+        'scenes[0].visual.props[2].value: is 7 characters; a value can have at most 6 so it fits its shape.',
+      ]);
+    });
   });
 
   describe('list scenes', () => {
