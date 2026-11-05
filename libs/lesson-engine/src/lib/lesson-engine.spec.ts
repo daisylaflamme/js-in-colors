@@ -155,6 +155,45 @@ describe('InteractScene', () => {
     expect(lines(el)).toEqual(['Hi!']);
   });
 
+  it('points a list at the picked spot, or shows the list the choice makes', async () => {
+    const listScene: Scene = {
+      id: 'fruits',
+      type: 'interact',
+      prompt: 'Pick a spot:',
+      visual: { kind: 'list', name: 'fruits', items: ['apple', 'pear'], concept: 'string' },
+      choices: [
+        {
+          id: 'one',
+          label: '1',
+          concept: 'number',
+          value: '1',
+          index: 1,
+          bubble: 'pear!',
+          code: 'fruits[1]',
+        },
+        {
+          id: 'kiwi',
+          label: 'kiwi',
+          concept: 'string',
+          value: 'kiwi',
+          items: ['apple', 'pear', 'kiwi'],
+          bubble: 'Now 3!',
+          code: 'fruits.push("kiwi");',
+        },
+      ],
+    };
+    const { fixture } = await host(listScene, { pickedChoiceId: 'one', answeredOptionId: null });
+    const scene = () => fixture.componentInstance.current as InteractSceneComponent;
+    expect(scene().visual()).toEqual({ ...listScene.visual, index: 1 });
+    fixture.componentRef.setInput('state', { pickedChoiceId: 'kiwi', answeredOptionId: null });
+    await fixture.whenStable();
+    expect(scene().visual()).toEqual({
+      ...listScene.visual,
+      items: ['apple', 'pear', 'kiwi'],
+      index: undefined,
+    });
+  });
+
   it('sends a fork down the picked choice’s path', async () => {
     const forkScene: Scene = {
       id: 'sunny',

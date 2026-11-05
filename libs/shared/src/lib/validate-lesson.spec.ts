@@ -127,8 +127,62 @@ describe('validateLesson', () => {
     scenes[1]['visual'] = { kind: 'box' };
     expect(errors(validateLesson(data))).toEqual([
       'scenes[0].type: "video" is not a scene type. Use one of: watch, interact, quiz.',
-      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork.',
+      'scenes[1].visual.kind: "box" is not a visual. Use one of: jar, screen, dot, machine, fork, list.',
     ]);
+  });
+
+  describe('list scenes', () => {
+    const LIST = { kind: 'list', name: 'fruits', items: ['apple', 'pear', 'plum'], concept: 'string' };
+
+    /** The interact scene, turned into a list scene: one choice points, one changes the list. */
+    function withList(): { data: Record<string, unknown>; choices: Record<string, unknown>[] } {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      pick['visual'] = { ...LIST };
+      const choices = pick['choices'] as Record<string, unknown>[];
+      choices[0]['index'] = 2;
+      choices[1]['items'] = ['apple', 'pear', 'plum', 'kiwi'];
+      return { data, choices };
+    }
+
+    it('accepts choices that point at a spot or change the list', () => {
+      expect(errors(validateLesson(withList().data))).toEqual([]);
+    });
+
+    it('needs each choice to change the picture, and to point inside the list it shows', () => {
+      const { data, choices } = withList();
+      delete choices[1]['items'];
+      choices[0]['index'] = 3;
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].index: is 3, but the list has 3 item(s): spots go from 0 to 2.',
+        'scenes[2].choices[1]: needs index (point at a spot) or items (change the list), so the picture changes.',
+      ]);
+    });
+
+    it('allows index and items only in list scenes', () => {
+      const data = validLesson();
+      const pick = (data['scenes'] as Record<string, unknown>[])[2];
+      (pick['choices'] as Record<string, unknown>[])[0]['index'] = 0;
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[2].choices[0].index: is only for list scenes (which spot, or the new list).',
+      ]);
+    });
+
+    it('keeps lists small enough to fit, with a concept to color the items', () => {
+      const data = validLesson();
+      (data['scenes'] as Record<string, unknown>[])[0]['visual'] = {
+        kind: 'list',
+        name: 'fruits',
+        items: ['a', 'b', 'banana', 'cherry!', 'e'],
+        index: 1.5,
+      };
+      expect(errors(validateLesson(data))).toEqual([
+        'scenes[0].visual.items: can have at most 4 items, has 5.',
+        'scenes[0].visual.items[3]: is 7 characters; a list item can have at most 6 so it fits its box.',
+        'scenes[0].visual.concept: is required when the list has items (it colors them).',
+        'scenes[0].visual.index: should be a spot number (0, 1, 2...), got 1.5.',
+      ]);
+    });
   });
 
   describe('fork scenes', () => {
