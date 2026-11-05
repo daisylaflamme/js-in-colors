@@ -68,22 +68,43 @@ The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-ano
 
 Built to WCAG 2.2 AA. Every interaction works with the keyboard, color is never the only signal (each concept has a shape and a word), every animation has a calm alternative, touch targets are 44px or more, and the layout works from 320px wide and at 200% text size.
 
-| Check                                                                                  | Result                                                                                                |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| cypress-axe (WCAG 2.x A/AA), phone / tablet / desktop, Tip and Library open and closed | 0 violations                                                                                          |
-| cypress-axe on every scene of Variables, keyboard only, phone and desktop              | 0 violations                                                                                          |
-| cypress-axe in the dark and high-contrast themes                                       | 0 violations                                                                                          |
-| cypress-axe on Home, phone / tablet / desktop, all three themes                        | 0 violations                                                                                          |
-| Blocked or broken browser storage (e2e)                                                | The app still works; progress lasts for the visit                                                     |
-| prefers-reduced-motion (emulated in the browser), or the Calm motion setting           | No animations run; final states shown at once                                                         |
-| Storybook a11y addon                                                                   | Runs on every story (`test: 'error'`)                                                                 |
-| Lighthouse performance (mobile)                                                        | _to be measured_                                                                                      |
-| Lighthouse accessibility                                                               | _to be measured_                                                                                      |
-| Initial JS + CSS (production build)                                                    | 324 kB raw, 88 kB gzipped (Home, the lesson page and each lesson are lazy); the build fails at 400 kB |
+| Check                                                                                  | Result                                                                                     |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| cypress-axe (WCAG 2.x A/AA), phone / tablet / desktop, Tip and Library open and closed | 0 violations                                                                               |
+| cypress-axe on every scene of every lesson, keyboard only, phone and desktop           | 0 violations                                                                               |
+| cypress-axe in the dark and high-contrast themes (lessons, Home, certificate, Ask Dot) | 0 violations                                                                               |
+| cypress-axe on Home, the certificate and Ask Dot, phone / tablet / desktop             | 0 violations                                                                               |
+| Blocked or broken browser storage (e2e)                                                | The app still works; progress lasts for the visit                                          |
+| The certificate name and chat questions in network requests or storage (e2e)           | Never found                                                                                |
+| prefers-reduced-motion (emulated in the browser), or the Calm motion setting           | No animations run; final states shown at once                                              |
+| Storybook a11y addon                                                                   | Runs on every story (`test: 'error'`)                                                      |
+| Lighthouse accessibility, best practices, SEO (mobile)                                 | 100 / 100 / 100 on Home, a lesson, the certificate and Ask Dot                             |
+| Lighthouse performance (mobile)                                                        | 73 to 78 (see below): LCP 0.7 s, CLS 0.05 or less, Total Blocking Time 1.0 to 1.6 s        |
+| Initial JS + CSS (production build)                                                    | 328 kB raw, 89 kB gzipped (every page and each lesson are lazy); the build fails at 400 kB |
+
+**About the Lighthouse numbers.** Lighthouse 13.6, mobile preset (simulated 4x CPU slowdown and slow 4G), against the production build served locally, median of 3 runs per page, on 2026-11-05. The test machine is slow: Lighthouse's CPU benchmark scored it 445 to 644, while the 4x slowdown assumes a fast desktop, so blocking time is overstated here. Even so, **performance misses the 95 target**, and the gap is all Total Blocking Time: one long start-up task (Angular boot plus the first render, about 650 ms under throttling) and style and layout work. Paint is fast (0.7 s) and nothing shifts. Re-measuring on a faster machine or in CI, and splitting that start-up task, is open work.
 
 ## How I built this with Claude Code
 
-_Placeholder: a short write-up will go here. The raw notes are in [docs/build-log.md](docs/build-log.md): plan mode before each task, small commits, ADRs, the mockups as the source of truth, and where tests and human judgment caught problems._
+The whole app was built in four days (2026-11-02 to 11-05) with Claude Code doing the implementation and me making the product and design calls. The raw notes, entry by entry, are in [docs/build-log.md](docs/build-log.md). What made it work:
+
+**A rulebook, not prompts.** [CLAUDE.md](CLAUDE.md) holds the stack, the Angular conventions, the accessibility checklist, the kids' privacy rules and every command. Claude Code reads it at the start of each session and adds to it when something new is learned, so a lesson learned once (for example "never wrap an SVG `<text>` across lines") stays learned.
+
+**Plan first, then build.** Every feature started in plan mode: Claude Code read the code and the mockups and wrote a plan; I approved it or changed it before any file was touched. Questions that were really mine to answer came as explicit choices, and I made them: a new "intro" concept for the first lesson, a certificate earned only at 10 of 10 while lessons stay unlocked, crimson and a window shape for "page magic", and a demo-mode chat before any real AI. Each one is an ADR in [docs/adr](docs/adr) (11 so far).
+
+**The mockups are the source of truth.** Every visual was checked against [docs/mockups](docs/mockups) from screenshots at 320, 390, 820 and 1440 px and in the dark and high-contrast themes, taken by a throwaway Cypress spec and deleted before the commit.
+
+**Small, reviewable steps.** One feature per branch, Conventional Commits split by area, 13 pull requests, each green in CI (lint, about 285 unit tests, the build, Storybook, and the Cypress suite with axe at three screen sizes) before merging.
+
+**Tools caught what eyes missed.** A few examples from the log:
+
+- Every component animation was silently dead: the motion mixin selected `:root`, which Angular's style encapsulation never matches. The reduced-motion e2e test found it.
+- With browser storage blocked, just reading `window.localStorage` throws, and the app crashed on start. Found by an e2e test written for exactly that case.
+- The whole UI library shipped in the initial bundle. Marking the libraries side-effect free cut it from 374 to 324 kB. Later, the chat's answers leaked into it the same way; checking the initial total after each feature caught it.
+- Prettier wrapped SVG text across lines, and the line breaks turned into spaces (`" Tom "`). Unit tests now check exact text.
+- The content validator rejects any lesson sentence over 12 words, so the text stays readable for young children.
+
+**And judgment caught what tools missed.** Some things only showed up by looking: the first "yes or no" fork was nearly invisible in the dark theme, and the chat's question box shrank to a few letters at 320 px. Some things needed measuring before fixing: a "slow" certificate download was 0.3 s once timed alone, and a chat that "didn't scroll" was a screenshot taken mid-scroll. And some mistakes were Claude Code's and were owned in the open, like a test-download image committed by accident in one pull request and removed in the next. The Lighthouse section above follows the same rule: the numbers are reported as measured, including the one that misses its target.
 
 ## License
 
