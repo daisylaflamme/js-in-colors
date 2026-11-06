@@ -51,6 +51,12 @@ describe('ConceptChipListComponent', () => {
     expect(el.querySelector(`#${list?.getAttribute('aria-labelledby')}`)?.textContent).toBe('Jars can hold:');
     expect(list?.querySelectorAll('li')).toHaveLength(2);
   });
+
+  it('until measured (prerendered HTML, ADR 0014), the row is a tab stop, as a scrolling phone row must be', async () => {
+    // No ResizeObserver here, as on the server: nothing has measured the row.
+    const { el } = await render(ConceptChipListComponent, { label: 'Jars can hold:', concepts: ['number'] });
+    expect(el.querySelector('ul')?.getAttribute('tabindex')).toBe('0');
+  });
 });
 
 @Component({

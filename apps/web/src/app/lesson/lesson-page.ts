@@ -118,11 +118,17 @@ export class LessonPage {
     // Load the lesson for the route; a new lesson closes Tip and Library.
     // Only the lesson id is tracked: load() reads store signals, and tracking those would re-run
     // this effect when the lesson arrives (and close a Tip the child just opened).
+    // Only a *change* of lesson closes them: on a prerendered page (ADR 0014) a tap made while the
+    // page was starting up is replayed before this effect first runs, and must stay open.
+    let shownId: string | undefined;
     effect(() => {
       const id = this.lessonId();
       untracked(() => {
-        this.tipOpen.set(false);
-        this.libraryOpen.set(false);
+        if (shownId !== undefined && shownId !== id) {
+          this.tipOpen.set(false);
+          this.libraryOpen.set(false);
+        }
+        shownId = id;
         if (this.course.find(id)?.status !== 'ready') return;
         this.course.markOpened(id);
         void this.store.load(id);

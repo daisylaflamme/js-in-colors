@@ -22,7 +22,11 @@ const deepest = (route: ActivatedRouteSnapshot): ActivatedRouteSnapshot =>
   imports: [RouterOutlet, LessonMenuComponent, OverlayPanelComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
-  host: { '[class.menu-inline]': 'menuInline()' },
+  host: {
+    '[class.menu-inline]': 'menuInline()',
+    // Only in the prerendered HTML (ADR 0014): removed when the app starts in the browser.
+    '[attr.data-prerendered]': 'shell.prerendering ? "" : null',
+  },
 })
 export class App {
   protected readonly shell = inject(ShellState);

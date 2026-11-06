@@ -1,5 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CourseStore } from '@jic/data-access';
 import { SHAPE_PATHS } from '@jic/shared';
@@ -34,6 +42,16 @@ export class CertificatePage {
   protected readonly starPath = SHAPE_PATHS.star;
   protected readonly maxLength = NAME_MAX_LENGTH;
   protected readonly date = formatCertificateDate(new Date());
+
+  /**
+   * False in the prerendered HTML and until the page has rendered in the browser (ADR 0014). The
+   * build knows no child's progress, so it must not draw "not yet" for a child who has earned it.
+   */
+  protected readonly progressRead = signal(false);
+
+  constructor() {
+    if (isPlatformBrowser(inject(PLATFORM_ID))) afterNextRender(() => this.progressRead.set(true));
+  }
 
   /** In memory only (ADR 0010). */
   protected readonly name = signal('');

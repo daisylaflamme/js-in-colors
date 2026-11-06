@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { isResumeCode, type Course } from '@jic/shared';
 import { browserLocalStorage } from '../browser-storage';
@@ -97,6 +98,21 @@ describe('localProgressStorage', () => {
 });
 
 describe('CourseStore progress', () => {
+  it('when prerendering, makes no resume code and reads or writes nothing (ADR 0014)', () => {
+    const memory = memoryProgressStorage(saved(['hello']));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: LESSON_SOURCE, useValue: { course, loaders: {} } },
+        memory.provider,
+        { provide: PLATFORM_ID, useValue: 'server' },
+      ],
+    });
+    const store = TestBed.inject(CourseStore);
+    expect(store.resumeCode()).toBe('');
+    expect(store.finishedCount()).toBe(0);
+    expect(memory.box.writes).toBe(0);
+  });
+
   it('starts a new visitor with a fresh code and saves it at once', () => {
     const { store, box } = setup();
     expect(isResumeCode(store.resumeCode())).toBe(true);

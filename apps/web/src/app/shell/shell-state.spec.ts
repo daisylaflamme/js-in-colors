@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ShellState } from './shell-state';
 
@@ -73,5 +74,21 @@ describe('ShellState', () => {
     });
     expect(create(1440).menuOpen()).toBe(true);
     vi.restoreAllMocks();
+  });
+
+  it('when prerendering (no screen), draws the desktop layout with the menu open', () => {
+    // Even with a phone-sized matchMedia around, the build never asks it (ADR 0014).
+    stubViewport(390);
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [{ provide: PLATFORM_ID, useValue: 'server' }] });
+    const shell = TestBed.inject(ShellState);
+
+    expect(shell.prerendering).toBe(true);
+    expect(shell.layout()).toBe('desktop');
+    expect(shell.menuInline()).toBe(true);
+  });
+
+  it('in the browser it is not prerendering', () => {
+    expect(create(390).prerendering).toBe(false);
   });
 });

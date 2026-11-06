@@ -11,6 +11,23 @@
     />
     <meta name="theme-color" content="#f5f6ff" />
     <link rel="icon" type="image/svg+xml" href="icon.svg" />
+    <script>
+      // Before the first paint (ADR 0014): put this device's saved settings on the prerendered page,
+      // so the text never jumps in size. Reads local storage only and sends nothing. After start-up
+      // the settings store owns these attributes. Keys and values are checked by boot-script.spec.ts.
+      (function () {
+        try {
+          var root = document.documentElement;
+          var saved = JSON.parse(localStorage.getItem('jic.settings') || '{}') || {};
+          if (saved.calmMotion === true) root.setAttribute('data-motion', 'calm');
+          if (saved.textSize === 'large' || saved.textSize === 'larger')
+            root.setAttribute('data-text-size', saved.textSize);
+          if (localStorage.getItem('jic.menuOpen') === 'false') root.setAttribute('data-menu', 'closed');
+        } catch (e) {
+          // Storage blocked or broken: the page starts with the defaults.
+        }
+      })();
+    </script>
   </head>
   <body>
     <jic-root></jic-root>
