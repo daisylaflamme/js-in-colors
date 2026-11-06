@@ -1,26 +1,30 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { memoryProgressStorage } from '@jic/data-access';
-import { type ChatChunk, ChatService, ChatStore, PRIVATE_REPLY } from '@jic/data-access/chat';
+import { signal } from '@angular/core';
+import { type ChatChunk, type ChatMode, ChatService, ChatStore, PRIVATE_REPLY } from '@jic/data-access/chat';
 import { Subject } from 'rxjs';
-import { AskDotPage } from './ask-dot-page';
+import { AskDotPage, DEMO_NOTE, LIVE_NOTE, RESTING_NOTE } from './ask-dot-page';
 
 /** A chat service the test drives by hand: each question gets its own stream. */
-function fakeChat() {
+function fakeChat(mode: ChatMode = 'demo') {
   const asked: string[] = [];
   let current = new Subject<ChatChunk>();
+  const resting = signal(false);
   const service: ChatService = {
+    mode,
+    resting,
     ask: (q: string) => {
       asked.push(q);
       current = new Subject<ChatChunk>();
       return current;
     },
   };
-  return { service, asked, stream: () => current };
+  return { service, asked, stream: () => current, resting };
 }
 
-async function setup(from?: string) {
-  const chat = fakeChat();
+async function setup(from?: string, mode: ChatMode = 'demo') {
+  const chat = fakeChat(mode);
   TestBed.configureTestingModule({ providers: [provideRouter([]), memoryProgressStorage().provider] });
   TestBed.overrideComponent(AskDotPage, {
     set: { providers: [ChatStore, { provide: ChatService, useValue: chat.service }] },
@@ -115,5 +119,24 @@ describe('AskDotPage', () => {
     await typeAndSend('my name is Emma');
     expect(chat.asked).toEqual([]);
     expect(bubbles().at(-1)).toEqual({ from: 'dot', text: PRIVATE_REPLY });
+  });
+
+  it('says Demo mode, or Live in a live build, with the matching note', async () => {
+    const demo = await setup();
+    expect(demo.text('.demo-pill')).toBe('Demo mode');
+    expect(demo.text('jic-safe-rules-card .note')).toBe(DEMO_NOTE);
+    TestBed.resetTestingModule();
+    document.body.replaceChildren();
+    const live = await setup(undefined, 'live');
+    expect(live.text('.demo-pill')).toBe('Live');
+    expect(live.text('jic-safe-rules-card .note')).toBe(LIVE_NOTE);
+  });
+
+  it('says in words when Dot is resting (live answers unavailable)', async () => {
+    const { el, chat, fixture, text } = await setup(undefined, 'live');
+    expect(el.querySelector('.resting')).toBeNull();
+    chat.resting.set(true);
+    await fixture.whenStable();
+    expect(text('.resting')).toBe(RESTING_NOTE);
   });
 });

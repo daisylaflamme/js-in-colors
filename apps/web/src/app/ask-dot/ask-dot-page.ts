@@ -11,7 +11,14 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CourseStore } from '@jic/data-access';
-import { CHAT_INSTANT, ChatStore, provideDemoChat, QUESTION_MAX_LENGTH } from '@jic/data-access/chat';
+import {
+  CHAT_INSTANT,
+  ChatService,
+  ChatStore,
+  provideChat,
+  QUESTION_MAX_LENGTH,
+} from '@jic/data-access/chat';
+import { CHAT_MODE } from '../../environments/chat-mode';
 import type { Concept } from '@jic/shared';
 import {
   AppLogoComponent,
@@ -32,6 +39,11 @@ export const SUGGESTIONS: readonly { readonly text: string; readonly concept: Co
 export const DEMO_NOTE =
   "Demo mode shows pre-written answers. In the full version, Dot's replies stream in word by word.";
 
+export const LIVE_NOTE =
+  'Live mode: an AI writes the answers, and every word is checked before you see it. Nothing is saved.';
+
+export const RESTING_NOTE = 'Dot is resting, so these are quick pre-written answers.';
+
 /**
  * Ask Dot (mockup 09, ADR 0011). The chat lives in a ChatStore provided here, so leaving the
  * page ends the conversation: nothing is saved. Demo mode answers come from DemoChatService.
@@ -50,7 +62,8 @@ export const DEMO_NOTE =
     SafeRulesCardComponent,
     TypingDotsComponent,
   ],
-  providers: [ChatStore, provideDemoChat()],
+  // Demo unless this is a live build (npm run start:live, ADR 0012).
+  providers: [ChatStore, provideChat(CHAT_MODE)],
   templateUrl: './ask-dot-page.html',
   styleUrl: './ask-dot-page.scss',
 })
@@ -63,7 +76,10 @@ export class AskDotPage {
   private readonly instant = inject(CHAT_INSTANT);
 
   protected readonly suggestions = SUGGESTIONS;
-  protected readonly demoNote = DEMO_NOTE;
+  protected readonly chat = inject(ChatService);
+  protected readonly live = this.chat.mode === 'live';
+  protected readonly note = this.live ? LIVE_NOTE : DEMO_NOTE;
+  protected readonly restingNote = RESTING_NOTE;
   protected readonly maxLength = QUESTION_MAX_LENGTH;
   protected readonly draft = signal('');
 
