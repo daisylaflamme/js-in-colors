@@ -40,12 +40,18 @@ export class ConceptChipListComponent {
   readonly concepts = input.required<readonly Concept[]>();
 
   protected readonly labelId = `jic-chip-list-${nextId++}`;
-  protected readonly scrollable = signal(false);
+  /**
+   * Until measured, the row is assumed to scroll (as on a phone): a moment's extra tab stop on a wide
+   * screen is harmless, a scrolling row keyboard users can't reach is not. The prerendered HTML
+   * (ADR 0014) can't measure at all, and hydration must not drop the tab stop before the first
+   * measurement.
+   */
+  protected readonly scrollable = signal(true);
   private readonly list = viewChild<ElementRef<HTMLUListElement>>('list');
 
   constructor() {
     // A ResizeObserver reports once after first layout and again on every resize,
-    // so no render hook is needed. (Absent on the server and in very old browsers: stay unfocusable.)
+    // so no render hook is needed. (Absent on the server and in very old browsers: stay a tab stop.)
     if (typeof ResizeObserver === 'undefined') return;
     const host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const observer = new ResizeObserver(() => {

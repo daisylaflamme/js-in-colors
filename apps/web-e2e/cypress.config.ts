@@ -50,6 +50,10 @@ export default defineConfig({
     baseUrl: 'http://localhost:4200',
     setupNodeEvents(on, config) {
       config.env['lessons'] = readyLessons();
+      // prerender.cy.ts runs only against the prerendered production build (serve-static): what CI
+      // and --configuration=production serve. Set CYPRESS_prerendered=true when running Cypress by hand.
+      config.env['prerendered'] ??=
+        Boolean(process.env['CI']) || process.env['NX_TASK_TARGET_CONFIGURATION'] === 'production';
       // Print axe violations in the terminal (CI logs), not only in the browser console.
       on('task', {
         table(rows: unknown[]) {

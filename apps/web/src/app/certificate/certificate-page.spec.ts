@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { memoryProgressStorage } from '@jic/data-access';
@@ -24,11 +25,16 @@ const saved = (finishedIds: string[]) => ({
   lastLessonId: null,
 });
 
-async function setup(finishedIds: string[]) {
+async function setup(finishedIds: string[], platform: 'browser' | 'server' = 'browser') {
   const memory = memoryProgressStorage(saved(finishedIds));
   const download = vi.fn(async () => true);
   TestBed.configureTestingModule({
-    providers: [provideRouter([]), memory.provider, { provide: CertificateExport, useValue: { download } }],
+    providers: [
+      provideRouter([]),
+      memory.provider,
+      { provide: CertificateExport, useValue: { download } },
+      { provide: PLATFORM_ID, useValue: platform },
+    ],
   });
   const fixture = TestBed.createComponent(CertificatePage);
   await fixture.whenStable();
@@ -46,6 +52,14 @@ async function setup(finishedIds: string[]) {
 
 describe('CertificatePage', () => {
   afterEach(() => vi.restoreAllMocks());
+
+  it('when prerendered, draws neither "not yet" nor the certificate: progress is only on the device', async () => {
+    const { el, text } = await setup(ALL, 'server');
+    expect(text('h1')).toBe('Your certificate');
+    expect(el.querySelector('.waiting')).not.toBeNull();
+    expect(el.querySelector('.lead')).toBeNull();
+    expect(el.querySelector('.sheet')).toBeNull();
+  });
 
   it('says how far the child is, and offers to continue, until every lesson is finished', async () => {
     const { el, text } = await setup(['hello', 'output', 'variables']);

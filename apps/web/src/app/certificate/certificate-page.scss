@@ -14,6 +14,11 @@
   }
 }
 
+// Holds the page open until progress is read (prerendered HTML, ADR 0014).
+.waiting {
+  min-block-size: 60dvh;
+}
+
 .top {
   display: flex;
   flex-wrap: wrap;

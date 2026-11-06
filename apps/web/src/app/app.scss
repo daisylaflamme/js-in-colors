@@ -11,6 +11,35 @@
   grid-template-columns: var(--size-nav) minmax(0, 1fr);
 }
 
+// Prerendered HTML (ADR 0014) is drawn for a desktop with the menu open, since the build has no
+// screen. Until the app starts, show that menu only where it would really be inline: at lg, and
+// not when this device saved it closed (data-menu, set by the boot script in index.html).
+:host([data-prerendered]) {
+  display: block;
+
+  .menu {
+    display: none;
+  }
+
+  @include mq-up(lg) {
+    &.menu-inline {
+      display: grid;
+    }
+
+    .menu {
+      display: block;
+    }
+  }
+}
+
+:host-context([data-menu='closed'])[data-prerendered] {
+  display: block;
+
+  .menu {
+    display: none;
+  }
+}
+
 .menu {
   position: sticky;
   inset-block-start: 0;

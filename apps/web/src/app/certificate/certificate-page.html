@@ -3,7 +3,11 @@
   <a class="path-link" routerLink="/">Your color path</a>
 </header>
 
-@if (course.certificateEarned()) {
+@if (!progressRead()) {
+  <!-- Prerendered (ADR 0014): progress lives only on this device, so the page waits for it. -->
+  <h1 class="u-visually-hidden">Your certificate</h1>
+  <div class="waiting"></div>
+} @else if (course.certificateEarned()) {
   <h1 class="u-visually-hidden">Your certificate</h1>
 
   <section class="controls" aria-label="Make your certificate">

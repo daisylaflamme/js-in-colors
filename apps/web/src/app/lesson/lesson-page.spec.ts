@@ -103,6 +103,29 @@ describe('LessonPage', () => {
     expect(el.querySelector('dialog.tip')?.hasAttribute('open')).toBe(true);
   });
 
+  it('keeps a Tip tapped while the page was starting up (prerendered page, ADR 0014)', async () => {
+    // Event replay can deliver a tap before the page's first change detection. The first run of
+    // the "new lesson closes Tip and Library" effect must not close it.
+    TestBed.configureTestingModule({ providers: [provideRouter([]), memoryProgressStorage().provider] });
+    const fixture = TestBed.createComponent(LessonPage);
+    fixture.componentRef.setInput('lessonId', 'variables');
+    const page = fixture.componentInstance as unknown as { toggleTip(trigger: HTMLElement): void };
+    page.toggleTip(document.createElement('button'));
+    await fixture.whenStable();
+    expect((fixture.nativeElement as HTMLElement).querySelector('dialog.tip')?.hasAttribute('open')).toBe(
+      true,
+    );
+  });
+
+  it('a new lesson still closes an open Tip', async () => {
+    const { fixture, el, click } = await setup('variables');
+    await click('jic-help-tabs button.tip');
+    expect(el.querySelector('dialog.tip')?.hasAttribute('open')).toBe(true);
+    fixture.componentRef.setInput('lessonId', 'hello');
+    await fixture.whenStable();
+    expect(el.querySelector('dialog.tip')?.hasAttribute('open')).toBe(false);
+  });
+
   it('shows an honest coming-soon scene for lessons without content yet', async () => {
     // Every real lesson is ready, so this one is made up.
     const { el } = await setup('later', {

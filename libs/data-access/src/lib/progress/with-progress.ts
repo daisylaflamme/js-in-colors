@@ -1,4 +1,5 @@
-import { computed, inject } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { computed, inject, PLATFORM_ID } from '@angular/core';
 import {
   patchState,
   signalStoreFeature,
@@ -87,6 +88,9 @@ export function withProgress() {
     })),
     withHooks({
       onInit(store) {
+        // Prerendering (ADR 0014): no device, so no progress and no resume code. A code made here
+        // would be baked into the HTML and shown to every visitor until the app starts.
+        if (isPlatformServer(inject(PLATFORM_ID))) return;
         const storage = inject(PROGRESS_STORAGE);
         const saved = parseProgress(
           storage.read(),

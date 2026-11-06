@@ -2,7 +2,7 @@ import { computed, inject, PendingTasks } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import type { Choice, InteractScene, Lesson, QuizOption, QuizScene, Scene } from '@jic/shared';
 import { CourseStore } from './course.store';
-import { LESSON_SOURCE } from './lesson-source';
+import { LESSON_SOURCE, LessonPreloader } from './lesson-source';
 
 export type LessonLoadStatus = 'idle' | 'loading' | 'ready' | 'missing';
 
@@ -60,9 +60,21 @@ export const LessonStore = signalStore(
     };
   }),
   withMethods(
-    (store, course = inject(CourseStore), source = inject(LESSON_SOURCE), tasks = inject(PendingTasks)) => ({
+    (
+      store,
+      course = inject(CourseStore),
+      source = inject(LESSON_SOURCE),
+      tasks = inject(PendingTasks),
+      preloader = inject(LessonPreloader),
+    ) => ({
       async load(id: string): Promise<void> {
         if (store.lesson()?.id === id && store.status() === 'ready') return;
+        // Already loaded (the route resolver): ready at once, with no 'loading' render in between.
+        const preloaded = preloader.get(id);
+        if (preloaded) {
+          patchState(store, { ...initialState, status: 'ready', lesson: preloaded });
+          return;
+        }
         const loader = source.loaders[id];
         if (!loader) {
           patchState(store, { ...initialState, status: 'missing' });

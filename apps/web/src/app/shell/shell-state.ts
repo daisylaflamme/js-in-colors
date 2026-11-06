@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformServer } from '@angular/common';
+import { Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { fromEvent, map, of, startWith } from 'rxjs';
 
@@ -14,10 +14,15 @@ const MENU_KEY = 'jic.menuOpen';
  *  - layout: phone (< sm), tablet (sm..lg), desktop (>= lg), from matchMedia
  *  - the lesson menu: inline and open by default on desktop (the choice is remembered),
  *    an overlay that starts closed below lg (mockups 12, 14)
+ *
+ * Prerendering (ADR 0014) has no screen, so the server draws the desktop layout with the menu open;
+ * until the app starts, app.scss hides that menu wherever it would not be inline.
  */
 @Injectable({ providedIn: 'root' })
 export class ShellState {
   private readonly window = inject(DOCUMENT).defaultView;
+  /** Rendering at build time (no screen, no storage). */
+  readonly prerendering = isPlatformServer(inject(PLATFORM_ID));
 
   private readonly isSm = this.mediaSignal(`(min-width: ${BREAKPOINTS.sm}px)`);
   private readonly isLg = this.mediaSignal(`(min-width: ${BREAKPOINTS.lg}px)`);
@@ -60,6 +65,7 @@ export class ShellState {
   }
 
   private mediaSignal(query: string) {
+    if (this.prerendering) return signal(true).asReadonly();
     const mql = this.window?.matchMedia?.(query);
     const changes$ = mql
       ? fromEvent<MediaQueryListEvent>(mql, 'change').pipe(

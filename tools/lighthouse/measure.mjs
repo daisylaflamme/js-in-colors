@@ -17,11 +17,13 @@ const LIGHTHOUSE = 'lighthouse@13.6.0';
 // in three on CI: 0.6 s becomes 2.4-3.2 s), so the median needs enough runs. CI uses 5.
 const RUNS = Number(process.env.LIGHTHOUSE_RUNS ?? 3);
 const MIN_BENCHMARK = 1000;
+// Each page is a prerendered folder (ADR 0014). The trailing slash asks for it directly: without it,
+// http-server (serve-static) first redirects, and Lighthouse would count that hop.
 const PAGES = [
   ['Home', '/'],
-  ['Lesson', '/lesson/variables'],
-  ['Certificate', '/certificate'],
-  ['Ask Dot', '/ask-dot'],
+  ['Lesson', '/lesson/variables/'],
+  ['Certificate', '/certificate/'],
+  ['Ask Dot', '/ask-dot/'],
 ];
 const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 
