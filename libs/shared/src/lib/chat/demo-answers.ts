@@ -1,4 +1,4 @@
-import type { Concept } from '@jic/shared';
+import type { Concept } from '../concepts';
 
 /** A pre-written answer for demo mode (ADR 0011). Original text, short kid sentences. */
 export interface DemoAnswer {

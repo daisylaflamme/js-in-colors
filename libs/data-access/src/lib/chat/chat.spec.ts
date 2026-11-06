@@ -3,15 +3,9 @@ import { sentences } from '@jic/shared';
 import { firstValueFrom, Observable, toArray } from 'rxjs';
 import { CHAT_INSTANT, type ChatChunk, ChatService, looksPersonal, PRIVATE_REPLY } from './chat';
 import { ChatStore, DOT_GREETING, DOT_OOPS } from './chat.store';
-import { DEMO_ANSWERS, DEMO_REDIRECTS } from './demo-answers';
-import {
-  DEMO_THINK_MS,
-  DemoChatService,
-  matchAnswer,
-  normalize,
-  provideDemoChat,
-  redirectFor,
-} from './demo-chat.service';
+import { DEMO_ANSWERS, DEMO_REDIRECTS } from '@jic/shared/chat';
+import { matchAnswer, normalize, redirectFor } from '@jic/shared/chat';
+import { DEMO_THINK_MS, DemoChatService, provideDemoChat } from './demo-chat.service';
 
 describe('demo answers', () => {
   it('are short kid sentences (12 words or fewer), with unique ids', () => {

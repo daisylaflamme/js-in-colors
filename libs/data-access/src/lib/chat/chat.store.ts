@@ -2,7 +2,7 @@ import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, concatMap, EMPTY, filter, finalize, of, pipe, tap } from 'rxjs';
-import { type ChatLink, ChatService, looksPersonal, PRIVATE_REPLY } from './chat';
+import { type ChatLink, ChatService, cleanQuestion, looksPersonal, PRIVATE_REPLY } from './chat';
 
 export interface ChatMessage {
   readonly id: number;
@@ -22,8 +22,6 @@ interface ChatState {
 
 export const DOT_GREETING = 'Hi! I am Dot. Ask me anything about JavaScript.';
 export const DOT_OOPS = 'Oops, Dot got mixed up. Try again!';
-/** The longest question a child can send. */
-export const QUESTION_MAX_LENGTH = 200;
 
 /**
  * One chat with Dot (ADR 0011). In memory only: provide it on the chat page, so leaving the
@@ -55,7 +53,7 @@ export const ChatStore = signalStore(
         pipe(
           filter((q) => q.trim().length > 0 && store.status() === 'idle'),
           concatMap((raw) => {
-            const question = raw.trim().slice(0, QUESTION_MAX_LENGTH);
+            const question = cleanQuestion(raw);
             add({ from: 'kid', text: question });
             if (looksPersonal(question)) {
               add({ from: 'dot', text: PRIVATE_REPLY });

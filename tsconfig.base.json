@@ -23,7 +23,8 @@
       "@jic/data-access": ["./libs/data-access/src/index.ts"],
       "@jic/data-access/chat": ["./libs/data-access/src/chat.ts"],
       "@jic/visuals": ["./libs/visuals/src/index.ts"],
-      "@jic/shared": ["./libs/shared/src/index.ts"]
+      "@jic/shared": ["./libs/shared/src/index.ts"],
+      "@jic/shared/chat": ["./libs/shared/src/chat.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
