@@ -16,7 +16,7 @@
     "format:check": "prettier --check .",
     "lighthouse": "node tools/lighthouse/measure.mjs",
     "api": "nx serve api",
-    "chat:eval": "nx run api:eval",
+    "chat:eval": "node --env-file-if-exists=apps/api/.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tools/content/ts-resolve.mjs apps/api/src/eval/run-eval.ts",
     "dot-art": "node tools/dot-art/convert.mjs && prettier --write libs/visuals/src/lib/dot/dot-art.ts"
   },
   "devDependencies": {

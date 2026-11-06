@@ -27,6 +27,29 @@ export function looksPersonal(question: string): boolean {
   return PERSONAL_INFO.some((pattern) => pattern.test(question));
 }
 
+export const CARE_REPLY =
+  'That sounds hard. Please tell a grown-up you trust, like a parent or a teacher. I am here for JavaScript questions any time.';
+
+/**
+ * A child who says they are hurt, scared, sad or picked on gets a fixed, caring reply that points
+ * to a trusted grown-up, never an AI's answer: the live eval showed a model answering "someone at
+ * school is mean to me" with a coding tip. Over-triggering is the safe side.
+ */
+const NEEDS_A_GROWN_UP: readonly RegExp[] = [
+  /\bmean to me\b/i,
+  /\bbull(?:y|ies|ied|ying)\b/i,
+  /\b(?:hurts?|hurting|hit|hits|kicks?|kicked) me\b/i,
+  /\bi(?:'m| am)? (?:so |very |really )?(?:scared|afraid|sad|lonely|alone|unhappy|upset)\b/i,
+  /\b(?:i )?(?:feel|felt) (?:so |very |really )?(?:scared|afraid|sad|lonely|alone|unhappy|upset)\b/i,
+  /\bnobody likes me\b/i,
+  /\bi hate myself\b/i,
+  /\bhurt myself\b/i,
+];
+
+export function needsAGrownUp(question: string): boolean {
+  return NEEDS_A_GROWN_UP.some((pattern) => pattern.test(question));
+}
+
 /** Trimmed, single-spaced, no control characters, at most QUESTION_MAX_LENGTH characters. */
 export function cleanQuestion(raw: string): string {
   return (

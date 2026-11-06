@@ -12,8 +12,12 @@ export interface GroqOptions {
 
 /**
  * Groq's OpenAI-compatible chat API, streamed (ADR 0012). Sends the kid system prompt and only
- * this one question: no history, no names, nothing stored here. Short and calm by design
- * (max_tokens 120, temperature 0.3). The key stays on the server and is never logged.
+ * this one question: no history, no names, nothing stored here. Calm by design (temperature
+ * 0.3); the pipeline caps the length. The key stays on the server and is never logged.
+ *
+ * gpt-oss models think before they answer: reasoning_effort "low" keeps that short, and
+ * include_reasoning false keeps it out of the stream, so only the answer arrives. Their thinking
+ * counts against the token budget, hence 400 tokens for an answer of about 30 words.
  */
 export class GroqProvider implements ChatProvider {
   readonly name = 'groq';
@@ -35,8 +39,11 @@ export class GroqProvider implements ChatProvider {
       body: JSON.stringify({
         model: this.options.model,
         stream: true,
-        max_tokens: 120,
+        max_completion_tokens: 400,
         temperature: 0.3,
+        ...(isReasoningModel(this.options.model)
+          ? { reasoning_effort: 'low', include_reasoning: false }
+          : {}),
         messages: [
           { role: 'system', content: KID_SYSTEM_PROMPT },
           { role: 'user', content: question },
@@ -51,6 +58,31 @@ export class GroqProvider implements ChatProvider {
       const delta = parseDelta(data);
       if (delta) yield delta;
     }
+  }
+}
+
+/** Groq's gpt-oss models reason before answering and take the reasoning settings. */
+export function isReasoningModel(model: string): boolean {
+  return model.startsWith('openai/gpt-oss');
+}
+
+/**
+ * Asks Groq which models this key can use (no content is sent). Used at start-up to warn when
+ * the configured model is not available, instead of silently answering from the canned demo.
+ */
+export async function availableModels(
+  apiKey: string,
+  doFetch: typeof fetch = fetch,
+): Promise<string[] | undefined> {
+  try {
+    const response = await doFetch('https://api.groq.com/openai/v1/models', {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (!response.ok) return undefined;
+    const body = (await response.json()) as { data?: { id?: unknown }[] };
+    return (body.data ?? []).map((m) => m.id).filter((id): id is string => typeof id === 'string');
+  } catch {
+    return undefined;
   }
 }
 

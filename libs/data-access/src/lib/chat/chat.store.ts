@@ -2,7 +2,15 @@ import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { catchError, concatMap, EMPTY, filter, finalize, of, pipe, tap } from 'rxjs';
-import { type ChatLink, ChatService, cleanQuestion, looksPersonal, PRIVATE_REPLY } from './chat';
+import {
+  CARE_REPLY,
+  type ChatLink,
+  ChatService,
+  cleanQuestion,
+  looksPersonal,
+  needsAGrownUp,
+  PRIVATE_REPLY,
+} from './chat';
 
 export interface ChatMessage {
   readonly id: number;
@@ -58,6 +66,11 @@ export const ChatStore = signalStore(
             if (looksPersonal(question)) {
               add({ from: 'dot', text: PRIVATE_REPLY });
               finish(PRIVATE_REPLY);
+              return EMPTY;
+            }
+            if (needsAGrownUp(question)) {
+              add({ from: 'dot', text: CARE_REPLY });
+              finish(CARE_REPLY);
               return EMPTY;
             }
             patchState(store, { status: 'thinking', announcement: '' });

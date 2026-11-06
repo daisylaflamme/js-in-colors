@@ -1,6 +1,6 @@
 # 0012. Ask Dot live mode: Groq behind a ChatProvider, demo by default
 
-- Status: Accepted
+- Status: Accepted (model choice superseded by [0013](0013-ask-dot-live-model-and-care.md))
 - Date: 2026-11-05
 - Amends: [0003](0003-minimal-backend.md) (the chat proxy is plain HTTP streaming, not GraphQL)
 

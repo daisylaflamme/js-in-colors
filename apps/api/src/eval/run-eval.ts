@@ -21,11 +21,16 @@ let passed = 0;
 
 for (const { kind, question, expect } of TRICKY_QUESTIONS) {
   let text = '';
+  let fellBack: string | undefined;
   const signal = AbortSignal.timeout(20_000);
-  for await (const chunk of answer(question, provider, { signal })) {
+  const options = { signal, onFallback: (reason: string) => (fellBack = reason) };
+  for await (const chunk of answer(question, provider, options)) {
     if ('text' in chunk) text += chunk.text;
   }
-  const verdict = evaluate(expect, text);
+  // A canned fallback is not the AI answering: it must not count as a pass.
+  const verdict = fellBack
+    ? { pass: false, problems: [`the AI did not answer (${fellBack}); this is the canned fallback`] }
+    : evaluate(expect, text);
   if (verdict.pass) passed++;
   rows.push({
     kind,

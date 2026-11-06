@@ -1,6 +1,13 @@
-import { type ChatChunk, checkWord, PRIVATE_REPLY, redirectFor, SAFE_ENDING } from '@jic/shared/chat';
+import {
+  CARE_REPLY,
+  type ChatChunk,
+  checkWord,
+  PRIVATE_REPLY,
+  redirectFor,
+  SAFE_ENDING,
+} from '@jic/shared/chat';
 import { TRICKY_QUESTIONS } from './eval/tricky-questions';
-import { answer, MID_ANSWER_OOPS, wordsOf } from './pipeline';
+import { answer, ASK_ABOUT_JAVASCRIPT, MID_ANSWER_OOPS, safeReason, wordsOf } from './pipeline';
 import { DemoProvider } from './providers/demo';
 import type { ChatProvider } from './providers/provider';
 
@@ -101,6 +108,48 @@ describe('the answer pipeline', () => {
     expect(slow.text).toBe(redirectFor('Do you like pizza?'));
   });
 
+  it('reports a fallback with a reason that never holds content, so a broken provider cannot hide', async () => {
+    const reasons: string[] = [];
+    const broken: ChatProvider = {
+      name: 'groq',
+      // eslint-disable-next-line require-yield
+      async *stream() {
+        throw new Error('groq responded 404');
+      },
+    };
+    await collect(
+      answer('What is a loop?', broken, {
+        signal: new AbortController().signal,
+        onFallback: (r) => reasons.push(r),
+      }),
+    );
+    await collect(
+      answer('Do you like pizza?', fake(['late'], { hang: true }), {
+        signal: new AbortController().signal,
+        firstWordTimeoutMs: 20,
+        onFallback: (r) => reasons.push(r),
+      }),
+    );
+    expect(reasons).toEqual(['groq responded 404', 'timeout']);
+    expect(safeReason(new Error('bad request: "What is a loop?" is too long'))).toBe('provider error');
+    expect(safeReason('weird')).toBe('provider error');
+  });
+
+  it('sends plain text: Markdown marks never reach the child', async () => {
+    const { text } = await run('hi', fake(['In JavaScript, **true** means `yes` ** ok.']));
+    expect(text).toBe('In JavaScript, true means yes ok.');
+  });
+
+  it('points a bare refusal back to JavaScript, and leaves other answers alone', async () => {
+    expect((await run('hi', fake(["I'm sorry, but I can’t help with that."]))).text).toBe(
+      `I'm sorry, but I can’t help with that. ${ASK_ABOUT_JAVASCRIPT}`,
+    );
+    expect((await run('hi', fake(["I can't do that. I only talk about JavaScript."]))).text).toBe(
+      "I can't do that. I only talk about JavaScript.",
+    );
+    expect((await run('hi', fake(['A loop repeats.']))).text).toBe('A loop repeats.');
+  });
+
   it('ends kindly if the provider breaks mid-answer', async () => {
     const { text } = await run('hi', fake(['Loops ', 'repeat ', 'things'], { throwAt: 2 }));
     expect(text).toBe(`Loops repeat ${MID_ANSWER_OOPS}`);
@@ -149,8 +198,8 @@ describe('tricky kid questions, against a model that misbehaves on purpose', () 
       const provider = fake([MISBEHAVIOUR[i % MISBEHAVIOUR.length]]);
       const { text } = await run(question, provider, { maxWords: 60 });
 
-      if (expectation === 'private') {
-        expect(text).toBe(PRIVATE_REPLY);
+      if (expectation === 'private' || expectation === 'care') {
+        expect(text).toBe(expectation === 'private' ? PRIVATE_REPLY : CARE_REPLY);
         expect(provider.calls).toEqual([]);
         return;
       }

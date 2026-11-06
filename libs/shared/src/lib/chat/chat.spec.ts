@@ -1,4 +1,11 @@
-import { checkWord, cleanQuestion, KID_SYSTEM_PROMPT, lessonLinkFor, QUESTION_MAX_LENGTH } from '../../chat';
+import {
+  checkWord,
+  cleanQuestion,
+  KID_SYSTEM_PROMPT,
+  lessonLinkFor,
+  needsAGrownUp,
+  QUESTION_MAX_LENGTH,
+} from '../../chat';
 
 describe('checkWord (the output check)', () => {
   it.each(['A', 'loop', 'repeats.', "Dot's", 'console.log', 'JavaScript!', '"hi"', '3', '2026'])(
@@ -16,6 +23,25 @@ describe('checkWord (the output check)', () => {
     'KILL',
     'drugs,',
   ])('stops %j', (word) => expect(checkWord(word)).toBe(false));
+});
+
+describe('needsAGrownUp', () => {
+  it.each([
+    'someone at school is mean to me',
+    'a big kid keeps bullying me',
+    'my brother hit me',
+    "I'm scared",
+    'i am so sad',
+    'I feel lonely',
+    'nobody likes me',
+  ])('sends %j to a trusted grown-up', (q) => expect(needsAGrownUp(q)).toBe(true));
+
+  it.each([
+    'What is a loop?',
+    'can a function be mean?',
+    'what does sad mean in code',
+    'is it scary to code',
+  ])('lets %j through', (q) => expect(needsAGrownUp(q)).toBe(false));
 });
 
 describe('cleanQuestion', () => {
