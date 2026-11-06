@@ -1,6 +1,6 @@
 # 0003. Minimal backend in version 1
 
-- Status: Accepted
+- Status: Accepted (amended by [0012](0012-ask-dot-live-mode.md): the chat proxy is plain HTTP streaming, not GraphQL)
 - Date: 2026-11-02
 
 ## Context

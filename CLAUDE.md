@@ -8,13 +8,13 @@ This is a public **front-end portfolio project**. Its job is to show modern Angu
 
 Angular (standalone, signals, zoneless where supported) · NgRx (`@ngrx/signals` SignalStore for feature state; classic Store + Effects for cross-cutting state) · RxJS · GraphQL on the client (Apollo Angular + graphql-codegen) · D3 (SVG visuals) · Storybook · Cypress (E2E and component tests) · SCSS with CSS custom-property design tokens · Nx monorepo · TypeScript everywhere.
 
-Backend (kept small, version 1): a **mock GraphQL layer** (MSW in dev and Cypress, plus a tiny TypeScript GraphQL Yoga server in `apps/api` only if needed). **No database, no Python, no real auth in version 1.** Postgres and a real API are optional later milestones. See `docs/adr/0003-minimal-backend.md`.
+Backend (kept small, version 1): `apps/api`, one tiny Hono server for the Ask Dot chat proxy (plain HTTP streaming, ADR 0012); a mock GraphQL layer (MSW) only when a feature needs it. **No database, no Python, no real auth in version 1.** Postgres and a real API are optional later milestones. See `docs/adr/0003-minimal-backend.md`.
 
 ## Repo layout
 
 ```
 apps/web            Angular app
-apps/api            Tiny TypeScript GraphQL/chat-proxy server (optional, minimal)
+apps/api            Ask Dot chat proxy (Hono, Node 24 runs the TypeScript directly; demo by default, Groq optional)
 apps/web-e2e        Cypress E2E
 libs/ui             Design system components (every one documented in Storybook)
 libs/lesson-engine  Renders lessons from data (scene types: watch, interact, quiz)
@@ -153,7 +153,16 @@ npx nx graph                            # project graph and module boundaries
 npx nx show project <project>           # every target a project has
 ```
 
-There is no `serve api` yet: `apps/api` is not created until a feature needs it (ADR 0003).
+# Ask Dot API (apps/api, ADR 0012). Settings: copy apps/api/.env.example to apps/api/.env (git-ignored)
+npm run api                             # http://localhost:3333 (demo answers unless CHAT_PROVIDER=groq and GROQ_API_KEY are set)
+npm run chat:eval                       # tricky kid questions against the real provider (needs the key; not in CI)
+
+### Ask Dot server (ADR 0012)
+
+- `apps/api` (tag `type:server`) may import `@jic/shared` only. It runs as TypeScript on Node 24 (type stripping, `tools/content/ts-resolve.mjs` for aliases), so use erasable syntax only (`erasableSyntaxOnly` in its tsconfig): no enums, no parameter properties, `import type` for types. `build` is a type check.
+- Every answer goes through `pipeline.ts`: input guard, provider, word-by-word output check, length cap, fallback to canned, lesson link. A new provider is one `ChatProvider` adapter and must pass the same tests (`pipeline.spec.ts`, with the tricky questions).
+- Never log a question, an answer or a provider error message (it can echo the question). Log lines are method, path, status, time and provider; a test checks it.
+- Keys only in `apps/api/.env` or the host's environment. Never in code, tests, commits or chat.
 
 Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_CLOSING`, exit 127). If that happens, run with `NX_DAEMON=false`. CI (Linux) is not affected.
 
