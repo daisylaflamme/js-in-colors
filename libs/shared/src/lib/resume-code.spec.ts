@@ -45,4 +45,11 @@ describe('resume codes', () => {
     for (const bad of ['', 'blue-fox', 'blue-fox-4', 'blue-fox-100', 'Blue-fox-42', 'blue fox 42', 42, null])
       expect(isResumeCode(bad)).toBe(false);
   });
+
+  it('is at most 17 characters, the width the resume code pill reserves (ADR 0014)', () => {
+    const longest = (words: readonly string[]) => Math.max(...words.map((w) => w.length));
+    expect(
+      longest(RESUME_CODE_ADJECTIVES) + longest(RESUME_CODE_ANIMALS) + '-'.length * 2 + 2,
+    ).toBeLessThanOrEqual(17);
+  });
 });

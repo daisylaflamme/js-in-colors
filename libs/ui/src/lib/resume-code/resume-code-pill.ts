@@ -49,7 +49,12 @@ let nextId = 0;
       color: var(--color-text-muted);
       font-weight: var(--font-weight-bold);
     }
+    /* One width for every code (generated codes are 10 to 17 characters, monospace), so the
+       layout never depends on which code a child got, and the prerendered page, which has no
+       code yet (ADR 0014), takes the same space: nothing moves when the code arrives. */
     .code {
+      display: inline-block;
+      min-inline-size: 17ch;
       font-family: var(--font-code);
       font-size: 1.0625rem;
       font-weight: var(--font-weight-bold);
