@@ -3,3 +3,4 @@
 export * from './lib/chat/chat';
 export * from './lib/chat/chat.store';
 export * from './lib/chat/demo-chat.service';
+export * from './lib/chat/live-chat.service';
