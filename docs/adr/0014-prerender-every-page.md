@@ -28,6 +28,8 @@ Every page's content is known at build time. Lessons are data from `content/` (A
 ## Consequences
 
 - The words and pictures of every page show before any JavaScript runs. Every page also has its real `<title>` in the HTML.
+- **Measured** (CI Lighthouse, mobile, median of 5, before → after): Home 89 → 99 (largest paint 2.92 → 0.95 s), Ask Dot 91 → 100 (2.74 → 0.79 s), a lesson 99 → 99, CLS 0.039 or less. The five runs now agree, because the first paint no longer waits for the file chain.
+- **The certificate drops 94 → 86**, on purpose. Its header paints at 0.8 s, but the certificate itself waits for progress (4.1 s in the simulation), because drawing "0 of 10" for a child who has earned it would be wrong. From Home's button, where the app is already running, the wait is one frame.
 - **The initial JavaScript grows by about 36 kB raw (11 kB transferred), the hydration runtime.**
   - That takes it to 366 kB, over the 340 kB warning budget (the error budget, 400 kB, still holds).
   - The warning is raised to 380 kB on purpose, with this ADR as the reason. Without hydration, the prerendered HTML would be thrown away and drawn again, which is worse.

@@ -28,6 +28,13 @@ Branch `feat/prerender` (ADR 0014).
 - The hydration runtime costs 36 kB raw (11 kB transferred): the initial bundle is 366 kB. The warning budget moves from 340 to 380 kB, on purpose and recorded in the ADR; the 400 kB error budget is unchanged.
 - http-server redirects `/lesson/variables` to `/lesson/variables/`, so Lighthouse now asks for the folder URLs directly.
 
+**Checks**
+
+- Lint, unit tests (all 9 projects), build, format and the Storybook build: green.
+- Cypress against the prerendered build: all specs green, including `prerender.cy.ts`. The new stage check failed with the lesson preload removed, as it should.
+- CI Lighthouse (median of 5), main → this branch: Home 89 → 99, a lesson 99 → 99, Ask Dot 91 → 100, the certificate 94 → 86 (it waits for progress on purpose). Largest paint 0.8 to 1.0 s everywhere except the certificate; CLS 0.039 or less. The first push measured CLS 0.116 on Home and 0.212 on a lesson, which led to the resume-code and lesson-preload fixes above.
+- The Cursor editor's indexing used several cores during the local runs. Two unit-test runs and one e2e step timed out for that reason and passed when re-run.
+
 ## 2026-11-06 · Ask Dot live mode in the app (part 2 of 2)
 
 Branch `feat/ask-dot-live-client`.
