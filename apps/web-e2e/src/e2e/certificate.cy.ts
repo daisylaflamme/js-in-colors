@@ -29,6 +29,8 @@ const NAME = 'Zyxwen';
 function visitWithProgress(finishedIds: string[]): void {
   cy.visit('/certificate', {
     onBeforeLoad(win) {
+      // Before any app code runs: a real print dialog would block the page (and the run) for good.
+      cy.stub(win, 'print').as('print');
       win.localStorage.setItem(
         'jic.progress',
         JSON.stringify({ v: 1, resumeCode: 'brave-otter-37', finishedIds, lastLessonId: null }),
@@ -88,7 +90,6 @@ describe('certificate', () => {
 
   it('works with the keyboard: type a name, then Print', () => {
     visitWithProgress(ALL);
-    cy.window().then((win) => cy.stub(win, 'print').as('print'));
     cy.get('.sheet').should('be.visible');
     tabTo('#certificate-name');
     cy.focused().type(NAME);

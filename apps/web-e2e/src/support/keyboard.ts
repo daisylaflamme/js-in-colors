@@ -6,12 +6,32 @@
  */
 const { TAB } = Cypress.Keyboard.Keys;
 
-/** Activate the focused control the way a keyboard user does. */
-export const pressEnter = () => cy.focused().type('{enter}');
-export const pressSpace = () => cy.focused().type(' ');
+/**
+ * Prerendered pages (ADR 0014) show before the app starts, and Angular removes each `ngh` marker
+ * as it hydrates that part: no marker left means the page has fully started. A real key press
+ * made earlier is replayed by Angular (checked with real key events through Chrome DevTools), but
+ * Cypress's simulated `type('{enter}')` is not, so every keyboard helper waits for start-up. Pages
+ * that were not prerendered have no markers, so this returns at once.
+ */
+export const waitForStartUp = () => cy.get('[ngh]', { log: false, timeout: 10000 }).should('not.exist');
 
-/** Press Tab until the focused element matches (optionally containing `text`). */
+/** Activate the focused control the way a keyboard user does. */
+export const pressEnter = () => {
+  waitForStartUp();
+  cy.focused().type('{enter}');
+};
+export const pressSpace = () => {
+  waitForStartUp();
+  cy.focused().type(' ');
+};
+
+/**
+ * Press Tab until the focused element matches (optionally containing `text`). Waits for start-up
+ * first: with saved progress, the browser redraws a few progress-dependent bits as it starts, and
+ * focus inside one of them would drop to the page.
+ */
 export function tabTo(selector: string, text?: string, max = 40): void {
+  waitForStartUp();
   const step = (left: number): void => {
     cy.press(TAB);
     cy.focused({ log: false }).then(($el) => {
@@ -36,4 +56,7 @@ export const emulateReducedMotion = (value: 'reduce' | 'no-preference') =>
  * and forms), and browsers always follow a focused <a href> on Enter natively, so after a real
  * Tab to the link this clicks the focused element. It must be a real link.
  */
-export const followFocusedLink = () => cy.focused().should('match', 'a[href]').click();
+export const followFocusedLink = () => {
+  waitForStartUp();
+  cy.focused().should('match', 'a[href]').click();
+};
