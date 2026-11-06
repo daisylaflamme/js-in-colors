@@ -168,9 +168,10 @@ CYPRESS_chatMode=live npx nx e2e web-e2e --configuration=live --spec src/e2e/ask
 - Code must be server-safe: browser APIs only through `DOCUMENT` / `defaultView` with guards, or after render. A throw while prerendering fails `nx build web`.
 - The HTML holds no child's data. What depends on the device is settled in the browser: `ShellState.prerendering` draws the desktop layout and `app.scss` (`[data-prerendered]`) hides its menu below lg; the certificate waits for progress (`progressRead`); Home updates in place.
 - Nothing random or device-specific in the first render on the server (the resume code is made in the browser only), and no layout guesses that hide content from keyboard users (the chip row assumes it scrolls).
+- A page's first render in the browser must match the HTML: load what it needs before the route activates (a resolver, like `lessonPreloadResolver` + `LessonPreloader`), not in an effect after, or hydration throws the prerendered part away and draws it again.
 - Event replay can deliver a tap before a page's first change detection: an effect that resets UI state "on change" must skip its first run (see `LessonPage`'s lesson-id effect).
 - The inline script in `apps/web/src/index.html` is the one exception to "settings only through the effects": it applies saved text size, Calm motion and a closed menu before the first paint. Keep it tiny; `boot-script.spec.ts` (data-access) keeps its keys in step.
-- E2E: `prerender.cy.ts` checks each page's HTML before JavaScript and that hydration reuses `<main>` with no `NG05xx` errors. A new full page belongs in its list.
+- E2E: `prerender.cy.ts` checks each page's HTML before JavaScript and that hydration reuses its `keep` element (a lesson's stage) with no `NG05xx` errors. A new full page belongs in its list. It runs only against the prerendered build (`prerendered` in `cypress.config.ts`; by hand: `--env prerendered=true`).
 
 ### Ask Dot server (ADR 0012)
 

@@ -17,9 +17,12 @@ Branch `feat/prerender` (ADR 0014).
 - `404.html` (the Not found page) for unknown addresses, through a new `web:static` target. `serve-static` stops serving Home for every address.
 - `prerender.cy.ts`: each page's HTML before JavaScript; hydration reuses `<main>` with no `NG05xx` errors; the 404; the boot script; the menu at phone and desktop sizes.
 
-**Found along the way** (the existing e2e suite caught all of these on the hydrated build)
+**Found along the way** (the e2e suite caught all of these on the hydrated build)
+
+- **The stage was drawn twice.** Caught by CI on the first push, as a lost keyboard focus. The lesson file is loaded lazily, so the browser's first render had no lesson: hydration dropped the prerendered stage and drew it again when the file arrived. A route resolver now loads the lesson before the page starts. `prerender.cy.ts` checks that the stage element itself survives; it failed without the resolver and passes with it.
 
 - **A random resume code was baked into every page.** The store made one while prerendering, so every visitor would see the same made-up code until start-up. The store now does nothing on the server.
+- **Home shifted when the code arrived** (CI Lighthouse: CLS 0.116, from 0.000). The empty pill was narrow, and the real code widened it, so the settings row rewrapped and pushed the color path down. The code now has one width for every child (17 characters, the longest; a test keeps the word lists within it).
 - **A Tip tapped during start-up closed itself.** Event replay delivered the tap before the lesson page's first change detection, and the "new lesson closes the Tip" effect then ran for the first time. It now closes only when the lesson id changes. A unit test reproduces the order.
 - **The chip row lost its tab stop for one frame.** The server wrote `tabindex="0"`, hydration reset it to the browser's "not scrolling" starting value, and the ResizeObserver restored it a frame later. Axe caught it about one run in three. The row now assumes it scrolls until it has measured itself, on the server and in the browser.
 - The hydration runtime costs 36 kB raw (11 kB transferred): the initial bundle is 366 kB. The warning budget moves from 340 to 380 kB, on purpose and recorded in the ADR; the 400 kB error budget is unchanged.

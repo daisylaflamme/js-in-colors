@@ -19,8 +19,9 @@ Every page's content is known at build time. Lessons are data from `content/` (A
   - **Layout.** The build has no screen, so it draws the desktop layout with the menu open (`ShellState.prerendering`). Until the app starts, `app.scss` (`[data-prerendered]`) hides that menu below `lg`, or when this device saved it closed. At start-up the browser picks the real layout.
   - **Settings.** A few lines of inline script in `index.html` read `jic.settings` and `jic.menuOpen` before the first paint, and set `data-text-size`, `data-motion` and `data-menu` on `<html>`. So a child with large text never sees the text jump. It only reads local storage and sends nothing; after start-up the settings store owns these attributes. `boot-script.spec.ts` keeps its keys and values in step with the store.
   - **Progress.** Home draws the no-progress version and updates in place: the button text and the path ticks change, not the layout. The certificate draws only its header until the browser has read progress, so a child who earned it never sees "not yet".
-  - **Resume code.** The store makes no code while prerendering. Otherwise one random code would be baked into the HTML and shown to every visitor until start-up.
+  - **Resume code.** The store makes no code while prerendering. Otherwise one random code would be baked into the HTML and shown to every visitor until start-up. The pill gives the code one width (17 characters, the longest a code can be), so the empty pill in the HTML takes the same space and Home's header doesn't rewrap when the code arrives.
   - **Measurements.** The concept chip row assumes it scrolls (a tab stop, as on a phone) until it has measured itself in the browser. The build can't measure, and hydration must not drop the tab stop before the first measurement, so there's never a moment when keyboard users can't reach a scrolling row.
+- **The lesson is in hand before the page starts.** A route resolver (`lessonPreloadResolver`) loads the lesson file into `LessonPreloader`, and `LessonStore.load` takes it from there synchronously. Without this, the browser's first render had no lesson yet: hydration dropped the prerendered stage and drew it again when the file arrived. The stage blinked, and keyboard focus inside it was lost.
 - **Taps during start-up are kept.** Event replay can deliver a tap before a page's first change detection. So "on a new lesson, close Tip and Library" runs only when the lesson id changes, not on the first run, which would close a Tip the child just opened.
 - **Unknown addresses:** the `static` target copies the prerendered Not found page to `404.html`. Static hosts serve it for any missing file, and the app's `**` route draws Not found too, so hydration matches. `serve-static` now runs with `spa: false`, because serving Home's HTML for every address would hydrate the wrong page.
 
@@ -36,7 +37,7 @@ Every page's content is known at build time. Lessons are data from `content/` (A
   - A throw during prerendering fails `nx build web`, so CI catches it.
 - `prerender.cy.ts` checks, against the production build:
   - the HTML of each page before JavaScript;
-  - that hydration reuses the page with no `NG05xx` errors;
+  - that hydration reuses the page (for a lesson, the stage itself) with no `NG05xx` errors;
   - the 404 page;
   - the boot script;
   - the menu at phone and desktop sizes.
