@@ -19,6 +19,7 @@ Short records of decisions that shape the project. One decision per file, number
 | [0013](0013-ask-dot-live-model-and-care.md)          | Ask Dot live: gpt-oss-20b, a caring reply, fallbacks that can't hide | Accepted |
 | [0014](0014-prerender-every-page.md)                 | Prerender every page at build time                                   | Accepted |
 | [0015](0015-no-graphql-or-d3-in-version-1.md)        | Version 1 without GraphQL or D3                                      | Accepted |
+| [0016](0016-host-on-github-pages.md)                 | Host the public site on GitHub Pages                                 | Accepted |
 
 ## Template
 

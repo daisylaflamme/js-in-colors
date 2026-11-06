@@ -15,7 +15,6 @@
         "browser": "apps/web/src/main.ts",
         "server": "apps/web/src/main.server.ts",
         "outputMode": "static",
-        "prerender": true,
         "tsConfig": "apps/web/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -44,6 +43,22 @@
             }
           ],
           "outputHashing": "all"
+        },
+        "github-pages": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "380kb",
+              "maximumError": "400kb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ],
+          "outputHashing": "all",
+          "baseHref": "/js-in-colors/"
         },
         "development": {
           "optimization": false,

@@ -1,0 +1,74 @@
+name: Deploy to GitHub Pages
+
+# The public site (ADR 0016): the prerendered static build, served under /js-in-colors/.
+# Deploys only after CI has passed on main, so a red build never goes live. Ask Dot is in demo
+# mode there (no server, no AI, no key); live mode stays local.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  NX_NO_CLOUD: true
+  NG_CLI_ANALYTICS: false
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The commit CI just passed (workflow_run), not whatever main is now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: 0
+
+      - name: Build every page for /js-in-colors/, plus 404.html
+        run: |
+          npx nx build web --configuration=github-pages
+          node tools/prerender/fallback-page.mjs dist/apps/web/browser
+
+      - name: Check the output before publishing
+        run: |
+          cd dist/apps/web/browser
+          for page in index.html lesson/variables/index.html certificate/index.html ask-dot/index.html 404.html; do
+            test -f "$page" || { echo "missing $page"; exit 1; }
+            grep -q '<base href="/js-in-colors/">' "$page" || { echo "wrong base href in $page"; exit 1; }
+          done
+          echo "All pages present with the /js-in-colors/ base."
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/apps/web/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

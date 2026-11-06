@@ -3,6 +3,18 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-06 · Public site on GitHub Pages
+
+Branch `feat/github-pages` (ADR 0016).
+
+- `pages.yml` deploys after CI passes on main: it builds that exact commit with the `github-pages` configuration (base `/js-in-colors/`), adds `404.html`, checks every page has the right base, and publishes.
+- **Checked before shipping:** a small local server that behaves like GitHub Pages (subpath, folder redirects, 404.html) and a throwaway Cypress spec. Home hydrates and its links stay under the subpath; a lesson works as a deep link with fonts and the Tip; an unknown address shows Not found, whose Home link returns to the subpath. 3 of 3 passed.
+- **Found along the way:**
+  - Git Bash on Windows rewrites `--base-href=/js-in-colors/` into `C:/Program Files/Git/js-in-colors/`, and prerendering then failed (NG05703).
+  - Nx ran `--configuration=production,github-pages` as plain `production`.
+  - Both are why the base path lives in a full `github-pages` configuration.
+- Removed `prerender: true`: Angular ignores it when `outputMode` is set, and said so on every build.
+
 ## 2026-11-06 · Stack trimmed to what's used; Groq data settings
 
 Branch `docs/drop-graphql-d3` (ADR 0015).
