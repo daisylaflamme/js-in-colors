@@ -7,27 +7,31 @@
 const prerendered = [true, 'true'].includes(Cypress.env('prerendered'));
 const describePrerendered = prerendered ? describe : describe.skip;
 
-/** Pages and a few words each one's HTML must already contain. */
+/**
+ * Pages, a few words each one's HTML must already contain, and the element that must survive
+ * start-up (the same node: hydrated, not drawn again).
+ */
 const PAGES = [
-  { path: '/', title: 'Your color path', words: 'Hi, explorer!' },
-  { path: '/lesson/variables', title: 'Variables', words: 'This is a jar.' },
-  { path: '/certificate', title: 'Your certificate', words: 'Your color path' },
-  { path: '/ask-dot', title: 'Ask Dot', words: 'Ask Dot' },
+  { path: '/', title: 'Your color path', words: 'Hi, explorer!', keep: 'main' },
+  // The stage too: the lesson file must be in hand before the page's first render.
+  { path: '/lesson/variables', title: 'Variables', words: 'This is a jar.', keep: 'jic-scene-host' },
+  { path: '/certificate', title: 'Your certificate', words: 'Your color path', keep: 'main' },
+  { path: '/ask-dot', title: 'Ask Dot', words: 'Ask Dot', keep: 'main' },
 ] as const;
 
 /** Angular reports hydration problems as NG05xx errors (NG0500 to NG0507). */
 const HYDRATION_ERROR = /NG05\d\d/;
 
 interface MarkedWindow extends Window {
-  __prerenderedMain?: Element | null;
+  __prerendered?: Element | null;
   __textSizeAtParse?: string | null;
 }
 
 /**
- * Visit a page and, as soon as the HTML is parsed (before the app's scripts run), remember its
- * <main> and the text size on <html>. Console errors and warnings are spied on for the whole visit.
+ * Visit a page and, as soon as the HTML is parsed (before the app's scripts run), remember the
+ * `keep` element and the text size on <html>. Console errors and warnings are spied on throughout.
  */
-function visitPrerendered(path: string, storage: Record<string, string> = {}): void {
+function visitPrerendered(path: string, storage: Record<string, string> = {}, keep = 'main'): void {
   cy.visit(path, {
     failOnStatusCode: false,
     onBeforeLoad(win: MarkedWindow) {
@@ -36,7 +40,7 @@ function visitPrerendered(path: string, storage: Record<string, string> = {}): v
       cy.spy(win.console, 'warn').as('consoleWarn');
       win.document.addEventListener('readystatechange', () => {
         if (win.document.readyState !== 'interactive') return;
-        win.__prerenderedMain = win.document.querySelector('main');
+        win.__prerendered = win.document.querySelector(keep);
         win.__textSizeAtParse = win.document.documentElement.getAttribute('data-text-size');
       });
     },
@@ -70,11 +74,14 @@ describePrerendered('Prerendered pages', () => {
     });
 
     it(`${page.path} is hydrated, not drawn again, with no hydration errors`, () => {
-      visitPrerendered(page.path);
+      visitPrerendered(page.path, {}, page.keep);
+      // The page has started once the router's first navigation is done: it drops the trailing slash
+      // that http-server's folder redirect added (the lesson's resolver and chunk come before that).
+      cy.location('pathname').should('eq', page.path);
       cy.window().then((win: MarkedWindow) => {
-        expect(win.__prerenderedMain, 'the prerendered <main>').to.be.instanceOf(win.HTMLElement);
+        expect(win.__prerendered, `the prerendered ${page.keep}`).to.be.instanceOf(win.HTMLElement);
         // The same element is still in the page: Angular reused the HTML instead of replacing it.
-        expect(win.document.querySelector('main')).to.equal(win.__prerenderedMain);
+        expect(win.document.querySelector(page.keep)).to.equal(win.__prerendered);
       });
       cy.title().should('eq', `${page.title} · JavaScript in Colors`);
       expectNoHydrationErrors();
