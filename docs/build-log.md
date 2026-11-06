@@ -3,6 +3,42 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-05 · Ask Dot's server: live AI behind an adapter (part 1 of 2)
+
+Branch `feat/ask-dot-live`.
+
+**Decided** (with the owner, ADR 0012)
+
+- Demo stays the default. Live AI is one optional adapter, Groq, chosen by an environment variable, with the key on the server only, falling back to canned answers, at no cost.
+- Groq's free tier, data retention (none by default; 30-day abuse logs; Zero Data Retention self-serve) and models were checked on its own pages first. Its data page doesn't mention training, so the owner checks the terms.
+- Model `llama-3.1-8b-instant`: production, fast, plain answers. `gpt-oss-20b` is a reasoning model and would spend tokens thinking.
+- A plain HTTP streaming endpoint, not GraphQL. This amends ADR 0003.
+
+**Built**
+
+- `@jic/shared/chat`: the chunk contract, the input guard, matching and lesson links, the output word check with a short blocklist, and the kid system prompt. Browser and server now share one copy. It has its own entry point so it stays out of the initial bundle.
+- `apps/api`: Hono on Node 24, run straight from TypeScript (type stripping plus the workspace alias resolver).
+  - `POST /api/chat` streams SSE in the existing contract.
+  - `ChatProvider` with `DemoProvider` and `GroqProvider` (fetch, no SDK).
+  - The safety pipeline:
+    1. clean the input;
+    2. private details never reach a provider;
+    3. per-client and global rate limits (salted hashes, in memory);
+    4. word-by-word output checks that stop before a bad word;
+    5. a 60-word cap;
+    6. fallback to canned on an error or a slow first word;
+    7. the lesson link.
+  - Logs carry no content.
+- 30 tricky kid questions. In CI they run through the pipeline against a fake model that misbehaves on purpose. `npx nx run api:eval` runs them against real Groq.
+- Lint enforces that the server can only import the shared pure code (`type:server`).
+
+**Found along the way**
+
+- Hono was pinned to releases a few weeks old, not the days-old latest.
+- npm 11 again rewrote unrelated lockfile entries. The lockfile was rebuilt from main plus only the two new packages.
+- `npm run api` takes about 17 s on the first start, while Nx builds its graph for the new project. A smoke test that gave up after 30 s and called curl without a timeout looked like a hang. With timeouts it showed the server streaming correctly (0.86 s for a full answer), the private reply, 400 and 429, and content-free logs.
+- Stopping Nx's serve leaves the Node server running on Windows; it has to be stopped separately.
+
 ## 2026-11-05 · The real Dot
 
 Branch `feat/dot-art`.
