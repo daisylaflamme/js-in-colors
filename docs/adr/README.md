@@ -17,6 +17,7 @@ Short records of decisions that shape the project. One decision per file, number
 | [0011](0011-ask-dot-demo-mode.md)                    | Ask Dot: demo mode first, behind ChatService                         | Accepted |
 | [0012](0012-ask-dot-live-mode.md)                    | Ask Dot live mode: Groq behind a ChatProvider, demo by default       | Accepted |
 | [0013](0013-ask-dot-live-model-and-care.md)          | Ask Dot live: gpt-oss-20b, a caring reply, fallbacks that can't hide | Accepted |
+| [0014](0014-prerender-every-page.md)                 | Prerender every page at build time                                   | Accepted |
 
 ## Template
 

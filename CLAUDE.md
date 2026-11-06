@@ -77,6 +77,7 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 ## Performance checklist
 
 - Set Angular bundle budgets and fail the build when they are exceeded.
+- Every page is prerendered (ADR 0014): content shows before JavaScript runs.
 - Lazy-load routes and use `@defer` for D3 visuals. Load D3 modules selectively (`d3-selection`, `d3-scale`, etc.), not the whole library.
 - Use `NgOptimizedImage`, SVG for artwork, and avoid layout shift. Target Lighthouse performance and accessibility scores of 95+ and record results in the README.
 
@@ -115,7 +116,7 @@ Node 24 (`.nvmrc`). Versions are pinned exactly in `package.json` (Nx 24.0.3, An
 # Setup and run
 npm ci                                  # install (exact versions from package-lock.json)
 npm start                               # serve web: http://localhost:4200 (same as: npx nx serve web)
-npx nx run web:serve-static             # serve the production build on :4200
+npx nx run web:serve-static             # serve the prerendered production build (+ 404.html) on :4200
 
 # Before finishing any task
 npx nx run-many -t lint test build      # lint + unit tests + build, all projects
@@ -132,12 +133,13 @@ npx nx test ui --watch                  # watch mode while working on components
 
 # Lint and build
 npx nx lint <project>
-npx nx build web                        # production build; budgets: initial warn 340 kB / error 400 kB
+npx nx build web                        # production build, every page prerendered (ADR 0014); budgets: initial warn 380 kB / error 400 kB
+npx nx run web:static                   # the deployable static site: the build plus 404.html (the Not found page)
 
 # End-to-end (Cypress + cypress-axe; starts the app itself)
 npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Home/progress/settings + every ready lesson with the keyboard and axe per scene + the deep Variables walkthrough + reduced motion
 npx nx e2e web-e2e --spec src/e2e/lesson-variables.cy.ts   # one spec
-npx nx e2e web-e2e --configuration=production   # against the production build (what CI runs)
+npx nx e2e web-e2e --configuration=production   # against the prerendered production build (what CI runs; also runs prerender.cy.ts)
 
 # Storybook (libs/ui)
 npx nx storybook ui                     # http://localhost:4400 (ui + visuals + lesson-engine stories; Theme toolbar)
@@ -159,6 +161,16 @@ npm run chat:eval                       # tricky kid questions against the real 
 npm run start:live                      # the web app in live mode: Ask Dot asks /api/chat (proxied to :3333)
 CYPRESS_chatMode=live npx nx e2e web-e2e --configuration=live --spec src/e2e/ask-dot-live.cy.ts   # live-mode e2e (server faked)
 # (with CI=true, nx e2e always starts the CI web server, the demo build: CI starts web:serve:live itself, see ci.yml)
+
+### Prerendering (ADR 0014)
+
+- Every page is prerendered at build time (`outputMode: "static"`, `app.routes.server.ts`), then hydrated in the browser. No server at runtime. A new lesson in `content/` is prerendered with no change; a new route is covered by the `**` entry.
+- Code must be server-safe: browser APIs only through `DOCUMENT` / `defaultView` with guards, or after render. A throw while prerendering fails `nx build web`.
+- The HTML holds no child's data. What depends on the device is settled in the browser: `ShellState.prerendering` draws the desktop layout and `app.scss` (`[data-prerendered]`) hides its menu below lg; the certificate waits for progress (`progressRead`); Home updates in place.
+- Nothing random or device-specific in the first render on the server (the resume code is made in the browser only), and no layout guesses that hide content from keyboard users (the chip row assumes it scrolls).
+- Event replay can deliver a tap before a page's first change detection: an effect that resets UI state "on change" must skip its first run (see `LessonPage`'s lesson-id effect).
+- The inline script in `apps/web/src/index.html` is the one exception to "settings only through the effects": it applies saved text size, Calm motion and a closed menu before the first paint. Keep it tiny; `boot-script.spec.ts` (data-access) keeps its keys in step.
+- E2E: `prerender.cy.ts` checks each page's HTML before JavaScript and that hydration reuses `<main>` with no `NG05xx` errors. A new full page belongs in its list.
 
 ### Ask Dot server (ADR 0012)
 

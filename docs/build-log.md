@@ -3,6 +3,28 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-06 · Every page prerendered
+
+Branch `feat/prerender` (ADR 0014).
+
+**Built**
+
+- The build writes HTML for all 14 pages: Home, the 10 lessons, the certificate, Ask Dot and Not found. The browser shows it before any JavaScript runs, then Angular hydrates it (event replay keeps early taps). There's still no server at runtime.
+- Device-specific state is settled in the browser, never baked in:
+  - the server draws the desktop layout, and CSS hides its menu until start-up wherever it wouldn't be inline;
+  - a tiny inline script applies saved text size, Calm motion and a closed menu before the first paint;
+  - the certificate waits for progress.
+- `404.html` (the Not found page) for unknown addresses, through a new `web:static` target. `serve-static` stops serving Home for every address.
+- `prerender.cy.ts`: each page's HTML before JavaScript; hydration reuses `<main>` with no `NG05xx` errors; the 404; the boot script; the menu at phone and desktop sizes.
+
+**Found along the way** (the existing e2e suite caught all of these on the hydrated build)
+
+- **A random resume code was baked into every page.** The store made one while prerendering, so every visitor would see the same made-up code until start-up. The store now does nothing on the server.
+- **A Tip tapped during start-up closed itself.** Event replay delivered the tap before the lesson page's first change detection, and the "new lesson closes the Tip" effect then ran for the first time. It now closes only when the lesson id changes. A unit test reproduces the order.
+- **The chip row lost its tab stop for one frame.** The server wrote `tabindex="0"`, hydration reset it to the browser's "not scrolling" starting value, and the ResizeObserver restored it a frame later. Axe caught it about one run in three. The row now assumes it scrolls until it has measured itself, on the server and in the browser.
+- The hydration runtime costs 36 kB raw (11 kB transferred): the initial bundle is 366 kB. The warning budget moves from 340 to 380 kB, on purpose and recorded in the ADR; the 400 kB error budget is unchanged.
+- http-server redirects `/lesson/variables` to `/lesson/variables/`, so Lighthouse now asks for the folder URLs directly.
+
 ## 2026-11-06 · Ask Dot live mode in the app (part 2 of 2)
 
 Branch `feat/ask-dot-live-client`.
