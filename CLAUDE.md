@@ -6,9 +6,9 @@ This is a public **front-end portfolio project**. Its job is to show modern Angu
 
 ## Stack
 
-Angular (standalone, signals, zoneless where supported) · NgRx (`@ngrx/signals` SignalStore for feature state; classic Store + Effects for cross-cutting state) · RxJS · GraphQL on the client (Apollo Angular + graphql-codegen) · D3 (SVG visuals) · Storybook · Cypress (E2E and component tests) · SCSS with CSS custom-property design tokens · Nx monorepo · TypeScript everywhere.
+Angular (standalone, signals, zoneless where supported) · NgRx (`@ngrx/signals` SignalStore for feature state; classic Store + Effects for cross-cutting state) · RxJS · Storybook · Cypress (E2E and component tests) · SCSS with CSS custom-property design tokens · Nx monorepo · TypeScript everywhere.
 
-Backend (kept small, version 1): `apps/api`, one tiny Hono server for the Ask Dot chat proxy (plain HTTP streaming, ADR 0012); a mock GraphQL layer (MSW) only when a feature needs it. **No database, no Python, no real auth in version 1.** Postgres and a real API are optional later milestones. See `docs/adr/0003-minimal-backend.md`.
+Backend (kept small, version 1): `apps/api`, one tiny Hono server for the Ask Dot chat proxy (plain HTTP streaming, ADR 0012). No GraphQL, Apollo or MSW in version 1, and no D3 (ADR 0015): lessons are compiled YAML, visuals are hand-built SVG components. **No database, no Python, no real auth in version 1.** Postgres and a real API are optional later milestones. See `docs/adr/0003-minimal-backend.md`.
 
 ## Repo layout
 
@@ -18,9 +18,9 @@ apps/api            Ask Dot chat proxy (Hono, Node 24 runs the TypeScript direct
 apps/web-e2e        Cypress E2E
 libs/ui             Design system components (every one documented in Storybook)
 libs/lesson-engine  Renders lessons from data (scene types: watch, interact, quiz)
-libs/data-access    GraphQL client, SignalStores, local persistence, MSW handlers
-libs/visuals        D3 concept visuals
-libs/shared         GraphQL schema/types, shared utilities
+libs/data-access    SignalStores, lesson source, local persistence, Ask Dot chat services
+libs/visuals        SVG concept visuals (Angular components, no D3)
+libs/shared         Lesson types, content validator, chat contract and safety, shared utilities
 content/lessons     Lesson files (YAML), original text only
 docs/adr            Architecture decision records
 docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
@@ -78,7 +78,7 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 
 - Set Angular bundle budgets and fail the build when they are exceeded.
 - Every page is prerendered (ADR 0014): content shows before JavaScript runs.
-- Lazy-load routes and use `@defer` for D3 visuals. Load D3 modules selectively (`d3-selection`, `d3-scale`, etc.), not the whole library.
+- Lazy-load routes, and give each lesson its own chunk. Use `@defer` for anything heavy that is not needed for the first paint.
 - Use `NgOptimizedImage`, SVG for artwork, and avoid layout shift. Target Lighthouse performance and accessibility scores of 95+ and record results in the README.
 
 ## Kids' privacy and safety (hard rules)

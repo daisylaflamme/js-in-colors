@@ -3,6 +3,13 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-06 · Stack trimmed to what's used; Groq data settings
+
+Branch `docs/drop-graphql-d3` (ADR 0015).
+
+- **GraphQL (Apollo, codegen, MSW) and D3 are dropped from version 1.** Both were "planned" in the README but never needed: lessons are compiled YAML and the visuals are fixed SVG scenes. The README's stack now lists only what's used, plus the Hono server.
+- **Groq:** the owner confirmed that Groq's terms make no claim to train on API data, and switched on Zero Data Retention. The README now states both as facts, not as instructions.
+
 ## 2026-11-06 · Every page prerendered
 
 Branch `feat/prerender` (ADR 0014).
