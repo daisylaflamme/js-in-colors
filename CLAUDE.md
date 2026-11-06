@@ -135,6 +135,7 @@ npx nx test ui --watch                  # watch mode while working on components
 npx nx lint <project>
 npx nx build web                        # production build, every page prerendered (ADR 0014); budgets: initial warn 380 kB / error 400 kB
 npx nx run web:static                   # the deployable static site: the build plus 404.html (the Not found page)
+npx nx build web --configuration=github-pages   # the same for GitHub Pages (base /js-in-colors/); .github/workflows/pages.yml deploys it after CI passes on main (ADR 0016)
 
 # End-to-end (Cypress + cypress-axe; starts the app itself)
 npx nx e2e web-e2e                      # smoke (3 sizes, 3 themes) + Home/progress/settings + every ready lesson with the keyboard and axe per scene + the deep Variables walkthrough + reduced motion
@@ -172,6 +173,11 @@ CYPRESS_chatMode=live npx nx e2e web-e2e --configuration=live --spec src/e2e/ask
 - Event replay can deliver a tap before a page's first change detection: an effect that resets UI state "on change" must skip its first run (see `LessonPage`'s lesson-id effect).
 - The inline script in `apps/web/src/index.html` is the one exception to "settings only through the effects": it applies saved text size, Calm motion and a closed menu before the first paint. Keep it tiny; `boot-script.spec.ts` (data-access) keeps its keys in step.
 - E2E: `prerender.cy.ts` checks each page's HTML before JavaScript and that hydration reuses its `keep` element (a lesson's stage) with no `NG05xx` errors. A new full page belongs in its list. It runs only against the prerendered build (`prerendered` in `cypress.config.ts`; by hand: `--env prerendered=true`).
+
+### Public site (ADR 0016)
+
+- GitHub Pages at https://daisylaflamme.github.io/js-in-colors/, deployed by `pages.yml` only after CI passes on main. Ask Dot is demo there.
+- The site lives under `/js-in-colors/`: always link with `routerLink` (never a hard-coded `href="/..."`), and reference assets relative to the base.
 
 ### Ask Dot server (ADR 0012)
 

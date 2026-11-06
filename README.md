@@ -4,6 +4,8 @@ A web app that introduces young children (about 6 to 12) to JavaScript **ideas**
 
 It is also a front-end portfolio project: modern Angular, a real design system, accessibility, animation and tests, built with Claude Code.
 
+**Try it: [daisylaflamme.github.io/js-in-colors](https://daisylaflamme.github.io/js-in-colors/)** (Ask Dot runs in demo mode there).
+
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
 > Status: all ten lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, Things with details, and Page magic) run on a data-driven lesson engine. Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. Finishing all ten earns a certificate, saved as a PNG or printed, made entirely in the browser. Ask Dot answers JavaScript questions: demo mode (pre-written answers, no server) by default, and an optional live AI mode through a small server with layered safety (see below). Progress so far: [docs/build-log.md](docs/build-log.md).
@@ -54,14 +56,14 @@ npx nx run-many -t lint test build
 npx nx e2e web-e2e             # Cypress smoke + axe (starts the app for you)
 ```
 
-The full command list is in [CLAUDE.md](CLAUDE.md#commands).
+The full command list is in [CLAUDE.md](CLAUDE.md#commands). Every merge to `main` that passes CI is deployed to GitHub Pages ([ADR 0016](docs/adr/0016-host-on-github-pages.md)).
 
 ## Privacy by design
 
 The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-anonymous-first-local-first-progress.md)):
 
 - No account and no login. Progress stays in the browser, under a random resume code such as `blue-fox-42` that says nothing about the child ([ADR 0008](docs/adr/0008-local-progress-and-settings.md)).
-- No personal data, no analytics, no tracking, no third-party scripts or CDN assets.
+- No personal data, no analytics, no tracking, no cookies, no third-party scripts or CDN assets. The public site is hosted on GitHub Pages; like any web host, GitHub logs visitors' IP addresses for security ([ADR 0016](docs/adr/0016-host-on-github-pages.md)).
 - The certificate name is typed and rendered on the device, never sent anywhere and never stored, not even in the browser ([ADR 0010](docs/adr/0010-certificate.md)).
 - Ask Dot keeps the chat in memory only and catches names, emails and addresses before anything is sent. Demo mode makes no request at all; live mode reaches the AI only through a server-side proxy, and the key stays on the server ([How Ask Dot stays safe](#how-ask-dot-stays-safe)).
 
