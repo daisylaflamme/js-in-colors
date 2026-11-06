@@ -46,6 +46,17 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "live": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/web/src/environments/chat-mode.ts",
+              "with": "apps/web/src/environments/chat-mode.live.ts"
+            }
+          ]
         }
       },
       "dependsOn": [
@@ -68,6 +79,10 @@
         },
         "development": {
           "buildTarget": "web:build:development"
+        },
+        "live": {
+          "buildTarget": "web:build:live",
+          "proxyConfig": "apps/web/proxy.live.json"
         }
       },
       "dependsOn": [

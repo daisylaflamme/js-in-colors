@@ -1,4 +1,4 @@
-import { inject, InjectionToken } from '@angular/core';
+import { inject, InjectionToken, type Signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Store } from '@ngrx/store';
 import type { ChatChunk } from '@jic/shared/chat';
@@ -25,12 +25,18 @@ export {
   redirectFor,
 } from '@jic/shared/chat';
 
+/** demo: pre-written answers in the browser. live: the Ask Dot server (apps/api). */
+export type ChatMode = 'demo' | 'live';
+
 /**
- * Where Dot's answers come from (ADR 0011). Today: DemoChatService (pre-written answers). Later:
- * a server-side proxy (apps/api) that streams the same chunks. The browser never holds a key and
- * never talks to an AI provider directly. Nothing a provider receives is stored or logged.
+ * Where Dot's answers come from (ADR 0011, ADR 0012): DemoChatService (pre-written answers) or
+ * LiveChatService (the Ask Dot server, which streams the same chunks). The browser never holds a
+ * key and never talks to an AI provider directly. Nothing a provider receives is stored or logged.
  */
 export abstract class ChatService {
+  abstract readonly mode: ChatMode;
+  /** True while live answers are unavailable and Dot answers from the pre-written ones. */
+  abstract readonly resting: Signal<boolean>;
   /** Streams the answer to one question, then completes. */
   abstract ask(question: string): Observable<ChatChunk>;
 }

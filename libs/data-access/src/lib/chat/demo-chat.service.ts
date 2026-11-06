@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { concatMap, concatWith, from, map, type Observable, of, timer } from 'rxjs';
 import { CHAT_INSTANT, type ChatChunk, ChatService } from './chat';
 import { lessonLinkFor, matchAnswer, redirectFor } from '@jic/shared/chat';
@@ -14,6 +14,8 @@ export const DEMO_THINK_MS = 500;
  */
 @Injectable()
 export class DemoChatService extends ChatService {
+  readonly mode = 'demo';
+  readonly resting = signal(false).asReadonly();
   private readonly instant = inject(CHAT_INSTANT);
 
   ask(question: string): Observable<ChatChunk> {

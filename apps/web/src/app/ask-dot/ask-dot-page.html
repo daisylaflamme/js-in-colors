@@ -14,7 +14,7 @@
         <h1 id="ask-dot-title">Ask Dot</h1>
         <p>Dot answers questions about JavaScript.</p>
       </div>
-      <span class="demo-pill">Demo mode</span>
+      <span class="demo-pill" [class.live]="live">{{ live ? 'Live' : 'Demo mode' }}</span>
     </div>
 
     <!-- A log, but not live: answers stream word by word. The status below says each finished one. -->
@@ -34,6 +34,9 @@
       }
     </div>
     <p class="u-visually-hidden" role="status">{{ store.announcement() }}</p>
+    @if (chat.resting()) {
+      <p class="resting">{{ restingNote }}</p>
+    }
 
     <div class="suggest">
       <span id="try-asking" class="suggest-label">Try asking:</span>
@@ -75,5 +78,5 @@
     </form>
   </section>
 
-  <jic-safe-rules-card class="rules" [note]="demoNote" />
+  <jic-safe-rules-card class="rules" [note]="note" />
 </div>

@@ -41,6 +41,8 @@ export default defineConfig({
       webServerCommands: {
         default: process.env['CI'] ? 'npx nx run web:serve-static' : 'npx nx run web:serve',
         production: 'npx nx run web:serve-static',
+        // Ask Dot live mode (ADR 0012); the specs fake the server with cy.intercept.
+        live: 'npx nx run web:serve:live',
       },
       ciWebServerCommand: 'npx nx run web:serve-static',
       ciBaseUrl: 'http://localhost:4200',

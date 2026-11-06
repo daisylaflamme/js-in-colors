@@ -85,6 +85,17 @@ jobs:
         env:
           CI: true
 
+      # Started by hand: with CI=true, `nx e2e` always starts the CI web server (the demo build),
+      # whatever --configuration says. The live dev server is started explicitly instead.
+      - name: Cypress, Ask Dot live mode (live build; the server is faked, no AI is called)
+        run: |
+          npx nx run web:serve:live > serve-live.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf http://localhost:4200/ > /dev/null && break; sleep 2; done
+          curl -sf http://localhost:4200/ > /dev/null || (cat serve-live.log; exit 1)
+          npx cypress run --project apps/web-e2e --spec apps/web-e2e/src/e2e/ask-dot-live.cy.ts
+        env:
+          CYPRESS_chatMode: live
+
       - name: Upload Cypress screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v6

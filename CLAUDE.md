@@ -156,6 +156,9 @@ npx nx show project <project>           # every target a project has
 # Ask Dot API (apps/api, ADR 0012). Settings: copy apps/api/.env.example to apps/api/.env (git-ignored)
 npm run api                             # http://localhost:3333 (demo answers unless CHAT_PROVIDER=groq and GROQ_API_KEY are set)
 npm run chat:eval                       # tricky kid questions against the real provider (needs the key; not in CI)
+npm run start:live                      # the web app in live mode: Ask Dot asks /api/chat (proxied to :3333)
+CYPRESS_chatMode=live npx nx e2e web-e2e --configuration=live --spec src/e2e/ask-dot-live.cy.ts   # live-mode e2e (server faked)
+# (with CI=true, nx e2e always starts the CI web server, the demo build: CI starts web:serve:live itself, see ci.yml)
 
 ### Ask Dot server (ADR 0012)
 
@@ -163,6 +166,7 @@ npm run chat:eval                       # tricky kid questions against the real 
 - Every answer goes through `pipeline.ts`: input guards (personal details get the private reply, a child who sounds hurt or sad gets the caring reply; neither reaches a provider), provider, word-by-word output check, length cap, fallback to canned, lesson link. A new provider is one `ChatProvider` adapter and must pass the same tests (`pipeline.spec.ts`, with the tricky questions).
 - A canned fallback must never pass as the AI answering: the pipeline reports it (`onFallback`, a content-free reason), the server logs it and the live eval fails it. The server warns at start-up if `GROQ_MODEL` is not available to the key (ADR 0013).
 - Never log a question, an answer or a provider error message (it can echo the question). Log lines are method, path, status, time and provider; a test checks it.
+- The web app is demo unless built with the `live` configuration (it swaps `apps/web/src/environments/chat-mode.ts`). The page provides `provideChat(CHAT_MODE)`; `LiveChatService` falls back to the demo answers and sets `resting` when the server is busy or down. Only the lazy chat page reads the mode.
 - Keys only in `apps/api/.env` or the host's environment. Never in code, tests, commits or chat.
 
 Windows note: the Nx daemon can crash after a successful run (libuv `UV_HANDLE_CLOSING`, exit 127). If that happens, run with `NX_DAEMON=false`. CI (Linux) is not affected.

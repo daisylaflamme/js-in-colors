@@ -101,6 +101,15 @@
   }
 }
 
+// Live answers are unavailable for now: said in words, under the messages.
+.resting {
+  margin: 0;
+  padding: var(--space-2) var(--space-5);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-bold);
+}
+
 .messages {
   @include focus-ring;
   display: grid;
