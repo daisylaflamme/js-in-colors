@@ -9,6 +9,7 @@ import {
   withComponentInputBinding,
   withInMemoryScrolling,
 } from '@angular/router';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideStore } from '@ngrx/store';
 import { provideSettings } from '@jic/data-access';
 import { AppTitleStrategy } from './app-title.strategy';
@@ -24,6 +25,8 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
     ),
+    // Pages are prerendered at build time (ADR 0014): reuse that HTML, and replay taps made before start-up.
+    provideClientHydration(withEventReplay()),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
     // Classic NgRx for cross-cutting state (ADR 0002): today the global settings.
     provideStore(),
