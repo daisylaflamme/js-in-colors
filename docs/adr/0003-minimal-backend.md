@@ -1,6 +1,6 @@
 # 0003. Minimal backend in version 1
 
-- Status: Accepted (amended by [0012](0012-ask-dot-live-mode.md): the chat proxy is plain HTTP streaming, not GraphQL)
+- Status: Accepted (amended by [0012](0012-ask-dot-live-mode.md): the chat proxy is plain HTTP streaming, not GraphQL; and by [0015](0015-no-graphql-or-d3-in-version-1.md): no GraphQL client or MSW in version 1)
 - Date: 2026-11-02
 
 ## Context

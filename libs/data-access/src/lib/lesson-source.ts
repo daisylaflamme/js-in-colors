@@ -4,7 +4,7 @@ import { COURSE, LESSON_LOADERS } from '../generated';
 
 /**
  * Where lessons come from. Today: modules compiled from content/ at build time (one lazy chunk
- * per lesson). Later: the GraphQL API (ADR 0003). Stores only see this interface, so swapping
+ * per lesson). A real API, if one ever comes, gets its own ADR (0015). Stores only see this interface, so swapping
  * the source never touches them; tests provide a fake.
  */
 export interface LessonSource {

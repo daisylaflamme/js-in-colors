@@ -10,19 +10,20 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ## Stack
 
-| Area              | Choice                                                                                                                                       |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| App               | Angular 22 (standalone components, signals, zoneless, new control flow, lazy routes)                                                         |
-| Monorepo          | Nx 24                                                                                                                                        |
-| Styling           | SCSS, ITCSS-lite layers, CSS custom-property design tokens, light / dark / high-contrast themes                                              |
-| Fonts             | Baloo 2 + Nunito, self-hosted (OFL)                                                                                                          |
-| State             | Signals for local state; NgRx SignalStore for features; classic NgRx for cross-cutting state ([ADR 0002](docs/adr/0002-state-management.md)) |
-| Data (planned)    | GraphQL (Apollo Angular + graphql-codegen), mocked with MSW ([ADR 0003](docs/adr/0003-minimal-backend.md))                                   |
-| Visuals (planned) | D3 modules for SVG concept visuals                                                                                                           |
-| Unit tests        | Vitest (Angular's `@angular/build:unit-test` for the app, AnalogJS for libs)                                                                 |
-| Component docs    | Storybook 10 with the a11y addon                                                                                                             |
-| E2E               | Cypress 15 + cypress-axe at three viewports                                                                                                  |
-| CI                | GitHub Actions                                                                                                                               |
+| Area           | Choice                                                                                                                                                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App            | Angular 22 (standalone components, signals, zoneless, new control flow, lazy routes, prerendering with hydration)                                                                                                                |
+| Monorepo       | Nx 24                                                                                                                                                                                                                            |
+| Styling        | SCSS, ITCSS-lite layers, CSS custom-property design tokens, light / dark / high-contrast themes                                                                                                                                  |
+| Fonts          | Baloo 2 + Nunito, self-hosted (OFL)                                                                                                                                                                                              |
+| State          | Signals for local state; NgRx SignalStore for features; classic NgRx for cross-cutting state ([ADR 0002](docs/adr/0002-state-management.md))                                                                                     |
+| Server         | One tiny Hono server on Node 24, only for Ask Dot's live mode: streams answers, keeps the AI key off the browser ([ADR 0012](docs/adr/0012-ask-dot-live-mode.md))                                                                |
+| Data           | Lessons as YAML, validated and compiled to typed modules at build time, one lazy chunk each ([ADR 0007](docs/adr/0007-lessons-as-validated-yaml.md)); every page prerendered ([ADR 0014](docs/adr/0014-prerender-every-page.md)) |
+| Visuals        | Hand-built SVG Angular components with signal inputs and CSS animation; no D3 needed ([ADR 0015](docs/adr/0015-no-graphql-or-d3-in-version-1.md))                                                                                |
+| Unit tests     | Vitest (Angular's `@angular/build:unit-test` for the app, AnalogJS for libs)                                                                                                                                                     |
+| Component docs | Storybook 10 with the a11y addon                                                                                                                                                                                                 |
+| E2E            | Cypress 15 + cypress-axe at three viewports                                                                                                                                                                                      |
+| CI             | GitHub Actions                                                                                                                                                                                                                   |
 
 ## Repo layout
 
@@ -31,7 +32,7 @@ apps/web            Angular app (shell, Home, lesson route)
 apps/web-e2e        Cypress smoke + accessibility tests
 libs/ui             Design-system components (each has a Storybook story)
 libs/lesson-engine  Renders lessons from data (scene-type registry)
-libs/data-access    Course and lesson SignalStores, saved progress, settings store (GraphQL later)
+libs/data-access    Course and lesson SignalStores, saved progress, settings store, Ask Dot chat services
 libs/visuals        Lesson pictures: jar, screen, Dot, machine, fork, list, card, page
 libs/shared         Concepts, lesson types, content validator
 content/            Lessons as YAML (see content/README.md)
@@ -83,7 +84,7 @@ Ask Dot is the chat (mockup 09). **The public site runs in demo mode**: pre-writ
    - no history: each question is sent alone.
 4. **The instructions to the AI:** JavaScript only, three short sentences for ages 6 to 12, no links or personal questions, the rules can't be changed or revealed, a kind redirect when off topic.
 5. **Every word is checked before the child sees it.** Links, emails, long numbers and blocked words stop the answer, which ends with "Let's talk about JavaScript instead!", so the word is never shown. Markdown marks are removed, answers are capped at 60 words, and a bare refusal is pointed back to JavaScript.
-6. **Nothing is kept.** The chat lives in memory and disappears when you leave. The server logs only the method, path, status, time and provider: never a question or an answer. For live mode, switch on Groq's Zero Data Retention (an account setting), so Groq keeps nothing either.
+6. **Nothing is kept.** The chat lives in memory and disappears when you leave. The server logs only the method, path, status, time and provider: never a question or an answer. Live mode's Groq account has **Zero Data Retention** switched on, so Groq keeps nothing either, and Groq's terms make no claim to train models on what is sent through its API. (Running your own copy? Switch Zero Data Retention on in your Groq account settings.)
 
 **Tested with tricky kid questions.** 32 questions (off topic, personal, unsafe, hurt, prompt injection, hard JavaScript, silly) are run two ways:
 
