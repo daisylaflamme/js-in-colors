@@ -15,6 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lighthouse": "node tools/lighthouse/measure.mjs",
+    "api": "nx serve api",
+    "chat:eval": "nx run api:eval",
     "dot-art": "node tools/dot-art/convert.mjs && prettier --write libs/visuals/src/lib/dot/dot-art.ts"
   },
   "devDependencies": {
@@ -75,9 +77,11 @@
     "@angular/router": "~22.2.0",
     "@fontsource/baloo-2": "5.3.0",
     "@fontsource/nunito": "5.3.0",
+    "@hono/node-server": "2.1.5",
     "@ngrx/effects": "22.0.1",
     "@ngrx/signals": "22.0.1",
     "@ngrx/store": "22.0.1",
+    "hono": "4.13.13",
     "rxjs": "~7.8.0"
   }
 }

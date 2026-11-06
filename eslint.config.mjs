@@ -45,6 +45,8 @@ export default [
             { sourceTag: 'type:data-access', onlyDependOnLibsWithTags: ['type:data-access', 'type:util'] },
             { sourceTag: 'type:util', onlyDependOnLibsWithTags: ['type:util'] },
             { sourceTag: 'type:e2e', onlyDependOnLibsWithTags: ['type:util'] },
+            // The Ask Dot server (apps/api) may use the shared pure code only, never browser libs.
+            { sourceTag: 'type:server', onlyDependOnLibsWithTags: ['type:util'] },
           ],
         },
       ],

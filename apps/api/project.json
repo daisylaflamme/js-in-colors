@@ -1,0 +1,27 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "tags": ["type:server", "scope:api"],
+  "targets": {
+    "serve": {
+      "continuous": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --env-file-if-exists=apps/api/.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tools/content/ts-resolve.mjs apps/api/src/main.ts"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": { "command": "tsc -p apps/api/tsconfig.app.json --noEmit" },
+      "inputs": ["default", "^default"]
+    },
+    "eval": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --env-file-if-exists=apps/api/.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./tools/content/ts-resolve.mjs apps/api/src/eval/run-eval.ts"
+      }
+    }
+  }
+}
