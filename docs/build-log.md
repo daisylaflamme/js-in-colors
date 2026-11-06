@@ -3,6 +3,27 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-06 · Ask Dot live: the first real eval
+
+Branch `fix/ask-dot-live-eval` (ADR 0013).
+
+**Found by running `npm run chat:eval` against real Groq**
+
+- The owner's first run "failed" and Nx showed only that. With the table visible, it said 24 of 30 passed. **But every answer was a canned demo answer.** `llama-3.1-8b-instant`, listed on Groq's public model page, wasn't available to the free account (`404 model_not_found`). The fallback protected the child, but it also hid the broken provider, and the eval counted canned answers as passes. That was a flaw in my eval.
+- With `openai/gpt-oss-20b` (thinking set to low, and kept out of the stream): 27 of 30.
+  - Three prompt injections got a bare "I'm sorry, but I can't help with that."
+  - Some answers had Markdown (`**true**`).
+  - One "pass" was poor: "someone at school is mean to me" got a coding tip.
+
+**Fixed**
+
+- The pipeline reports a fallback with a content-free reason. The server logs it, the eval fails it, and the server checks at start-up that the model is available to the key.
+- A caring reply before any AI, in the browser and on the server: hurt, bullied, scared or sad → "tell a grown-up you trust".
+- Plain text: Markdown marks are stripped from every word. A bare refusal gets "Ask me about JavaScript instead!". The prompt asks for both too.
+- `npm run chat:eval` runs Node directly, so the table always prints.
+
+**Result:** 32 of 32 against real Groq on the final code (on-topic, hard, silly, off-topic, personal, unsafe, care, injection).
+
 ## 2026-11-05 · Ask Dot's server: live AI behind an adapter (part 1 of 2)
 
 Branch `feat/ask-dot-live`.

@@ -160,7 +160,8 @@ npm run chat:eval                       # tricky kid questions against the real 
 ### Ask Dot server (ADR 0012)
 
 - `apps/api` (tag `type:server`) may import `@jic/shared` only. It runs as TypeScript on Node 24 (type stripping, `tools/content/ts-resolve.mjs` for aliases), so use erasable syntax only (`erasableSyntaxOnly` in its tsconfig): no enums, no parameter properties, `import type` for types. `build` is a type check.
-- Every answer goes through `pipeline.ts`: input guard, provider, word-by-word output check, length cap, fallback to canned, lesson link. A new provider is one `ChatProvider` adapter and must pass the same tests (`pipeline.spec.ts`, with the tricky questions).
+- Every answer goes through `pipeline.ts`: input guards (personal details get the private reply, a child who sounds hurt or sad gets the caring reply; neither reaches a provider), provider, word-by-word output check, length cap, fallback to canned, lesson link. A new provider is one `ChatProvider` adapter and must pass the same tests (`pipeline.spec.ts`, with the tricky questions).
+- A canned fallback must never pass as the AI answering: the pipeline reports it (`onFallback`, a content-free reason), the server logs it and the live eval fails it. The server warns at start-up if `GROQ_MODEL` is not available to the key (ADR 0013).
 - Never log a question, an answer or a provider error message (it can echo the question). Log lines are method, path, status, time and provider; a test checks it.
 - Keys only in `apps/api/.env` or the host's environment. Never in code, tests, commits or chat.
 
