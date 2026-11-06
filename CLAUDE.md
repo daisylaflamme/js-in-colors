@@ -158,6 +158,7 @@ npm run api                             # http://localhost:3333 (demo answers un
 npm run chat:eval                       # tricky kid questions against the real provider (needs the key; not in CI)
 npm run start:live                      # the web app in live mode: Ask Dot asks /api/chat (proxied to :3333)
 CYPRESS_chatMode=live npx nx e2e web-e2e --configuration=live --spec src/e2e/ask-dot-live.cy.ts   # live-mode e2e (server faked)
+# (with CI=true, nx e2e always starts the CI web server, the demo build: CI starts web:serve:live itself, see ci.yml)
 
 ### Ask Dot server (ADR 0012)
 
