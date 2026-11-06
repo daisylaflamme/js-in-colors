@@ -1,5 +1,5 @@
 import type { Route } from '@angular/router';
-import { lessonExistsGuard, lessonTitleResolver } from './lessons/lesson-routing';
+import { lessonExistsGuard, lessonPreloadResolver, lessonTitleResolver } from './lessons/lesson-routing';
 
 /** Route data `shell: 'full'`: the page draws its own header, so the shell shows no lesson menu. */
 export interface ShellRouteData {
@@ -18,6 +18,7 @@ export const appRoutes: Route[] = [
     path: 'lesson/:lessonId',
     canMatch: [lessonExistsGuard],
     title: lessonTitleResolver,
+    resolve: { lessonPreloaded: lessonPreloadResolver },
     loadComponent: () => import('./lesson/lesson-page').then((m) => m.LessonPage),
   },
   {

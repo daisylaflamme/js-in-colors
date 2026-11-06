@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { memoryProgressStorage } from '@jic/data-access';
+import { LessonPreloader, memoryProgressStorage } from '@jic/data-access';
 import {
   type ActivatedRouteSnapshot,
   convertToParamMap,
@@ -7,7 +7,7 @@ import {
   Router,
   type UrlSegment,
 } from '@angular/router';
-import { lessonExistsGuard, lessonTitleResolver } from './lesson-routing';
+import { lessonExistsGuard, lessonPreloadResolver, lessonTitleResolver } from './lesson-routing';
 
 describe('lesson routing', () => {
   beforeEach(() =>
@@ -31,5 +31,12 @@ describe('lesson routing', () => {
     const route = { paramMap: convertToParamMap({ lessonId: 'functions' }) } as ActivatedRouteSnapshot;
     const title = TestBed.runInInjectionContext(() => lessonTitleResolver(route, {} as never));
     expect(title).toBe('Magic machines');
+  });
+
+  it('loads the lesson before the page starts, so a prerendered page hydrates with it (ADR 0014)', async () => {
+    const route = { paramMap: convertToParamMap({ lessonId: 'variables' }) } as ActivatedRouteSnapshot;
+    const loaded = await TestBed.runInInjectionContext(() => lessonPreloadResolver(route, {} as never));
+    expect(loaded).toBe(true);
+    expect(TestBed.inject(LessonPreloader).get('variables')?.title).toBe('Variables');
   });
 });

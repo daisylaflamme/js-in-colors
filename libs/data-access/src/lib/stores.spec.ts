@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import type { Course, Lesson } from '@jic/shared';
 import { CourseStore } from './course.store';
-import { LESSON_SOURCE, type LessonSource } from './lesson-source';
+import { LESSON_SOURCE, LessonPreloader, type LessonSource } from './lesson-source';
 import { LessonStore } from './lesson.store';
 import { memoryProgressStorage } from './testing/memory-progress-storage';
 
@@ -73,6 +73,30 @@ describe('CourseStore', () => {
     expect(courseStore.finishedIds()).toEqual(['jars']);
     expect(courseStore.isFinished('jars')).toBe(true);
     expect(courseStore.finishedCount()).toBe(1);
+  });
+});
+
+describe('LessonPreloader (ADR 0014)', () => {
+  it('loads a lesson once and then hands it out at once', async () => {
+    const loader = vi.fn(async () => lesson);
+    TestBed.configureTestingModule({
+      providers: [{ provide: LESSON_SOURCE, useValue: { course, loaders: { jars: loader } } }],
+    });
+    const preloader = TestBed.inject(LessonPreloader);
+    expect(preloader.get('jars')).toBeUndefined();
+    expect(await preloader.preload('jars')).toBe(lesson);
+    expect(await preloader.preload('jars')).toBe(lesson);
+    expect(loader).toHaveBeenCalledTimes(1);
+    expect(preloader.get('jars')).toBe(lesson);
+    expect(await preloader.preload('loops')).toBeUndefined(); // coming soon: no content
+  });
+
+  it('a preloaded lesson is ready in the store at once, with no loading state in between', async () => {
+    const { store } = setup();
+    await TestBed.inject(LessonPreloader).preload('jars');
+    void store.load('jars');
+    expect(store.status()).toBe('ready');
+    expect(store.scene()?.id).toBe('watch');
   });
 });
 
