@@ -85,6 +85,12 @@ jobs:
         env:
           CI: true
 
+      - name: Cypress, Ask Dot live mode (live build; the server is faked, no AI is called)
+        run: npx nx e2e web-e2e --configuration=live --spec src/e2e/ask-dot-live.cy.ts
+        env:
+          CI: true
+          CYPRESS_chatMode: live
+
       - name: Upload Cypress screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v6

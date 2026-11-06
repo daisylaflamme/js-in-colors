@@ -15,7 +15,10 @@ const lastDot = () => cy.get('jic-chat-bubble[data-from="dot"]').last();
 /** The answer is done when the status announces it. */
 const answered = () => cy.get('[role="status"]', { timeout: 10000 }).should('contain.text', 'Dot says:');
 
-describe('Ask Dot', () => {
+// Demo mode only: a live build (CYPRESS_chatMode=live) runs ask-dot-live.cy.ts instead.
+const describeDemo = Cypress.env('chatMode') === 'live' ? describe.skip : describe;
+
+describeDemo('Ask Dot', () => {
   for (const [w, h] of VIEWPORTS) {
     it(`answers a suggestion at ${w}px, with no a11y violations in any theme`, () => {
       cy.viewport(w, h);
