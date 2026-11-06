@@ -6,7 +6,7 @@ It is also a front-end portfolio project: modern Angular, a real design system, 
 
 ![The lesson screen on desktop](docs/mockups/01-lesson-default.png)
 
-> Status: all ten lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, Things with details, and Page magic) run on a data-driven lesson engine. Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. Finishing all ten earns a certificate, saved as a PNG or printed, made entirely in the browser. Ask Dot answers JavaScript questions in demo mode (pre-written answers, no server); the real AI proxy comes later. Progress so far: [docs/build-log.md](docs/build-log.md).
+> Status: all ten lessons (Hello, Say it out loud, Variables, Numbers, words, yes/no, Magic machines, Yes or no paths, Again and again, Lists of things, Things with details, and Page magic) run on a data-driven lesson engine. Home shows the color path with a Continue button, and progress, a resume code, Calm motion and Text size are saved on the device. Finishing all ten earns a certificate, saved as a PNG or printed, made entirely in the browser. Ask Dot answers JavaScript questions: demo mode (pre-written answers, no server) by default, and an optional live AI mode through a small server with layered safety (see below). Progress so far: [docs/build-log.md](docs/build-log.md).
 
 ## Stack
 
@@ -62,7 +62,35 @@ The learners are children, so the rules are strict ([ADR 0001](docs/adr/0001-ano
 - No account and no login. Progress stays in the browser, under a random resume code such as `blue-fox-42` that says nothing about the child ([ADR 0008](docs/adr/0008-local-progress-and-settings.md)).
 - No personal data, no analytics, no tracking, no third-party scripts or CDN assets.
 - The certificate name is typed and rendered on the device, never sent anywhere and never stored, not even in the browser ([ADR 0010](docs/adr/0010-certificate.md)).
-- Ask Dot keeps the chat in memory only and catches names, emails and addresses before anything is sent. Demo mode makes no request at all; the real AI will only be reached through a server-side proxy ([ADR 0011](docs/adr/0011-ask-dot-demo-mode.md)).
+- Ask Dot keeps the chat in memory only and catches names, emails and addresses before anything is sent. Demo mode makes no request at all; live mode reaches the AI only through a server-side proxy, and the key stays on the server ([How Ask Dot stays safe](#how-ask-dot-stays-safe)).
+
+## How Ask Dot stays safe
+
+Ask Dot is the chat (mockup 09). **The public site runs in demo mode**: pre-written, reviewed answers in the browser. It costs nothing, can't break or say something unsafe, and works instantly. A **live mode** with a real AI is optional. It runs through a small server (`apps/api`), so the key never reaches the browser ([ADR 0012](docs/adr/0012-ask-dot-live-mode.md), [ADR 0013](docs/adr/0013-ask-dot-live-model-and-care.md)).
+
+**One interface, swappable providers.**
+
+- The browser talks to a `ChatService`: `DemoChatService`, or `LiveChatService`, which reads the server's stream as an RxJS Observable.
+- The server picks a `ChatProvider` by environment variable: canned answers, or Groq (`openai/gpt-oss-20b`). If the server is busy or down, the child gets a pre-written answer and a note that Dot is resting.
+
+**Safety in layers.** Each layer works on its own, and every provider goes through all of them:
+
+1. **Personal details never leave.** Names, addresses, schools, emails and phone numbers get "Let's keep names and places private". Checked in the browser and again on the server, before any AI.
+2. **A child who sounds hurt gets a person, not an AI.** "Someone at school is mean to me" gets a fixed, caring reply: tell a grown-up you trust. Also checked before any AI.
+3. **Limits:**
+   - 5 questions a minute and 30 a day per visitor;
+   - a daily cap for everyone, below the free tier;
+   - no history: each question is sent alone.
+4. **The instructions to the AI:** JavaScript only, three short sentences for ages 6 to 12, no links or personal questions, the rules can't be changed or revealed, a kind redirect when off topic.
+5. **Every word is checked before the child sees it.** Links, emails, long numbers and blocked words stop the answer, which ends with "Let's talk about JavaScript instead!", so the word is never shown. Markdown marks are removed, answers are capped at 60 words, and a bare refusal is pointed back to JavaScript.
+6. **Nothing is kept.** The chat lives in memory and disappears when you leave. The server logs only the method, path, status, time and provider: never a question or an answer. For live mode, switch on Groq's Zero Data Retention (an account setting), so Groq keeps nothing either.
+
+**Tested with tricky kid questions.** 32 questions (off topic, personal, unsafe, hurt, prompt injection, hard JavaScript, silly) are run two ways:
+
+- **In CI, against a fake AI that misbehaves on purpose:** links, a rude word, rambling, an email, a phone number. Nothing unsafe gets through.
+- **Against the real AI** (`npm run chat:eval`): **32 of 32 passed** on 2026-11-06.
+
+The first real run taught a lesson worth keeping. The model in the docs wasn't available to the account, and the silent fallback made canned answers look like AI answers. Fallbacks are now reported, and the eval fails them.
 
 ## Accessibility and performance
 

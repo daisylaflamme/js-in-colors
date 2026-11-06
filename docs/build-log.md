@@ -3,6 +3,25 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-06 · Ask Dot live mode in the app (part 2 of 2)
+
+Branch `feat/ask-dot-live-client`.
+
+**Built**
+
+- `LiveChatService` streams the server's SSE as an RxJS Observable in the same chunks as demo mode. Leaving the page aborts the request. A busy server (429), a server that's down, or no words within 12 s falls back to the demo answers and sets `resting`. A break mid-answer ends with Dot's oops.
+- `provideChat(mode)`: demo by default. The `live` build configuration swaps one environment file, and `npm run start:live` proxies `/api` to the server. Only the lazy chat page reads the mode, so the initial bundle doesn't move (329.26 kB).
+- The page shows a **Live** pill instead of **Demo mode**, the matching note in the safe chat rules, and "Dot is resting…" when live answers are unavailable.
+- Browser tests for live mode fake the server with `cy.intercept` and run in their own CI step: the streamed answer and link, a 429 → resting, and no request for private or hurt questions. CI never calls an AI. Each spec skips itself in the other mode.
+- The README section "How Ask Dot stays safe".
+
+**Found along the way**
+
+- jsdom has no global `ReadableStream`. The first live test "passed" a 2-chunk answer that turned out to be the fallback, catching its own setup error. That's the same trap as the canned eval, this time in a unit test; the spec now imports Node's stream.
+- Per the Streams spec, `controller.error()` discards queued chunks, so a test of "breaks mid-answer" has to deliver its words on one read and fail on the next.
+
+**Checked end to end with nothing faked:** the live app → `apps/api` → Groq answered "What is an array?" with a 3-sentence answer and the "Lists of things" lesson link.
+
 ## 2026-11-06 · Ask Dot live: the first real eval
 
 Branch `fix/ask-dot-live-eval` (ADR 0013).
