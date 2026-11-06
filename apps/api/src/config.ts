@@ -15,7 +15,7 @@ export interface ApiConfig {
 
 const DEFAULTS = {
   port: 3333,
-  groqModel: 'llama-3.1-8b-instant',
+  groqModel: 'openai/gpt-oss-20b',
   perMinute: 5,
   perDay: 30,
   dailyCap: 500,

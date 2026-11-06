@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { sentences } from '@jic/shared';
 import { firstValueFrom, Observable, toArray } from 'rxjs';
-import { CHAT_INSTANT, type ChatChunk, ChatService, looksPersonal, PRIVATE_REPLY } from './chat';
+import { CARE_REPLY, CHAT_INSTANT, type ChatChunk, ChatService, looksPersonal, PRIVATE_REPLY } from './chat';
 import { ChatStore, DOT_GREETING, DOT_OOPS } from './chat.store';
 import { DEMO_ANSWERS, DEMO_REDIRECTS } from '@jic/shared/chat';
 import { matchAnswer, normalize, redirectFor } from '@jic/shared/chat';
@@ -148,6 +148,14 @@ describe('ChatStore', () => {
     store.ask('my name is Emma');
     expect(ask).not.toHaveBeenCalled();
     expect(store.messages().at(-1)?.text).toBe(PRIVATE_REPLY);
+    expect(store.busy()).toBe(false);
+  });
+
+  it('answers a child who sounds hurt with care, never through the chat service', () => {
+    const { store, ask } = setup(() => words({ text: 'a coding tip' }));
+    store.ask('someone at school is mean to me');
+    expect(ask).not.toHaveBeenCalled();
+    expect(store.messages().at(-1)?.text).toBe(CARE_REPLY);
     expect(store.busy()).toBe(false);
   });
 

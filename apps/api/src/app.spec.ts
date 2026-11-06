@@ -74,6 +74,31 @@ describe('the Ask Dot API', () => {
     );
   });
 
+  it('logs a fallback with its reason, still without the question', async () => {
+    const lines: string[] = [];
+    const app = createApp({
+      config: { allowedOrigin: 'http://localhost:4200' },
+      provider: {
+        name: 'groq',
+        // eslint-disable-next-line require-yield
+        async *stream() {
+          throw new Error('groq responded 404');
+        },
+      },
+      limiter: new RateLimiter({ perMinute: 5, perDay: 30, dailyCap: 500 }),
+      clientAddress: () => 'x',
+      log: (line) => lines.push(line),
+    });
+    const response = await app.request('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: 'My secret question about loops' }),
+    });
+    await response.text();
+    expect(lines).toContain('fallback to canned answers: groq responded 404');
+    expect(lines.join(' ')).not.toMatch(/secret/i);
+  });
+
   it('logs one line per request and never the question or the answer', async () => {
     const { ask, lines } = setup();
     await events(await ask('My secret question about loops'));

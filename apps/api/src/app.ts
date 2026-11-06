@@ -69,7 +69,11 @@ export function createApp(deps: AppDeps): Hono {
       async (stream) => {
         const controller = new AbortController();
         stream.onAbort(() => controller.abort());
-        const options = { signal: controller.signal, firstWordTimeoutMs: deps.firstWordTimeoutMs };
+        const options = {
+          signal: controller.signal,
+          firstWordTimeoutMs: deps.firstWordTimeoutMs,
+          onFallback: (reason: string) => log(`fallback to canned answers: ${reason}`),
+        };
         for await (const chunk of answer(question, provider, options)) {
           await stream.writeSSE({ data: JSON.stringify(chunk) });
         }

@@ -9,6 +9,7 @@ import { selectCalmMotion } from '../settings/settings.feature';
 export {
   type ChatChunk,
   type ChatLink,
+  CARE_REPLY,
   checkWord,
   cleanQuestion,
   DEMO_ANSWERS,
@@ -17,6 +18,7 @@ export {
   lessonLinkFor,
   looksPersonal,
   matchAnswer,
+  needsAGrownUp,
   normalize,
   PRIVATE_REPLY,
   QUESTION_MAX_LENGTH,

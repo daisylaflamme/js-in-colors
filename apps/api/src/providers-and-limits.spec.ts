@@ -1,7 +1,14 @@
 import { KID_SYSTEM_PROMPT } from '@jic/shared/chat';
 import { readConfig } from './config';
 import { evaluate } from './eval/evaluate';
-import { GROQ_URL, GroqProvider, parseDelta, serverSentData } from './providers/groq';
+import {
+  availableModels,
+  GROQ_URL,
+  GroqProvider,
+  isReasoningModel,
+  parseDelta,
+  serverSentData,
+} from './providers/groq';
 import { RateLimiter } from './rate-limit';
 
 const streamOf = (...parts: string[]) =>
@@ -25,7 +32,8 @@ describe('GroqProvider', () => {
     expect(request?.url).toBe(GROQ_URL);
     expect((request?.init.headers as Record<string, string>)['Authorization']).toBe('Bearer test-key');
     const body = JSON.parse(String(request?.init.body));
-    expect(body).toMatchObject({ model: 'm', stream: true, max_tokens: 120, temperature: 0.3 });
+    expect(body).toMatchObject({ model: 'm', stream: true, max_completion_tokens: 400, temperature: 0.3 });
+    expect(body.reasoning_effort).toBeUndefined(); // only reasoning models get reasoning settings
     expect(body.messages).toEqual([
       { role: 'system', content: KID_SYSTEM_PROMPT },
       { role: 'user', content: 'What is a loop?' },
@@ -54,6 +62,27 @@ describe('GroqProvider', () => {
     await expect(iterator.next()).rejects.toThrow(/^groq responded 429$/);
   });
 
+  it('keeps a reasoning model thinking briefly, and its thinking out of the answer', async () => {
+    let body: Record<string, unknown> = {};
+    const fakeFetch = (async (_url: string, init: RequestInit) => {
+      body = JSON.parse(String(init.body));
+      return new Response(streamOf('data: [DONE]\n\n'), { status: 200 });
+    }) as unknown as typeof fetch;
+    const provider = new GroqProvider({ apiKey: 'k', model: 'openai/gpt-oss-20b', fetch: fakeFetch });
+    for await (const piece of provider.stream('q', new AbortController().signal)) void piece;
+    expect(body).toMatchObject({ reasoning_effort: 'low', include_reasoning: false });
+    expect(isReasoningModel('openai/gpt-oss-120b')).toBe(true);
+    expect(isReasoningModel('llama-3.1-8b-instant')).toBe(false);
+  });
+
+  it('lists the models a key can use, or nothing when it cannot', async () => {
+    const ok = (async () =>
+      Response.json({ data: [{ id: 'openai/gpt-oss-20b' }, { id: 'whisper' }] })) as unknown as typeof fetch;
+    expect(await availableModels('k', ok)).toEqual(['openai/gpt-oss-20b', 'whisper']);
+    const denied = (async () => new Response('', { status: 401 })) as unknown as typeof fetch;
+    expect(await availableModels('k', denied)).toBeUndefined();
+  });
+
   it('ignores lines that are not text deltas', async () => {
     expect(parseDelta('{"choices":[{"delta":{}}]}')).toBeUndefined();
     expect(parseDelta('not json')).toBeUndefined();
@@ -75,7 +104,7 @@ describe('readConfig', () => {
     const config = readConfig({ CHAT_PER_MINUTE: 'lots', CHAT_DAILY_CAP: '-3' });
     expect(config).toMatchObject({
       port: 3333,
-      groqModel: 'llama-3.1-8b-instant',
+      groqModel: 'openai/gpt-oss-20b',
       perMinute: 5,
       perDay: 30,
       dailyCap: 500,
