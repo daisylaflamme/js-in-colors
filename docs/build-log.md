@@ -3,6 +3,21 @@
 What was built, what was decided, and what the checks said, one entry per working session.
 Newest first. Material for the README's "How I built this with Claude Code" section.
 
+## 2026-11-06 · Live, and a flaky e2e test explained
+
+Branch `fix/e2e-wait-for-start`.
+
+- **The site is live** at https://daisylaflamme.github.io/js-in-colors/. The first deploy ran after #22's CI. A throwaway Cypress spec against the live site passed 4 of 4: Home hydrates and its links stay under the subpath, a lesson deep link (fonts, Tip), Ask Dot in demo mode, Not found.
+- **The #21 merge's CI failed once:** a simulated Enter on Next was lost while the page was still starting.
+  - A sweep with the lazy chunks held back showed that taps are always replayed, and so are **real** Enter key presses (sent through Chrome DevTools).
+  - Only Cypress's simulated `type('{enter}')` is lost before hydration. So it's a test artifact, not a problem for children.
+- **The fix is in the tests.** The keyboard helpers wait until no `ngh` marker is left: Angular removes each one as it hydrates, so none left means the page has fully started.
+  - `prerender.cy.ts` now checks that a tap and a real Enter made during start-up both work.
+- **Dead ends, recorded:**
+  - Overwriting `cy.visit` to wait hung Cypress 15 whenever the overwrite returned a chain.
+  - Without the return, stubs added right after a visit (`print`, clipboard) missed the page. The certificate spec now stubs `print` in `onBeforeLoad`, which is sturdier anyway: a real print dialog would block the run.
+- Three type errors in `prerender.cy.ts` fixed (Cypress compiles specs without type-checking).
+
 ## 2026-11-06 · Public site on GitHub Pages
 
 Branch `feat/github-pages` (ADR 0016).

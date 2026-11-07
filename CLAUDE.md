@@ -173,6 +173,7 @@ CYPRESS_chatMode=live npx nx e2e web-e2e --configuration=live --spec src/e2e/ask
 - Event replay can deliver a tap before a page's first change detection: an effect that resets UI state "on change" must skip its first run (see `LessonPage`'s lesson-id effect).
 - The inline script in `apps/web/src/index.html` is the one exception to "settings only through the effects": it applies saved text size, Calm motion and a closed menu before the first paint. Keep it tiny; `boot-script.spec.ts` (data-access) keeps its keys in step.
 - E2E: `prerender.cy.ts` checks each page's HTML before JavaScript and that hydration reuses its `keep` element (a lesson's stage) with no `NG05xx` errors. A new full page belongs in its list. It runs only against the prerendered build (`prerendered` in `cypress.config.ts`; by hand: `--env prerendered=true`).
+- E2E: the keyboard helpers (`tabTo`, `pressEnter`, `pressSpace`, `followFocusedLink` in `support/keyboard.ts`) first wait until no `[ngh]` marker is left (the page has fully hydrated). Cypress's simulated `type('{enter}')` is lost before hydration, while real key presses and taps are replayed (`prerender.cy.ts` checks both with the lazy chunks held back), so never simulate keys earlier. For real key behaviour, send CDP `Input.dispatchKeyEvent`; `cy.press` never activates buttons. Don't overwrite `cy.visit` to wait: returning a chain from that overwrite hangs Cypress 15. Stub browser APIs (`print`, clipboard) in `onBeforeLoad`, before app code runs.
 
 ### Public site (ADR 0016)
 

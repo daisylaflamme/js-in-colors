@@ -22,10 +22,10 @@ const PAGES = [
 /** Angular reports hydration problems as NG05xx errors (NG0500 to NG0507). */
 const HYDRATION_ERROR = /NG05\d\d/;
 
-interface MarkedWindow extends Window {
+type MarkedWindow = Cypress.AUTWindow & {
   __prerendered?: Element | null;
   __textSizeAtParse?: string | null;
-}
+};
 
 /**
  * Visit a page and, as soon as the HTML is parsed (before the app's scripts run), remember the
@@ -121,5 +121,47 @@ describePrerendered('Prerendered pages', () => {
     visitPrerendered('/lesson/variables');
     cy.get('jic-lesson-menu.menu').should('be.visible');
     expectNoHydrationErrors();
+  });
+
+  describe('a child who acts while the page is still starting', () => {
+    // Hold back the lazy chunks (the lesson page and its lesson), so the prerendered page is on
+    // screen but not started when the child acts.
+    beforeEach(() => {
+      cy.viewport(1440, 900);
+      cy.intercept({ url: /\/chunk-[A-Za-z0-9_-]+\.js$/ }, (req) => {
+        req.on('response', (res) => {
+          res.setDelay(700);
+        });
+      });
+    });
+
+    /** A real Enter key through Chrome DevTools: it activates a button as a keyboard does. */
+    const realEnter = () =>
+      cy.then(() =>
+        Cypress.automation('remote:debugger:protocol', {
+          command: 'Input.dispatchKeyEvent',
+          params: { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' },
+        }).then(() =>
+          Cypress.automation('remote:debugger:protocol', {
+            command: 'Input.dispatchKeyEvent',
+            params: { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
+          }),
+        ),
+      );
+
+    it('a tap on Tip is kept, and the Tip opens', () => {
+      visitPrerendered('/lesson/variables');
+      cy.get('jic-help-tabs button.tip').click();
+      cy.get('dialog.tip', { timeout: 8000 }).should('match', '[open]');
+      expectNoHydrationErrors();
+    });
+
+    it('a real Enter on Next is kept, and the lesson moves to scene 2', () => {
+      visitPrerendered('/lesson/variables');
+      cy.get('jic-scene-nav .next').focus();
+      realEnter();
+      cy.get('jic-scene-nav .label', { timeout: 8000 }).should('have.text', 'Scene 2 of 5');
+      expectNoHydrationErrors();
+    });
   });
 });
