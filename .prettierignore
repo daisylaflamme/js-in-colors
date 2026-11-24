@@ -11,3 +11,6 @@ package-lock.json
 /CLAUDE.md
 /FIRST_PROMPT.md
 /libs/data-access/src/generated
+
+# Third-party agent skill (CLAUDE.md, Skills): keep as published
+/.claude/skills/angular-developer

@@ -108,6 +108,32 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 - Keep this file current: when you add a command or convention, update it.
 - Review and ship: the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) reviews a branch against these rules, read-only. `/commit-push-pr [base] [notes]` (`.claude/skills/commit-push-pr/`) runs the reviewer and the checks, commits, pushes, and opens a PR against the stacked base branch. It stops on blocking findings or failed checks.
 
+## Skills
+
+`angular-developer` (`.claude/skills/angular-developer/`, the Angular team's skill) gives current Angular guidance: Signals, Signal Forms, Angular Aria, SSR. Third-party content: never edit its files (Prettier skips them).
+
+- When it conflicts with this file or an ADR, this file and the ADRs win.
+- Skill says `ng build` / `ng generate` / `ng serve` / `ng test` / `ng e2e` → we run `npx nx …` (Commands).
+- Skill says always `ng add`, and install `@angular/aria` / `@angular/cdk` when needed → no package without the owner's OK, pinned exactly (Commands).
+- Skill says Tailwind, and its examples hard-code colors, `px` sizes and widths → SCSS with tokens (Styling and design system).
+- Skill says theme with `:host-context(.theme-dark)` → token overrides in `_themes.scss` (ADR 0005).
+- Skill says fixed animation durations, view transitions in `styles.css` → `motion-ok` and `var(--motion-*)` (Conventions added during the scaffold).
+- Skill says `effect` for analytics or `localStorage`, router events for page views → no analytics; storage only through `PROGRESS_STORAGE` / `SETTINGS_STORAGE` (Kids' privacy, ADR 0008).
+- Skill's form examples collect name, email and age, and `console.log` the model → no personal data, nothing logged (Kids' privacy, ADR 0010).
+- Skill says `RenderMode.Server` / `Client` for some routes → every route prerendered (ADR 0014).
+- Skill says event replay is on by default in Angular 22 → keep `withEventReplay()` in `app.config.ts` (ADR 0014).
+- Skill says eager-load the landing page → every route lazy, Home included (Angular conventions).
+- Skill's examples link with `href="#"` → `routerLink` only (Public site, ADR 0016).
+- Skill's Signal Forms errors are plain `<span>`s → names, `aria-invalid`/`aria-describedby` and a live region (Accessibility checklist).
+- Skill says Angular Aria directives over native elements → Tip and Library stay native `<dialog>` with `ModalDialogDirective` (Conventions added during the scaffold).
+- Skill's harness tests use Material harnesses and Jasmine matchers (`toBeTrue()`) → Vitest matchers, no Material (Stack).
+
+Installed from `angular/skills` at `1b1e2d179923527ca6432c95706cef286c254f75` (recorded in `skills-lock.json`). To update, run the same command, read the diff before committing, and update the SHA here:
+
+```bash
+DO_NOT_TRACK=1 npx skills@1.9.0 add https://github.com/angular/skills --skill angular-developer -a claude-code --copy -y
+```
+
 ## Commands
 
 Node 24 (`.nvmrc`). Versions are pinned exactly in `package.json` (Nx 24.0.3, Angular 22.2, Storybook 10.6.5, Cypress 15.21.1: cypress-axe does not support Cypress 16 yet).
