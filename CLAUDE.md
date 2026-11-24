@@ -106,15 +106,17 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 - Before finishing a task, run lint, unit tests, and a build, and report the results.
 - Record significant decisions as short ADRs in `docs/adr/`.
 - Keep this file current: when you add a command or convention, update it.
+- Ask the owner before adding any dependency, with its exact version and bundle cost. Pin it exactly.
 - Review and ship: the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) reviews a branch against these rules, read-only. `/commit-push-pr [base] [notes]` (`.claude/skills/commit-push-pr/`) runs the reviewer and the checks, commits, pushes, and opens a PR against the stacked base branch. It stops on blocking findings or failed checks.
 
 ## Skills
 
-`angular-developer` (`.claude/skills/angular-developer/`, the Angular team's skill) gives current Angular guidance: Signals, Signal Forms, Angular Aria, SSR. Third-party content: never edit its files (Prettier skips them).
+When `angular-developer` conflicts with this file or an ADR, this file and the ADRs win.
 
-- When it conflicts with this file or an ADR, this file and the ADRs win.
+The skill (`.claude/skills/angular-developer/`, from the Angular team) gives current Angular guidance: Signals, Signal Forms, Angular Aria, SSR. Third-party content: never edit its files (Prettier skips them).
+
 - Skill says `ng build` / `ng generate` / `ng serve` / `ng test` / `ng e2e` → we run `npx nx …` (Commands).
-- Skill says always `ng add`, and install `@angular/aria` / `@angular/cdk` when needed → no package without the owner's OK, pinned exactly (Commands).
+- Skill says always `ng add`, and install `@angular/aria` / `@angular/cdk` when needed → ask the owner first and pin exactly (Workflow).
 - Skill says Tailwind, and its examples hard-code colors, `px` sizes and widths → SCSS with tokens (Styling and design system).
 - Skill says theme with `:host-context(.theme-dark)` → token overrides in `_themes.scss` (ADR 0005).
 - Skill says fixed animation durations, view transitions in `styles.css` → `motion-ok` and `var(--motion-*)` (Conventions added during the scaffold).
@@ -125,8 +127,10 @@ docs/mockups        Official mockups (PNG), UI spec, and design-tokens.css
 - Skill says eager-load the landing page → every route lazy, Home included (Angular conventions).
 - Skill's examples link with `href="#"` → `routerLink` only (Public site, ADR 0016).
 - Skill's Signal Forms errors are plain `<span>`s → names, `aria-invalid`/`aria-describedby` and a live region (Accessibility checklist).
-- Skill says Angular Aria directives over native elements → Tip and Library stay native `<dialog>` with `ModalDialogDirective` (Conventions added during the scaffold).
-- Skill's harness tests use Material harnesses and Jasmine matchers (`toBeTrue()`) → Vitest matchers, no Material (Stack).
+- Skill says build menus, tabs, listboxes and toolbars with Angular Aria `ng*` directives → the menu button, the Tip / Library / Read to me tabs and the choice row stay native buttons (`aria-expanded`, `aria-pressed`), Tip and Library open a native `<dialog>` with `ModalDialogDirective`, and no `@angular/aria` (Conventions added during the scaffold).
+- Skill says keep state in a `@Service()` singleton with a private `signal()` → local UI state in signals, feature state in a SignalStore, cross-cutting state in classic NgRx; page-scoped stores such as `ChatStore` stay page-provided (Angular conventions, ADR 0002).
+- Skill says use `HttpClient` for backend calls → Ask Dot live mode streams with `fetch` through `CHAT_FETCH` (Ask Dot server, ADR 0012).
+- Skill's harness tests use Material harnesses and Jasmine matchers (`toBeTrue()`) → Vitest matchers, no Material (Commands).
 
 Installed from `angular/skills` at `1b1e2d179923527ca6432c95706cef286c254f75` (recorded in `skills-lock.json`). To update, run the same command, read the diff before committing, and update the SHA here:
 
